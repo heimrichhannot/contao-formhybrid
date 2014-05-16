@@ -131,7 +131,7 @@ abstract class Form extends \Controller
 					}
 					
 					// Unset a field, if arrEditable is given but field not present
-					if (is_array($this->arrEditable) && !in_array($vv, $this->arrEditable) && !$this->dc['fields']['inputType'] == 'hidden')
+					if (is_array($this->arrEditable) && !empty($this->arrEditable) && !in_array($vv, $this->arrEditable) && !$this->dc['fields']['inputType'] == 'hidden')
 					{
 						unset($boxes[$k][$kk]);
 					}
