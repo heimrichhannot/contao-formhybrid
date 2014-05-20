@@ -8,7 +8,7 @@
 	<?php echo $this->novalidate; ?>
 	<?php if($this->formClass):?> class="<?php echo $this->formClass; ?>"<?php endif;?>>
 		<div class="formbody">
-			<?php if ($this->method != 'get'): ?>
+			<?php if ($this->method == FORMHYBRID_METHOD_POST): ?>
 				<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
 				<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
 				<?php if ($this->maxFileSize): ?>

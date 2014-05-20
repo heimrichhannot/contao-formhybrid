@@ -179,6 +179,12 @@ abstract class Form extends \Controller
 		
 		$value = $arrData['default'];
 		
+		// GET fallback
+		if($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($name))
+		{
+			$this->isSubmitted = true;
+		}
+		
 		// set value from request
 		if($this->isSubmitted)
 		{
@@ -192,7 +198,6 @@ abstract class Form extends \Controller
 				break;
 			}
 		}
-		
 		
 		// Trigger the load_callback
 		$dc = new DC_Hybrid($this->strTable, $this->objModel);
@@ -212,6 +217,12 @@ abstract class Form extends \Controller
 		{
 			$objDate = new \Date($value, $GLOBALS['TL_CONFIG'][$arrData['eval']['rgxp'] . 'Format']);
 			$value = $objDate->tstamp;
+		}
+		
+		// prevent name for GET and submit widget, otherwise url will have submit name in
+		if($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit')
+		{
+			$name = '';
 		}
 		
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name);
@@ -237,6 +248,11 @@ abstract class Form extends \Controller
 			}
 			elseif ($objWidget->submitInput())
 			{
+				if($this->strMethod == FORMHYBRID_METHOD_GET)
+				{
+					$objWidget->value = $value;
+				}
+				
 				$value = $objWidget->value;
 		
 				// Sort array by key (fix for JavaScript wizards)
@@ -305,9 +321,9 @@ abstract class Form extends \Controller
 	{
 		$arrData = array
 		(
-				'inputType' => 'submit',
-				'label'			=> &$GLOBALS['TL_LANG']['formhybrid']['submit'],
-				'eval'			=> array('class' => 'btn btn-primary')
+			'inputType' => 'submit',
+			'label'		=> &$GLOBALS['TL_LANG']['formhybrid']['submit'],
+			'eval'		=> array('class' => 'btn btn-primary')
 		);
 		
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
