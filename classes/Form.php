@@ -162,7 +162,19 @@ abstract class Form extends \Controller
 			}
 			
 			$this->arrEditableBoxes = $boxes;
-			$this->arrEditable = array_merge($arrHidden, $arrEditable);
+			//$this->arrEditable = array_merge($arrHidden, $arrEditable);
+			
+			// take into account sorting of arrEditable
+			$arrEditableSorted = array();
+			foreach ($this->arrEditable as $strField)
+			{
+				if (in_array($strField, array_merge($arrHidden, $arrEditable)))
+				{
+					$arrEditableSorted[] = $strField;
+				}
+			}
+			
+			$this->arrEditable = $arrEditableSorted;
 			
 			return true;
 		}
@@ -285,11 +297,11 @@ abstract class Form extends \Controller
 	{
 		$this->isSubmitted = \Input::post('FORM_SUBMIT') == $this->strFormId;
 		
-		foreach($this->dc['fields'] as $name => $arrData)
+		foreach($this->arrEditable as $name)
 		{
-			if(!in_array($name, $this->arrEditable)) continue;
+			if(!in_array($name, array_keys($this->dc['fields']))) continue;
 			
-			$this->arrFields[$name] = $this->generateField($name, $arrData);
+			$this->arrFields[$name] = $this->generateField($name, $this->dc['fields'][$name]);
 		}
 		
 		// add submit button if not configured in dca
