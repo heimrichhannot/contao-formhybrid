@@ -21,6 +21,8 @@ abstract class Form extends \Controller
 	
 	protected $arrEditableBoxes = array();
 	
+	protected $arrDefaultValues = array();
+	
 	protected $arrLegends = array();
 	
 	protected $isSubmitted = false;
@@ -53,6 +55,15 @@ abstract class Form extends \Controller
 		
 		$this->strMethod = $this->strMethod == FORMHYBRID_METHOD_GET ? FORMHYBRID_METHOD_GET : FORMHYBRID_METHOD_POST;
 		$this->strAction = is_null($this->strAction) ? $this->generateFrontendUrl($objPage->row()) : $this->strAction;
+		
+		// default values
+		if ($this->strMethod == FORMHYBRID_METHOD_GET && $this->addDefaultValues)
+		{
+			foreach (deserialize($this->arrDefaultValues, true) as $arrField)
+			{
+				\Input::setGet($arrField['field'], @unserialize($arrField['value']) === false ? $arrField['value'] : deserialize($arrField['value'], true));
+			}
+		}
 	}
 	
 	public function generate()

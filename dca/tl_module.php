@@ -2,6 +2,9 @@
 
 $dc = &$GLOBALS['TL_DCA']['tl_module'];
 
+$dc['palettes']['__selector__'][] = 'formHybridAddDefaultValues';
+$dc['subpalettes']['formHybridAddDefaultValues'] = 'formHybridDefaultValues';
+
 $arrFields = array
 (
 	'formHybridDataContainer' => array
@@ -10,7 +13,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridDataContainer'],
 		'default'								=> 'default',
 		'options_callback'						=> array('tl_form_hybrid_module', 'getDataContainers'),
-		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
+		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 clr'),
 		'exclude'								=> true,
 		'sql'									=> "varchar(255) NOT NULL default ''"
 	),
@@ -32,6 +35,38 @@ $arrFields = array
 		'exclude'								=> true,
 		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
 		'sql'									=> "blob NULL"
+	),
+	'formHybridAddDefaultValues' => array(
+		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridAddDefaultValues'],
+		'exclude'								=> true,
+		'inputType'								=> 'checkbox',
+		'eval'									=> array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
+		'sql'									=> "char(1) NOT NULL default ''"
+	),
+	'formHybridDefaultValues' => array
+	(
+		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues'],
+		'exclude' 								=> true,
+		'inputType' 							=> 'multiColumnWizard',
+		'eval' 									=> array(
+			'columnFields' => array(
+				'field' => array(
+					'label'                 => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['field'],
+					'exclude'               => true,
+					'inputType'             => 'select',
+					'options_callback'		=> array('tl_form_hybrid_module', 'getEditable'),
+					'eval'					=> array('style'=>'width: 200px')
+				),
+				'value' => array(
+					'label'                 => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
+					'exclude'               => true,
+					'inputType'             => 'text',
+					'eval'					=> array('style'=>'width: 200px')
+				)
+			),
+			'tl_class' => 'clr long'
+		),
+		'sql'						=> "blob NULL"
 	)
 );
 
@@ -81,8 +116,15 @@ class tl_form_hybrid_module extends \Backend
 		return $return;
 	}
 	
-	public function getEditable(\DataContainer $dc)
+	public function getEditable($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	{
+		// get dc for multicolumnwizard...
+		if (!$dc)
+		{
+			$dc = new stdClass();
+			$dc->activeRecord = \ModuleModel::findByPk(\Input::get('id'));
+		}
+		
 		if (!$dc->activeRecord->formHybridDataContainer)
 			return array();
 		
