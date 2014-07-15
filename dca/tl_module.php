@@ -36,6 +36,15 @@ $arrFields = array
 		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
 		'sql'									=> "blob NULL"
 	),
+	'formHybridEditableSkip' => array
+	(
+		'inputType'								=> 'checkboxWizard',
+		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableSkip'],
+		'options_callback'						=> array('tl_form_hybrid_module', 'getEditable'),
+		'exclude'								=> true,
+		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
+		'sql'									=> "blob NULL"
+	),
 	'formHybridAddDefaultValues' => array(
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridAddDefaultValues'],
 		'exclude'								=> true,
