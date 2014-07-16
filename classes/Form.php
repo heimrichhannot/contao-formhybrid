@@ -251,6 +251,14 @@ abstract class Form extends \Controller
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name);
 		$objWidget = new $strClass($arrWidget);
 		
+		if (isset($arrData['formHybridOptions']))
+		{
+			$arrFormHybridOptions = $arrData['formHybridOptions'];
+			
+			$this->import($arrFormHybridOptions[0]);
+			$objWidget->options = $this->$arrFormHybridOptions[0]->$arrFormHybridOptions[1]();
+		}
+		
 		if ($objWidget instanceof \uploadable)
 		{
 			$this->hasUpload = true;
