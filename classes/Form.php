@@ -177,15 +177,22 @@ abstract class Form extends \Controller
 			
 			// take into account sorting of arrEditable
 			$arrEditableSorted = array();
-			foreach ($this->arrEditable as $strField)
+			if (is_array($this->arrEditable) && !empty($this->arrEditable))
 			{
-				if (in_array($strField, array_merge($arrHidden, $arrEditable)))
+				foreach ($this->arrEditable as $strField)
 				{
-					$arrEditableSorted[] = $strField;
+					if (in_array($strField, array_merge($arrHidden, $arrEditable)))
+					{
+						$arrEditableSorted[] = $strField;
+					}
 				}
+					
+				$this->arrEditable = $arrEditableSorted;
 			}
-			
-			$this->arrEditable = $arrEditableSorted;
+			else
+			{
+				$this->arrEditable = $arrEditable;
+			}
 			
 			return true;
 		}
