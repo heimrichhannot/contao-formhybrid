@@ -13,7 +13,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridDataContainer'],
 		'default'								=> 'default',
 		'options_callback'						=> array('tl_form_hybrid_module', 'getDataContainers'),
-		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 clr'),
+		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 clr', 'mandatory' => true),
 		'exclude'								=> true,
 		'sql'									=> "varchar(255) NOT NULL default ''"
 	),
@@ -23,7 +23,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridPalette'],
 		'default'								=> 'default',
 		'options_callback'						=> array('tl_form_hybrid_module', 'getPalette'),
-		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
+		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50', 'mandatory' => true),
 		'exclude'								=> true,
 		'sql'									=> "varchar(255) NOT NULL default ''"
 	),
@@ -33,7 +33,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
 		'options_callback'						=> array('tl_form_hybrid_module', 'getEditable'),
 		'exclude'								=> true,
-		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
+		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50', 'mandatory' => true),
 		'sql'									=> "blob NULL"
 	),
 	'formHybridEditableSkip' => array
@@ -87,7 +87,12 @@ class tl_form_hybrid_module extends \Backend
 	public function getDataContainers(\DataContainer $dc)
 	{
 		$arrDCA = array();
-		foreach (\ModuleLoader::getActive() as $strModule)
+
+        $arrModules = \ModuleLoader::getActive();
+
+        if(!is_array($arrModules)) return $arrDCA;
+
+		foreach ($arrModules as $strModule)
 		{
 			$strDir = TL_ROOT . '/system/modules/' . $strModule . '/dca';
 			
@@ -108,14 +113,17 @@ class tl_form_hybrid_module extends \Backend
 	
 	public function getPalette(\DataContainer $dc)
 	{
-		if (!$dc->activeRecord->formHybridDataContainer)
-			return array();
-		
-		$return = array();
-		
-		System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
+        $return = array();
+
+        if (!$dc->activeRecord->formHybridDataContainer) return $return;
+
+        System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
 		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
-		
+
+        $arrPaletes = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'];
+
+        if(!is_array($arrPaletes)) return $return;
+
 		foreach ($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'] as $k=>$v)
 		{
 			if ($k != '__selector__')
@@ -156,14 +164,14 @@ class tl_form_hybrid_module extends \Backend
 					++$eCount;
 					continue;
 				}
-				
-				// legends
+
+                // legends
 				if (preg_match('/^\{.*\}$/i', $vv))
 				{
 					unset($boxes[$k][$kk]);
 				}
 			}
-		
+
 			// Unset a box if it does not contain any fields
 			if (count($boxes[$k]) < $eCount)
 			{

@@ -47,12 +47,20 @@ abstract class Form extends \Controller
 	
 	protected $strFormClass;
 	
-	public function __construct()
+	public function __construct(\ModuleModel $objModule=null)
 	{
 		parent::__construct();
 		
 		global $objPage;
-		
+
+        if($objModule !== null && $objModule->formHybridPalette)
+        {
+            $this->strPalette = $objModule->formHybridPalette;
+            $this->arrEditable = deserialize($objModule->formHybridEditable, true);
+            $this->addDefaultValues = deserialize($objModule->formHybridAddDefaultValues, true);
+            $this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
+        }
+
 		$this->strMethod = $this->strMethod == FORMHYBRID_METHOD_GET ? FORMHYBRID_METHOD_GET : FORMHYBRID_METHOD_POST;
 		$this->strAction = is_null($this->strAction) ? $this->generateFrontendUrl($objPage->row()) : $this->strAction;
 		
