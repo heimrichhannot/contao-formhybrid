@@ -2,9 +2,10 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-use Contao\DataContainer;
 abstract class Form extends \Controller
 {
+    protected $arrData = array();
+
 	protected $strTable;
 	
 	protected $strFormId;
@@ -24,7 +25,7 @@ abstract class Form extends \Controller
 	protected $arrDefaultValues = array();
 	
 	protected $arrLegends = array();
-	
+
 	protected $isSubmitted = false;
 	
 	protected $doNotSubmit = false;
@@ -213,7 +214,7 @@ abstract class Form extends \Controller
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 		
 		// Continue if the class is not defined
-		if (!$this->classFileExists($strClass)) return false;
+		if (!class_exists($strClass)) return false;
 		
 		$value = $arrData['default'];
 		
@@ -245,16 +246,8 @@ abstract class Form extends \Controller
 			foreach ($arrData['load_callback'] as $callback)
 			{
 				$this->import($callback[0]);
-				
 				$value = $this->$callback[0]->$callback[1]($value, $dc);
 			}
-		}
-		
-		// Convert date formats into timestamps
-		if ($value != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
-		{
-			$objDate = new \Date($value, $GLOBALS['TL_CONFIG'][$arrData['eval']['rgxp'] . 'Format']);
-			$value = $objDate->tstamp;
 		}
 		
 		// prevent name for GET and submit widget, otherwise url will have submit name in
@@ -298,7 +291,7 @@ abstract class Form extends \Controller
 				{
 					$objWidget->value = $value;
 				}
-				
+
 				$value = $objWidget->value;
 		
 				// Sort array by key (fix for JavaScript wizards)
@@ -309,7 +302,14 @@ abstract class Form extends \Controller
 				}
 		
 				$dc = new DC_Hybrid($this->strTable, $this->objModel);
-		
+
+                // Convert date formats into timestamps
+                if ($value != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
+                {
+                    $objDate = new \Date($value, $GLOBALS['TL_CONFIG'][$arrData['eval']['rgxp'] . 'Format']);
+                    $value = $objDate->tstamp;
+                }
+
 				// Trigger the save_callback
 				if (is_array($arrData['save_callback']))
 				{
@@ -319,7 +319,7 @@ abstract class Form extends \Controller
 						$value = $this->$callback[0]->$callback[1]($value, $dc);
 					}
 				}
-		
+
 				$this->objModel->{$name} = $value;
 			}
 		}
@@ -374,6 +374,53 @@ abstract class Form extends \Controller
 		
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
 	}
+
+    /**
+     * Set an object property
+     * @param string
+     * @param mixed
+     */
+    public function __set($strKey, $varValue)
+    {
+        $this->arrData[$strKey] = $varValue;
+    }
+
+
+    /**
+     * Return an object property
+     * @param string
+     * @return mixed
+     */
+    public function __get($strKey)
+    {
+        if (isset($this->arrData[$strKey]))
+        {
+            return $this->arrData[$strKey];
+        }
+
+        return parent::__get($strKey);
+    }
+
+
+    /**
+     * Check whether a property is set
+     * @param string
+     * @return boolean
+     */
+    public function __isset($strKey)
+    {
+        return isset($this->arrData[$strKey]);
+    }
+
+    public function getSubmission()
+    {
+        return $this->objModel;
+    }
+
+    public function isSubmitted()
+    {
+        return $this->isSubmitted;
+    }
 	
 	abstract protected function compile();
 	
