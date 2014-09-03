@@ -102,6 +102,13 @@ abstract class Form extends \Controller
 		
 		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName ;
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
+		if (is_array($this->arrAttributes))
+		{
+			$arrAttributes = $this->arrAttributes;
+			$this->Template->attributes = implode(' ', array_map(function($strValue) use ($arrAttributes) {
+				return $strValue . '="' . $arrAttributes[$strValue] . '"';
+			}, array_keys($this->arrAttributes)));
+		}
 		$this->Template->cssID = ' id="' . $this->strFormName . '"';
 		
 		$this->compile();
