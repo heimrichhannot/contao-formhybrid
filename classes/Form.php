@@ -70,7 +70,8 @@ abstract class Form extends \Controller
 		{
 			foreach (deserialize($this->arrDefaultValues, true) as $arrField)
 			{
-				\Input::setGet($arrField['field'], @unserialize($arrField['value']) === false ? $arrField['value'] : deserialize($arrField['value'], true));
+				if (!\Input::get($arrField['field']))
+					\Input::setGet($arrField['field'], @unserialize($arrField['value']) === false ? $arrField['value'] : deserialize($arrField['value'], true));
 			}
 		}
 	}
@@ -262,7 +263,7 @@ abstract class Form extends \Controller
 		{
 			$name = '';
 		}
-		
+
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name);
 		$objWidget = new $strClass($arrWidget);
 		
