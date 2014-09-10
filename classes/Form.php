@@ -267,8 +267,6 @@ abstract class Form extends \Controller
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name);
 		$objWidget = new $strClass($arrWidget);
 
-
-
 		if (isset($arrData['formHybridOptions']))
 		{
 			$arrFormHybridOptions = $arrData['formHybridOptions'];
