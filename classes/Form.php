@@ -31,7 +31,9 @@ abstract class Form extends \Controller
 	protected $doNotSubmit = false;
 	
 	protected $objModel;
-	
+
+	protected $objModule;
+
 	protected $strTemplate = 'formhybrid_default';
 	
 	protected $strMethod = FORMHYBRID_METHOD_GET;
@@ -56,6 +58,7 @@ abstract class Form extends \Controller
 
         if($objModule !== null && $objModule->formHybridPalette)
         {
+			$this->objModule = $objModule;
             $this->strPalette = $objModule->formHybridPalette;
             $this->arrEditable = deserialize($objModule->formHybridEditable, true);
             $this->addDefaultValues = deserialize($objModule->formHybridAddDefaultValues, true);
@@ -247,7 +250,7 @@ abstract class Form extends \Controller
 		}
 		
 		// Trigger the load_callback
-		$dc = new DC_Hybrid($this->strTable, $this->objModel);
+		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 		
 		if (is_array($arrData['load_callback']))
 		{
@@ -264,7 +267,7 @@ abstract class Form extends \Controller
 			$name = '';
 		}
 
-		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name);
+		$arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name, $this->strTable, $dc);
 		$objWidget = new $strClass($arrWidget);
 
 		if (isset($arrData['formHybridOptions']))
@@ -309,7 +312,7 @@ abstract class Form extends \Controller
 					$value = serialize($value);
 				}
 		
-				$dc = new DC_Hybrid($this->strTable, $this->objModel);
+				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
                 // Convert date formats into timestamps
                 if ($value != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
