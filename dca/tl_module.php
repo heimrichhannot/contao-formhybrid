@@ -33,7 +33,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
 		'options_callback'						=> array('tl_form_hybrid_module', 'getEditable'),
 		'exclude'								=> true,
-		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50', 'mandatory' => true),
+		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight', 'mandatory' => true),
 		'sql'									=> "blob NULL"
 	),
 	'formHybridEditableSkip' => array
@@ -42,7 +42,7 @@ $arrFields = array
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableSkip'],
 		'options_callback'						=> array('tl_form_hybrid_module', 'getEditable'),
 		'exclude'								=> true,
-		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50'),
+		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight'),
 		'sql'									=> "blob NULL"
 	),
 	'formHybridAddDefaultValues' => array(
