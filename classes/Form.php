@@ -56,9 +56,10 @@ abstract class Form extends \Controller
 
 		global $objPage;
 
-		if($objModule !== null && $objModule->formHybridPalette)
+		if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
 		{
 			$this->objModule = $objModule;
+            $this->strTable = $objModule->formHybridDataContainer;
 			$this->strPalette = $objModule->formHybridPalette;
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
 			$this->addDefaultValues = deserialize($objModule->formHybridAddDefaultValues, true);
@@ -122,8 +123,7 @@ abstract class Form extends \Controller
 
 	protected function loadDC()
 	{
-		$this->loadDataContainer($this->strTable);
-
+		\Controller::loadDataContainer($this->strTable);
 		\System::loadLanguageFile($this->strTable);
 
 		if(!isset($GLOBALS['TL_DCA'][$this->strTable])) return false;

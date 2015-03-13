@@ -98,7 +98,7 @@ class tl_form_hybrid_module extends \Backend
 			
 			if (file_exists($strDir))
 				foreach (scandir($strDir) as $strFile) {
-					if ($strFile != '.' && $strFile != '..' && file_exists($strDir . '/' . $strFile))
+					if (substr($strFile, 0, 1) != '.'  && file_exists($strDir . '/' . $strFile))
 					{
 						$arrDCA[] = str_replace('.php', '', $strFile);
 					}
@@ -118,11 +118,11 @@ class tl_form_hybrid_module extends \Backend
         if (!$dc->activeRecord->formHybridDataContainer) return $return;
 
         System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
-		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
+		Controller::loadDataContainer($dc->activeRecord->formHybridDataContainer);
 
-        $arrPaletes = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'];
+        $arrPalettes = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'];
 
-        if(!is_array($arrPaletes)) return $return;
+        if(!is_array($arrPalettes)) return $return;
 
 		foreach ($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'] as $k=>$v)
 		{
