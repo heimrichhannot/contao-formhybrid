@@ -208,10 +208,6 @@ abstract class Form extends \Controller
 	{
 		$this->isSubmitted = \Input::post('FORM_SUBMIT') == $this->strFormId;
 
-		// important: reset cache, because input data is manipulated!!
-		if ($this->isSubmitted)
-			\Input::resetCache();
-
 		foreach($this->arrEditable as $name)
 		{
 			if(!in_array($name, array_keys($this->dc['fields']))) continue;
