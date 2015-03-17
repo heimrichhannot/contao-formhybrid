@@ -52,9 +52,9 @@ abstract class Form extends \Controller
 
 	protected $strFormClass;
 
-	protected $instanceId = 0;
+	protected $instanceId = 0; // id of model entitiy
 
-	public function __construct(\ModuleModel $objModule=null)
+	public function __construct(\ModuleModel $objModule=null, $instanceId = 0)
 	{
 		parent::__construct();
 
@@ -70,7 +70,7 @@ abstract class Form extends \Controller
 			$this->arrSubPalettes = deserialize($objModule->formHybridSubPalettes, true);
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
-			$this->instanceId = $objModule->instanceId;
+			$this->instanceId = $instanceId;
 		}
 
 		$this->strInputMethod = strtolower($this->strMethod);
@@ -89,21 +89,23 @@ abstract class Form extends \Controller
 
 		$strModelClass = \Model::getClassFromTable($this->strTable);
 
+		$this->Template = new \FrontendTemplate($this->strTemplate);
+
+		$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
+
 		// Load the model
-		if(is_numeric($this->instanceId)){
-			if(($objModel = $strModelClass::findByPk($this->instanceId)) === null)
+		if($this->instanceId && is_numeric($this->instanceId)){
+			if(($objModel = $strModelClass::findByPk($this->instanceId)) !== null)
 			{
-				return; // TODO
+				$this->objModel = $objModel;
+			}else
+			{
+				$this->Template->invalid = true;
+				$_SESSION[FORMHYBRID_MESSAGE_ERROR] = $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'];
 			}
-			$this->objModel = $objModel;
-		}else{
-			$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
 		}
 
-
 		$this->generateFields();
-
-		$this->Template = new \FrontendTemplate($this->strTemplate);
 		$this->Template->fields = $this->arrFields;
 
 		$this->Template->formName = $this->strFormName;
@@ -131,6 +133,13 @@ abstract class Form extends \Controller
 			$this->Template->messageType = 'success';
 			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
 			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
+		}
+
+		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
+		{
+			$this->Template->messageType = 'danger';
+			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
+			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
 		}
 
 		$this->compile();
@@ -196,7 +205,7 @@ abstract class Form extends \Controller
 		if (!class_exists($strClass)) return false;
 
 		// GET fallback
-		if($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($name))
+		if($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName))
 		{
 			$this->isSubmitted = true;
 		}
@@ -243,7 +252,6 @@ abstract class Form extends \Controller
 			{
 				$objWidget->validate();
 			}
-
 
 			if($objWidget->hasErrors())
 			{
@@ -385,7 +393,13 @@ abstract class Form extends \Controller
 			}
 		}
 
-		// priority 2 -> load_callback
+		// priority 2 -> set value from model entity
+		if($this->objModel->{$strName})
+		{
+			$varValue = $this->objModel->{$strName};
+		}
+
+		// priority 1 -> load_callback
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
 		if (is_array($this->dc['fields'][$strName]['load_callback']))

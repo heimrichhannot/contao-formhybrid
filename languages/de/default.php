@@ -14,3 +14,4 @@ $GLOBALS['TL_LANG']['formhybrid']['submit'][0] = 'Absenden';
  * Messages
  */
 $GLOBALS['TL_LANG']['formhybrid']['messages']['success'] = 'Vielen Dank für Ihre Einsendung.';
+$GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'] = 'Es wurde kein Datensatz mit dieser ID gefunden.';
