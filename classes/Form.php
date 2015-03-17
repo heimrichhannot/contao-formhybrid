@@ -52,6 +52,8 @@ abstract class Form extends \Controller
 
     protected $strFormClass;
 
+	protected $instanceId = 0;
+
     public function __construct(\ModuleModel $objModule=null)
     {
         parent::__construct();
