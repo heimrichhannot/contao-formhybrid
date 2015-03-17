@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\XCommonEnvironment;
+
 abstract class Form extends \Controller
 {
 	protected $arrData = array();
@@ -74,7 +76,10 @@ abstract class Form extends \Controller
 		}
 
 		$this->strInputMethod = strtolower($this->strMethod);
-		$this->strAction = is_null($this->strAction) ? $this->generateFrontendUrl($objPage->row()) : $this->strAction;
+		$this->strActionDefault = ($this->instanceId ?
+			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
+			$this->generateFrontendUrl($objPage->row()));
+		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
 		$this->skipValidation = call_user_func_array(array('\Input', $this->strInputMethod), array(FORMHYBRID_NAME_SKIP_VALIDATION));
 	}
 
@@ -91,10 +96,8 @@ abstract class Form extends \Controller
 
 		$this->Template = new \FrontendTemplate($this->strTemplate);
 
-		$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
-
 		// Load the model
-		if($this->instanceId && is_numeric($this->instanceId)){
+		if ($this->instanceId && is_numeric($this->instanceId)){
 			if(($objModel = $strModelClass::findByPk($this->instanceId)) !== null)
 			{
 				$this->objModel = $objModel;
@@ -103,6 +106,10 @@ abstract class Form extends \Controller
 				$this->Template->invalid = true;
 				$_SESSION[FORMHYBRID_MESSAGE_ERROR] = $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'];
 			}
+		}
+		else
+		{
+			$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
 		}
 
 		$this->generateFields();
@@ -200,6 +207,7 @@ abstract class Form extends \Controller
 	protected function generateField($strName, $arrData)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+		$strInputMethod = $this->strInputMethod;
 
 		// Continue if the class is not defined
 		if (!class_exists($strClass)) return false;
@@ -210,13 +218,26 @@ abstract class Form extends \Controller
 			$this->isSubmitted = true;
 		}
 
-		// contains the load_callback!
-		$varValue = $this->getDefaultFieldValue($strName);
-
 		// set value from request
 		if($this->isSubmitted)
 		{
-			$varValue = call_user_func_array(array('\Input', $this->strInputMethod), array($strName));
+			$varValue = \Input::$strInputMethod($strName);
+			$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
+		}
+		else
+		{
+			// contains the load_callback!
+			$varValue = $this->getDefaultFieldValue($strName);
+		}
+
+		// handle sub palette fields
+		if ($arrData['eval']['selector'])
+		{
+			if (!$this->getDefaultFieldValue($arrData['eval']['selector']) &&
+				!call_user_func_array(array('\Input', $this->strInputMethod), array($arrData['eval']['selector'])))
+			{
+				return false;
+			}
 		}
 
 		// prevent name for GET and submit widget, otherwise url will have submit name in
@@ -225,7 +246,7 @@ abstract class Form extends \Controller
 			$strName = '';
 		}
 
-		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
+		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this->dc);
 		$objWidget = new $strClass($arrWidget);
 
 		if (isset($arrData['formHybridOptions']))
@@ -268,7 +289,7 @@ abstract class Form extends \Controller
 
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-				$varValue = static::transformSpecialValues($varValue, $arrData);
+				$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
 
 				// Trigger the save_callback
 				if (is_array($arrData['save_callback']))
@@ -279,8 +300,6 @@ abstract class Form extends \Controller
 						$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
 					}
 				}
-
-				$varValue = static::transformSpecialValues($varValue, $arrData);
 
 				$this->objModel->{$strName} = $varValue;
 			}
@@ -297,7 +316,8 @@ abstract class Form extends \Controller
 		{
 			if(!in_array($name, array_keys($this->dc['fields']))) continue;
 
-			$this->arrFields[$name] = $this->generateField($name, $this->dc['fields'][$name]);
+			if ($strField = $this->generateField($name, $this->dc['fields'][$name]))
+				$this->arrFields[$name] = $strField;
 		}
 
 		// add default values not already rendered in the palette as hidden fields
@@ -307,15 +327,16 @@ abstract class Form extends \Controller
 			{
 				if(!in_array($arrDefaults['field'], $this->arrEditable))
 				{
-					$this->arrFields[$arrDefaults['field']] = $this->generateField($arrDefaults['field'], array(
-						'inputType' => 'hidden'
-					));
+					if ($strField = $this->generateField($arrDefaults['field'], array(
+							'inputType' => 'hidden'
+						)))
+					$this->arrFields[$arrDefaults['field']] = $strField;
 				}
 			}
 		}
 
 		// add submit button if not configured in dca
-		if(!$this->hasSubmit)
+		if (!$this->hasSubmit)
 		{
 			$this->generateSubmitField();
 		}
@@ -358,9 +379,12 @@ abstract class Form extends \Controller
 			}
 
 			// clear fields, set default value
-			foreach($this->arrFields as $name => $arrField)
+			if(!$this->instanceId)
 			{
-				$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
+				foreach($this->arrFields as $name => $arrField)
+				{
+					$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
+				}
 			}
 
 			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
@@ -408,7 +432,7 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity
-		if($this->objModel->{$strName})
+		if(isset($this->objModel->{$strName}))
 		{
 			$varValue = $this->objModel->{$strName};
 		}
@@ -428,64 +452,27 @@ abstract class Form extends \Controller
 		return $varValue;
 	}
 
-	public static function transformSpecialValues($value, $arrData)
+	public function transformSpecialValues($strName, $varValue, $arrData)
 	{
-		$value = deserialize($value);
-		$rgxp = $arrData['eval']['rgxp'];
-		$opts = $arrData['options'];
-		$rfrc = $arrData['reference'];
-
-		$rgxp = $arrData['eval']['rgxp'];
-
-		if ($rgxp == 'date' && \Validator::isDate($value))
+		// Convert date formats into timestamps
+		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
 		{
-			// Validate the date (see #5086)
-			try
-			{
-				$objDate = new \Date($value);
-				$value = $objDate->tstamp;
-			}
-			catch (\OutOfBoundsException $e){}
-		}
-		elseif ($rgxp == 'time' && \Validator::isTime($value))
-		{
-			// Validate the date (see #5086)
-			try
-			{
-				$objDate = new \Date($value);
-				$value = $objDate->tstamp;
-			}
-			catch (\OutOfBoundsException $e){}
-		}
-		elseif ($rgxp == 'datim' && \Validator::isDatim($value))
-		{
-			// Validate the date (see #5086)
-			try
-			{
-				$objDate = new \Date($value);
-				$value = $objDate->tstamp;
-			}
-			catch (\OutOfBoundsException $e){}
-		}
-		elseif (is_array($value))
-		{
-			$value = implode(', ', $value);
-		}
-		elseif (is_array($opts) && array_is_assoc($opts))
-		{
-			$value = isset($opts[$value]) ? $opts[$value] : $value;
-		}
-		elseif (is_array($rfrc))
-		{
-			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-		}
-		else
-		{
-			$value = $value;
+			$objDate = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
+			$varValue = $objDate->tstamp;
 		}
 
-		// Convert special characters (see #1890)
-		return specialchars($value);
+		// Make sure unique fields are unique
+		if ($arrData['eval']['unique'] && $varValue != '' && !$this->Database->isUniqueValue($this->strTable, $strName, $varValue, $this->instanceId))
+		{
+			throw new \Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
+		}
+
+		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv']))
+		{
+			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
+		}
+
+		return $varValue;
 	}
 
 	/**
