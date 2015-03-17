@@ -300,6 +300,20 @@ abstract class Form extends \Controller
 			$this->arrFields[$name] = $this->generateField($name, $this->dc['fields'][$name]);
 		}
 
+		// add default values not already rendered in the palette as hidden fields
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
+		{
+			foreach ($this->arrDefaultValues as $arrDefaults)
+			{
+				if(!in_array($arrDefaults['field'], $this->arrEditable))
+				{
+					$this->arrFields[$arrDefaults['field']] = $this->generateField($arrDefaults['field'], array(
+						'inputType' => 'hidden'
+					));
+				}
+			}
+		}
+
 		// add submit button if not configured in dca
 		if(!$this->hasSubmit)
 		{

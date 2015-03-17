@@ -25,5 +25,12 @@ $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
 /**
  * Formhybrid elements
  */
-
 $GLOBALS['TL_FORMHYBRID_ELEMENTS'] = array();
+
+/**
+ * Javascript
+ */
+if(TL_MODE == 'FE')
+{
+	$GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid.js|static';
+}
