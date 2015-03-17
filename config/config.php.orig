@@ -1,10 +1,9 @@
-<?php 
+<?php
 
 define('FORMHYBRID_METHOD_GET', 'GET');
 define('FORMHYBRID_METHOD_POST', 'POST');
 define('FORMHYBRID_NAME_SUBMIT', 'submit');
 define('FORMHYBRID_MESSAGE_SUCCESS', 'FORMHYBRID_SUCCESS');
-define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
 
 /**
  * Content elements
@@ -15,6 +14,7 @@ $GLOBALS['TL_CTE']['formhybrid'] = array(
 	'formhybridStop'    => 'HeimrichHannot\FormHybrid\ContentFormHybridStop',
 );
 
+<<<<<<< HEAD
 /**
  * Indent elements
  */
@@ -26,3 +26,7 @@ $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
  */
 
 $GLOBALS['TL_FORMHYBRID_ELEMENTS'] = array();
+=======
+define('FORMHYBRID_NAME_SUBMIT', 'submit');
+define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
+>>>>>>> b7bd96b4dde2ed9509f5d69455d8bad569b166cf

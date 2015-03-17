@@ -2,7 +2,7 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-abstract class Form extends \Frontend
+abstract class Form extends \Controller
 {
     protected $arrData = array();
 
@@ -19,6 +19,8 @@ abstract class Form extends \Frontend
     protected $strPalette = 'default';
 
     protected $arrEditable = array();
+
+	protected $arrSubPalettes = array();
 
     protected $arrEditableBoxes = array();
 
@@ -38,7 +40,7 @@ abstract class Form extends \Frontend
 
     protected $strMethod = FORMHYBRID_METHOD_GET;
 
-    protected $srtAction = null;
+    protected $strAction = null;
 
     protected $hasUpload = false;
 
@@ -59,31 +61,42 @@ abstract class Form extends \Frontend
         if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
         {
             $this->objModule = $objModule;
-			$this->arrData = $objModule->row();
             $this->strTable = $objModule->formHybridDataContainer;
             $this->strPalette = $objModule->formHybridPalette;
             $this->arrEditable = deserialize($objModule->formHybridEditable, true);
+			$this->arrSubPalettes = deserialize($objModule->formHybridSubPalettes, true);
             $this->addDefaultValues = $objModule->formHybridAddDefaultValues;
             $this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
+			$this->instanceId = $objModule->instanceId;
         }
 
-        $this->strMethod = $this->strMethod == FORMHYBRID_METHOD_GET ? FORMHYBRID_METHOD_GET : FORMHYBRID_METHOD_POST;
+		$this->strInputMethod = strtolower($this->strMethod);
         $this->strAction = is_null($this->strAction) ? $this->generateFrontendUrl($objPage->row()) : $this->strAction;
+		$this->skipValidation = call_user_func_array(array('\Input', $this->strInputMethod), array(FORMHYBRID_NAME_SKIP_VALIDATION));
     }
 
     public function generate()
     {
         if(!$this->loadDC()) return false;
 
-        if(!$this->setArrFields()) return false;
+        if(!$this->getFields()) return false;
 
         $this->strFormId = $this->strTable;
         $this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 
-		$strModelClass = \Model::getClassFromTable($this->strTable);
+        $strModelClass = \Model::getClassFromTable($this->strTable);
 
 		// Load the model
-		$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
+		if(is_numeric($this->instanceId)){
+			if(($objModel = $strModelClass::findByPk($this->instanceId)) === null)
+			{
+				return; // TODO
+			}
+			$this->objModel = $objModel;
+		}else{
+			$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
+		}
+
 
         $this->generateFields();
 
@@ -134,101 +147,50 @@ abstract class Form extends \Frontend
         return true;
     }
 
-    protected function setArrFields()
-    {
-        $boxes = trimsplit(';', $this->dc['palettes'][$this->strPalette]);
-        $this->legends = array();
+    protected function getFields()
+	{
+		$arrEditable = array();
+		foreach ($this->arrEditable as $strField)
+		{
+			// check if field really exists
+			if (!$this->dc['fields'][$strField])
+				continue;
 
-        if (!empty($boxes))
-        {
-            foreach ($boxes as $k=>$v)
-            {
-                $eCount = 1;
-                $boxes[$k] = trimsplit(',', $v);
+			$arrEditable[] = $strField;
 
-                foreach ($boxes[$k] as $kk=>$vv)
-                {
-                    if (preg_match('/^\[.*\]$/i', $vv))
-                    {
-                        ++$eCount;
-                        continue;
-                    }
+			// add subpalette fields
+			if (in_array($strField, array_keys($this->dc['subpalettes'])))
+			{
+				foreach ($this->arrSubPalettes as $arrSubPalette)
+				{
+					if ($arrSubPalette['subpalette'] == $strField)
+					{
+						foreach ($arrSubPalette['fields'] as $strSubPaletteField)
+						{
+							if (!$this->dc['fields'][$strSubPaletteField])
+								continue;
+							else
+							{
+								$arrEditable[] = $strSubPaletteField;
+								$this->dc['fields'][$strSubPaletteField]['eval']['selector'] = $strField;
+							}
+						}
+					}
+				}
+			}
+		}
 
-                    if (preg_match('/^\{.*\}$/i', $vv))
-                    {
-                        $legend = substr($vv, 1, -1);
-                        list($key, $cls) = explode(':', $legend);
-                        $this->arrLegends[$k] = $key;
-                        unset($boxes[$k][$kk]);
-                    }
+		$this->arrEditable = $arrEditable;
 
-                    // Unset a field, if arrEditable is given but field not present
-                    if (is_array($this->arrEditable) && !empty($this->arrEditable) && !in_array($vv, $this->arrEditable) && !$this->dc['fields']['inputType'] == 'hidden')
-                    {
-                        unset($boxes[$k][$kk]);
-                    }
-                }
+		return !empty($this->arrEditable);
+	}
 
-                // Unset a box if it does not contain any fields
-                if (count($boxes[$k]) < $eCount)
-                {
-                    unset($boxes[$k]);
-                }
-
-            }
-
-            $arrEditable = array();
-
-            // flat array
-            foreach($boxes as $box)
-            {
-                $arrEditable = array_merge($arrEditable, $box);
-            }
-
-            $arrHidden = array();
-
-            foreach($this->dc['fields'] as $name => $arrData)
-            {
-                if($arrData['inputType'] != 'hidden') continue;
-                $arrHidden[] = $name;
-            }
-
-            $this->arrEditableBoxes = $boxes;
-            //$this->arrEditable = array_merge($arrHidden, $arrEditable);
-
-            // take into account sorting of arrEditable
-            $arrEditableSorted = array();
-            if (is_array($this->arrEditable) && !empty($this->arrEditable))
-            {
-                foreach ($this->arrEditable as $strField)
-                {
-                    if (in_array($strField, array_merge($arrHidden, $arrEditable)))
-                    {
-                        $arrEditableSorted[] = $strField;
-                    }
-                }
-
-                $this->arrEditable = $arrEditableSorted;
-            }
-            else
-            {
-                $this->arrEditable = $arrEditable;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function generateField($name, $arrData)
+    protected function generateField($strName, $arrData)
     {
         $strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 
         // Continue if the class is not defined
         if (!class_exists($strClass)) return false;
-
-        $value = $arrData['default'];
 
         // GET fallback
         if($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($name))
@@ -236,44 +198,22 @@ abstract class Form extends \Frontend
             $this->isSubmitted = true;
         }
 
-        // set value from request
+		// contains the load_callback!
+		$varValue = $this->getDefaultFieldValue($strName);
+
+		// set value from request
         if($this->isSubmitted)
         {
-            switch($this->strMethod)
-            {
-                case FORMHYBRID_METHOD_GET:
-                    $value = \Input::get($name);
-                    break;
-                case FORMHYBRID_METHOD_POST:
-                    $value = \Input::post($name);
-                    break;
-            }
-        }
-        // set default values from form
-        else if($this->addDefaultValues)
-        {
-            $value = $this->getDefaultValue($name);
-        }
-
-        // Trigger the load_callback
-        $dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
-
-        if (is_array($arrData['load_callback']))
-        {
-            foreach ($arrData['load_callback'] as $callback)
-            {
-                $this->import($callback[0]);
-                $value = $this->$callback[0]->$callback[1]($value, $dc);
-            }
-        }
+			$varValue = call_user_func_array(array('\Input', $this->strInputMethod), array($strName));
+		}
 
         // prevent name for GET and submit widget, otherwise url will have submit name in
         if($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit')
         {
-            $name = '';
+            $strName = '';
         }
 
-        $arrWidget = \Widget::getAttributesFromDca($arrData, $name, $value, $name, $this->strTable, $dc);
+        $arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
         $objWidget = new $strClass($arrWidget);
 
         if (isset($arrData['formHybridOptions']))
@@ -296,7 +236,11 @@ abstract class Form extends \Frontend
 
         if ($this->isSubmitted)
         {
-            $objWidget->validate();
+			if(!$this->skipValidation)
+			{
+				$objWidget->validate();
+			}
+            
 
             if($objWidget->hasErrors())
             {
@@ -306,26 +250,14 @@ abstract class Form extends \Frontend
             {
                 if($this->strMethod == FORMHYBRID_METHOD_GET)
                 {
-                    $objWidget->value = $value;
+                    $objWidget->value = $varValue;
                 }
 
-                $value = $objWidget->value;
-
-                // Sort array by key (fix for JavaScript wizards)
-                if (is_array($value))
-                {
-                    sort($value);
-                    $value = serialize($value);
-                }
+                $varValue = $objWidget->value;
 
                 $dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-                // Convert date formats into timestamps
-                if ($value != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
-                {
-                    $objDate = new \Date($value, $GLOBALS['TL_CONFIG'][$arrData['eval']['rgxp'] . 'Format']);
-                    $value = $objDate->tstamp;
-                }
+				$varValue = static::transformSpecialValues($varValue, $arrData);
 
                 // Trigger the save_callback
                 if (is_array($arrData['save_callback']))
@@ -333,11 +265,13 @@ abstract class Form extends \Frontend
                     foreach ($arrData['save_callback'] as $callback)
                     {
                         $this->import($callback[0]);
-                        $value = $this->$callback[0]->$callback[1]($value, $dc);
+                        $varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
                     }
                 }
 
-                $this->objModel->{$name} = $value;
+				$varValue = static::transformSpecialValues($varValue, $arrData);
+
+                $this->objModel->{$strName} = $varValue;
             }
         }
 
@@ -364,9 +298,9 @@ abstract class Form extends \Frontend
         // trigger onsubmit callbacks
         if($this->isSubmitted && !$this->doNotSubmit)
         {
-            $dc = new DC_Hybrid($this->strTable, $this->objModel);
-
 			$this->save();
+
+            $dc = new DC_Hybrid($this->strTable, $this->objModel);
 
             $this->onSubmitCallback($dc);
 
@@ -401,21 +335,13 @@ abstract class Form extends \Frontend
 			// clear fields, set default value
 			foreach($this->arrFields as $name => $arrField)
 			{
-				$this->arrFields[$name]->value = $this->getDefaultValue($name);
+				$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
 			}
 			
 			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
         }
+
     }
-
-	protected function save()
-	{
-		// TODO: handle Submission
-		if(!$this->objModel instanceof \Contao\Model) return;
-
-		$this->objModel->tstamp = time();
-		$this->objModel->save();
-	}
 
     protected function generateSubmitField()
     {
@@ -429,26 +355,98 @@ abstract class Form extends \Frontend
         $this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
     }
 
-    protected function getDefaultValue($strName)
-    {
-        $strValue = '';
+    protected function getDefaultFieldValue($strName)
+	{
+		// priority 4 -> dca default value
+		$varValue = $this->dc['fields'][$strName]['default'];
 
-        if (!is_array($this->arrDefaultValues) || empty($this->arrDefaultValues))
-        {
-            return $strValue;
-        }
+		// priority 3 -> default values defined in the module
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
+		{
+			foreach ($this->arrDefaultValues as $arrDefaults) {
 
-        foreach ($this->arrDefaultValues as $arrDefaults) {
+		        if (empty($arrDefaults['field']) || ($arrDefaults['field'] != $strName)) {
+		            continue;
+				}
 
-            if (empty($arrDefaults['field']) || ($arrDefaults['field'] != $strName)) {
-                continue;
-            }
+		        $varValue = $arrDefaults['value'];
+		    }
+		}
 
-            $strValue = $arrDefaults['value'];
-        }
+		// priority 2 -> load_callback
+		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-        return $strValue;
-    }
+		if (is_array($this->dc['fields'][$strName]['load_callback']))
+		{
+			foreach ($this->dc['fields'][$strName]['load_callback'] as $callback)
+			{
+				$this->import($callback[0]);
+				$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
+			}
+		}
+
+		return $varValue;
+	}
+
+	public static function transformSpecialValues($value, $arrData)
+	{
+		$value = deserialize($value);
+		$rgxp = $arrData['eval']['rgxp'];
+		$opts = $arrData['options'];
+		$rfrc = $arrData['reference'];
+
+		$rgxp = $arrData['eval']['rgxp'];
+
+		if ($rgxp == 'date' && \Validator::isDate($value))
+		{
+			// Validate the date (see #5086)
+			try
+			{
+				$objDate = new \Date($value);
+				$value = $objDate->tstamp;
+			}
+			catch (\OutOfBoundsException $e){}
+		}
+		elseif ($rgxp == 'time' && \Validator::isTime($value))
+		{
+			// Validate the date (see #5086)
+			try
+			{
+				$objDate = new \Date($value);
+				$value = $objDate->tstamp;
+			}
+			catch (\OutOfBoundsException $e){}
+		}
+		elseif ($rgxp == 'datim' && \Validator::isDatim($value))
+		{
+			// Validate the date (see #5086)
+			try
+			{
+				$objDate = new \Date($value);
+				$value = $objDate->tstamp;
+			}
+			catch (\OutOfBoundsException $e){}
+		}
+		elseif (is_array($value))
+		{
+			$value = implode(', ', $value);
+		}
+		elseif (is_array($opts) && array_is_assoc($opts))
+		{
+			$value = isset($opts[$value]) ? $opts[$value] : $value;
+		}
+		elseif (is_array($rfrc))
+		{
+			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
+		}
+		else
+		{
+			$value = $value;
+		}
+
+		// Convert special characters (see #1890)
+		return specialchars($value);
+	}
 
     /**
      * Set an object property
@@ -502,6 +500,11 @@ abstract class Form extends \Frontend
     {
         return $this->isSubmitted;
     }
+
+	public function doNotSubmit()
+	{
+		return $this->doNotSubmit;
+	}
 
     abstract protected function compile();
 
