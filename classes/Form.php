@@ -2,7 +2,7 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-abstract class Form extends \Controller
+abstract class Form extends \Frontend
 {
     protected $arrData = array();
 
@@ -59,6 +59,7 @@ abstract class Form extends \Controller
         if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
         {
             $this->objModule = $objModule;
+			$this->arrData = $objModule->row();
             $this->strTable = $objModule->formHybridDataContainer;
             $this->strPalette = $objModule->formHybridPalette;
             $this->arrEditable = deserialize($objModule->formHybridEditable, true);
@@ -79,7 +80,10 @@ abstract class Form extends \Controller
         $this->strFormId = $this->strTable;
         $this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 
-        $this->objModel = new Submission();
+		$strModelClass = \Model::getClassFromTable($this->strTable);
+
+		// Load the model
+		$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
 
         $this->generateFields();
 
@@ -105,6 +109,13 @@ abstract class Form extends \Controller
             }, array_keys($this->arrAttributes)));
         }
         $this->Template->cssID = ' id="' . $this->strFormName . '"';
+
+		if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
+		{
+			$this->Template->messageType = 'success';
+			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
+			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
+		}
 
         $this->compile();
 
@@ -355,6 +366,8 @@ abstract class Form extends \Controller
         {
             $dc = new DC_Hybrid($this->strTable, $this->objModel);
 
+			$this->save();
+
             $this->onSubmitCallback($dc);
 
             if(is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback']))
@@ -365,9 +378,44 @@ abstract class Form extends \Controller
                     $this->$callback[0]->$callback[1]($dc);
                 }
             }
-        }
 
+			$arrTokenData = array();
+
+			foreach($this->objModel->row() as $name => $value)
+			{
+				if(in_array($name, array('pid', 'id', 'tstamp')) || $value == '') continue;
+				$label = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
+				$arrTokenData['submission'] .= $label . ": "  . $value . "\n";
+			}
+
+			if($this->formHybridSendSubmissionViaEmail)
+			{
+				$objEmail = new \Email();
+				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
+				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
+				$objEmail->subject = $this->replaceInsertTags($this->formHybridSubmissionMailSubject, false);
+				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags($this->formHybridSubmissionMailText), $arrTokenData);
+				$objEmail->sendTo($this->formHybridSubmissionMailRecipient);
+			}
+
+			// clear fields, set default value
+			foreach($this->arrFields as $name => $arrField)
+			{
+				$this->arrFields[$name]->value = $this->getDefaultValue($name);
+			}
+			
+			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
+        }
     }
+
+	protected function save()
+	{
+		// TODO: handle Submission
+		if(!$this->objModel instanceof \Contao\Model) return;
+
+		$this->objModel->tstamp = time();
+		$this->objModel->save();
+	}
 
     protected function generateSubmitField()
     {

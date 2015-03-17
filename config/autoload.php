@@ -3,7 +3,7 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * Copyright (c) 2005-2015 Leo Feyer
  *
  * @package Formhybrid
  * @link    https://contao.org
@@ -25,12 +25,16 @@ ClassLoader::addNamespaces(array
  */
 ClassLoader::addClasses(array
 (
-	// Classes
-	'HeimrichHannot\FormHybrid\Form'       => 'system/modules/formhybrid/classes/Form.php',
-	'HeimrichHannot\FormHybrid\Submission' => 'system/modules/formhybrid/classes/Submission.php',
-
 	// Drivers
-	'HeimrichHannot\FormHybrid\DC_Hybrid'  => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
+	'HeimrichHannot\FormHybrid\DC_Hybrid'              => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
+
+	// Elements
+	'HeimrichHannot\FormHybrid\ContentFormHybridStop'  => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',
+	'HeimrichHannot\FormHybrid\ContentFormHybridStart' => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
+
+	// Classes
+	'HeimrichHannot\FormHybrid\Submission'             => 'system/modules/formhybrid/classes/Submission.php',
+	'HeimrichHannot\FormHybrid\Form'                   => 'system/modules/formhybrid/classes/Form.php',
 ));
 
 
@@ -39,5 +43,7 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'formhybrid_default' => 'system/modules/formhybrid/templates/form',
+	'formhybrid_default'  => 'system/modules/formhybrid/templates/form',
+	'ce_formhybrid_start' => 'system/modules/formhybrid/templates/elements',
+	'ce_formhybrid_stop'  => 'system/modules/formhybrid/templates/elements',
 ));

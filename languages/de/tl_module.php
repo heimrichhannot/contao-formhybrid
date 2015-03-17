@@ -11,3 +11,14 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridAddDefaultValues'] = array('Standard
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues'] = array('Standardwerte', 'Definieren Sie hier Standardwerte für das Modul.');
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['field'] = array('Feld', 'Wählen Sie hier das gewünschte Feld aus. ACHTUNG: Bitte wählen Sie nur Felder aus, die sich auch tatsächlich im Formular befinden.');
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'] = array('Wert', 'Geben Sie hier den gewünschten Standardwert ein. Arrays bitte serialisiert eingeben.');
+
+$GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][0] = 'Erfolgsmeldung überschreiben';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][1] = 'Geben Sie hier eine alternative Erfolgsmeldung an.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][0] = 'Per E-Mail versenden';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][1] = 'Die Formulardaten an eine E-Mail-Adresse versenden.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailRecipient'][0] = 'Empfänger-Adresse';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailRecipient'][1] = 'Mehrere E-Mail-Adressen können mit Komma getrennt werden.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][0] = 'Betreff';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][1] = 'Bitte geben Sie die Betreffzeile ein.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][0] = 'Text der E-Mail';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein. Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';

@@ -2,7 +2,9 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-class Submission
+class Submission extends \Model
 {
-	
+
+	public function __construct(){}
+
 }
