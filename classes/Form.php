@@ -75,12 +75,12 @@ abstract class Form extends \Controller
 			$this->instanceId = $instanceId;
 		}
 
-		$this->strInputMethod = strtolower($this->strMethod);
+		$this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
 		$this->strActionDefault = ($this->instanceId ?
 			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
 			$this->generateFrontendUrl($objPage->row()));
 		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
-		$this->skipValidation = call_user_func_array(array('\Input', $this->strInputMethod), array(FORMHYBRID_NAME_SKIP_VALIDATION));
+		$this->skipValidation = \Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION);
 	}
 
 	public function generate()
@@ -204,6 +204,94 @@ abstract class Form extends \Controller
 		return !empty($this->arrEditable);
 	}
 
+	protected function generateFields()
+	{
+		$this->isSubmitted = \Input::post('FORM_SUBMIT') == $this->strFormId;
+
+		// important: reset cache, because input data is manipulated!!
+		if ($this->isSubmitted)
+			\Input::resetCache();
+
+		foreach($this->arrEditable as $name)
+		{
+			if(!in_array($name, array_keys($this->dc['fields']))) continue;
+
+			if ($strField = $this->generateField($name, $this->dc['fields'][$name]))
+				$this->arrFields[$name] = $strField;
+		}
+
+		// add default values not already rendered in the palette as hidden fields
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
+		{
+			foreach ($this->arrDefaultValues as $arrDefaults)
+			{
+				if(!in_array($arrDefaults['field'], $this->arrEditable))
+				{
+					if ($strField = $this->generateField($arrDefaults['field'], array(
+							'inputType' => 'hidden'
+						)))
+					$this->arrFields[$arrDefaults['field']] = $strField;
+				}
+			}
+		}
+
+		// add submit button if not configured in dca
+		if (!$this->hasSubmit)
+		{
+			$this->generateSubmitField();
+		}
+
+		// trigger onsubmit callbacks
+		if($this->isSubmitted && !$this->doNotSubmit)
+		{
+			$this->save();
+
+			$dc = new DC_Hybrid($this->strTable, $this->objModel);
+
+			$this->onSubmitCallback($dc);
+
+			if(is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback']))
+			{
+				foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $callback)
+				{
+					$this->import($callback[0]);
+					$this->$callback[0]->$callback[1]($dc);
+				}
+			}
+
+			$arrTokenData = array();
+
+			foreach($this->objModel->row() as $name => $value)
+			{
+				if(in_array($name, array('pid', 'id', 'tstamp')) || $value == '') continue;
+				$label = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
+				$arrTokenData['submission'] .= $label . ": "  . $value . "\n";
+			}
+
+			if($this->formHybridSendSubmissionViaEmail)
+			{
+				$objEmail = new \Email();
+				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
+				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
+				$objEmail->subject = $this->replaceInsertTags($this->formHybridSubmissionMailSubject, false);
+				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags($this->formHybridSubmissionMailText), $arrTokenData);
+				$objEmail->sendTo($this->formHybridSubmissionMailRecipient);
+			}
+
+			// clear fields, set default value
+			if(!$this->instanceId)
+			{
+				foreach($this->arrFields as $name => $arrField)
+				{
+					$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
+				}
+			}
+
+			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
+		}
+
+	}
+
 	protected function generateField($strName, $arrData)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
@@ -306,90 +394,6 @@ abstract class Form extends \Controller
 		}
 
 		return $objWidget;
-	}
-
-	protected function generateFields()
-	{
-		$this->isSubmitted = \Input::post('FORM_SUBMIT') == $this->strFormId;
-
-		foreach($this->arrEditable as $name)
-		{
-			if(!in_array($name, array_keys($this->dc['fields']))) continue;
-
-			if ($strField = $this->generateField($name, $this->dc['fields'][$name]))
-				$this->arrFields[$name] = $strField;
-		}
-
-		// add default values not already rendered in the palette as hidden fields
-		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
-		{
-			foreach ($this->arrDefaultValues as $arrDefaults)
-			{
-				if(!in_array($arrDefaults['field'], $this->arrEditable))
-				{
-					if ($strField = $this->generateField($arrDefaults['field'], array(
-							'inputType' => 'hidden'
-						)))
-					$this->arrFields[$arrDefaults['field']] = $strField;
-				}
-			}
-		}
-
-		// add submit button if not configured in dca
-		if (!$this->hasSubmit)
-		{
-			$this->generateSubmitField();
-		}
-
-		// trigger onsubmit callbacks
-		if($this->isSubmitted && !$this->doNotSubmit)
-		{
-			$this->save();
-
-			$dc = new DC_Hybrid($this->strTable, $this->objModel);
-
-			$this->onSubmitCallback($dc);
-
-			if(is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback']))
-			{
-				foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $callback)
-				{
-					$this->import($callback[0]);
-					$this->$callback[0]->$callback[1]($dc);
-				}
-			}
-
-			$arrTokenData = array();
-
-			foreach($this->objModel->row() as $name => $value)
-			{
-				if(in_array($name, array('pid', 'id', 'tstamp')) || $value == '') continue;
-				$label = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
-				$arrTokenData['submission'] .= $label . ": "  . $value . "\n";
-			}
-
-			if($this->formHybridSendSubmissionViaEmail)
-			{
-				$objEmail = new \Email();
-				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
-				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-				$objEmail->subject = $this->replaceInsertTags($this->formHybridSubmissionMailSubject, false);
-				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags($this->formHybridSubmissionMailText), $arrTokenData);
-				$objEmail->sendTo($this->formHybridSubmissionMailRecipient);
-			}
-
-			// clear fields, set default value
-			if(!$this->instanceId)
-			{
-				foreach($this->arrFields as $name => $arrField)
-				{
-					$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
-				}
-			}
-
-			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
-		}
-
 	}
 
 	protected function save()
