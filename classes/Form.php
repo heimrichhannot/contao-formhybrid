@@ -63,6 +63,7 @@ abstract class Form extends \Controller
 		if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
 		{
 			$this->objModule = $objModule;
+			$this->arrData = $objModule->row();
 			$this->strTable = $objModule->formHybridDataContainer;
 			$this->strPalette = $objModule->formHybridPalette;
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
