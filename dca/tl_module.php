@@ -106,6 +106,16 @@ $arrFields = array
 		),
 		'sql'       => "blob NULL"
 	),
+	'formHybridTemplate'		=> array
+	(
+		'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'],
+		'default'                 => 'event_full',
+		'exclude'                 => true,
+		'inputType'               => 'select',
+		'options_callback'        => array('tl_form_hybrid_module', 'getFormHybridTemplates'),
+		'eval'                    => array('tl_class'=>'w50'),
+		'sql'                     => "varchar(64) NOT NULL default ''"
+	),
 	'formHybridSuccessMessage'      => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'],
@@ -319,6 +329,11 @@ class tl_form_hybrid_module extends \Backend
 		}
 		
 		return $return;
+	}
+
+	public function getFormHybridTemplates()
+	{
+		return \Controller::getTemplateGroup('formhybrid_');
 	}
 	
 }

@@ -17,8 +17,8 @@ array_insert($dc['palettes']['__selector__'], 0, array('formhybridElement')); //
 /**
  * Palettes
  */
-$dc['palettes']['formhybridStart'] = '{type_legend},type;{config_legend},formhybridModule;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
-$dc['palettes']['formhybridElement'] = '{type_legend},type;{config_legend},formhybridElement;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$dc['palettes']['formhybridStart'] = '{type_legend},type;{formhybrid_legend},formhybridModule;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$dc['palettes']['formhybridElement'] = '{type_legend},type;{formhybrid_legend},formhybridElement;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 
 $arrFields = array
 (
@@ -61,7 +61,7 @@ class tl_content_formhybrid extends Backend
 
 		foreach($arrElements as $key => $strClass)
 		{
-			$strLabel = isset($GLOBALS['TL_LANG']['tl_module']['formhybrid_element'][$key]) ? $GLOBALS['TL_LANG']['tl_module']['formhybrid_element'][$key] : $key;
+			$strLabel = isset($GLOBALS['TL_LANG']['tl_content']['formhybrid_element'][$key]) ? $GLOBALS['TL_LANG']['tl_content']['formhybrid_element'][$key] : $key;
 			$arrOptions[$key] = $strLabel;
 		}
 

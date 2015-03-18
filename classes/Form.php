@@ -70,6 +70,7 @@ abstract class Form extends \Controller
 			$this->strPalette = $objModule->formHybridPalette;
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
 			$this->arrSubPalettes = deserialize($objModule->formHybridSubPalettes, true);
+			$this->strTemplate = $objModule->formHybridTemplate;
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
 			$this->instanceId = $instanceId;

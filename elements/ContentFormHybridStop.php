@@ -49,6 +49,9 @@ class ContentFormHybridStop extends \ContentElement
 
 		if($objArticle === null) return;
 
+		// do not send emails again, done by ContentFormHybridStart
+		$objModule->formHybridSendSubmissionViaEmail = false;
+
 		$objModule = new $strClass($objModule, $objArticle->inColumn);
 		$strBuffer = $objModule->generate();
 

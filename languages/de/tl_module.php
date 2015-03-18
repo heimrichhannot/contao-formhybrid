@@ -15,7 +15,6 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes'] = array('Subpaletten',
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['subpalette'] = array('Subpalette', 'Wählen Sie hier die gewünschten Subpaletten aus.');
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['fields'] = array('Felder', 'Wählen Sie hier die gewünschten Felder aus.');
 
-
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][0] = 'Erfolgsmeldung überschreiben';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][1] = 'Geben Sie hier eine alternative Erfolgsmeldung an.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][0] = 'Per E-Mail versenden';
@@ -26,3 +25,5 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][0] = 'Betref
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][1] = 'Bitte geben Sie die Betreffzeile ein.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][0] = 'Text der E-Mail';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein. Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][0] = 'Formular-Template';
+$GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][1] = 'Hier können Sie das Formular-Template überschreiben.';
