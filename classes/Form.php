@@ -259,9 +259,31 @@ abstract class Form extends \Controller
 
 			foreach($this->objModel->row() as $name => $value)
 			{
-				if(in_array($name, array('pid', 'id', 'tstamp')) || $value == '') continue;
-				$label = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
-				$arrTokenData['submission'] .= $label . ": "  . $value . "\n";
+				if(in_array($name, array('pid', 'id', 'tstamp')) || empty($value)) continue;
+				$strLabel = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
+
+				$strValue = deserialize($value);
+
+				// support input arrays
+				if(is_array($strValue))
+				{
+					$strArrayValue =  "\n";;
+					foreach($strValue as $arrItem)
+					{
+						foreach($arrItem as $itemKey => $itemValue)
+						{
+							$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
+
+							$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
+						}
+
+					}
+					
+					$arrTokenData['submission'] .= $strLabel . ": "  . "\n" . $strArrayValue . "\n";
+				}
+				else{
+					$arrTokenData['submission'] .= $strLabel . ": "  . $strValue . "\n";
+				}
 			}
 
 			if($this->formHybridSendSubmissionViaEmail)

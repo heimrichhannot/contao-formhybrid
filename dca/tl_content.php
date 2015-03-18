@@ -11,11 +11,14 @@
 
 $dc = &$GLOBALS['TL_DCA']['tl_content'];
 
-$dc['palettes']['__selector__'][] = 'formhybridElement';
+// selector
+array_insert($dc['palettes']['__selector__'], 0, array('formhybridElement')); // bug? mustn't be inserted after type selector
+
+/**
+ * Palettes
+ */
 $dc['palettes']['formhybridStart'] = '{type_legend},type;{config_legend},formhybridModule;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 $dc['palettes']['formhybridElement'] = '{type_legend},type;{config_legend},formhybridElement;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
-
-$dc['subpalettes']['formhybridElement_default'] = 'formhybridModule';
 
 $arrFields = array
 (
@@ -38,8 +41,8 @@ $arrFields = array
 		'exclude'                 => true,
 		'inputType'               => 'select',
 		'options_callback'        => array('tl_content_formhybrid', 'getElements'),
-		'eval'                    => array('mandatory'=>true, 'chosen'=>true, 'submitOnChange'=>true),
-		'sql'                     => "int(10) unsigned NOT NULL default '0'"
+		'eval'                    => array('mandatory'=>true, 'chosen'=>true, 'submitOnChange'=>true, 'includeBlankOption' => true),
+		'sql'                     => "varchar(64) NOT NULL default ''"
 	),
 );
 
@@ -56,7 +59,13 @@ class tl_content_formhybrid extends Backend
 
 		if(!is_array($arrElements) || empty($arrElements)) return $arrOptions;
 
-		return array_keys($arrElements);
+		foreach($arrElements as $key => $strClass)
+		{
+			$strLabel = isset($GLOBALS['TL_LANG']['tl_module']['formhybrid_element'][$key]) ? $GLOBALS['TL_LANG']['tl_module']['formhybrid_element'][$key] : $key;
+			$arrOptions[$key] = $strLabel;
+		}
+
+		return $arrOptions;
 	}
 
 

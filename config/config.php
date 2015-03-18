@@ -23,11 +23,6 @@ $GLOBALS['TL_WRAPPERS']['start'][] = 'formhybridStart';
 $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
 
 /**
- * Formhybrid elements
- */
-$GLOBALS['TL_FORMHYBRID_ELEMENTS'] = array();
-
-/**
  * Javascript
  */
 if(TL_MODE == 'FE')

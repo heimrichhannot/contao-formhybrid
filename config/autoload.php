@@ -26,15 +26,16 @@ ClassLoader::addNamespaces(array
 ClassLoader::addClasses(array
 (
 	// Drivers
-	'HeimrichHannot\FormHybrid\DC_Hybrid'              => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
+	'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
 
 	// Elements
-	'HeimrichHannot\FormHybrid\ContentFormHybridStop'  => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',
-	'HeimrichHannot\FormHybrid\ContentFormHybridStart' => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
+	'HeimrichHannot\FormHybrid\ContentFormHybridStop'    => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',
+	'HeimrichHannot\FormHybrid\ContentFormHybridElement' => 'system/modules/formhybrid/elements/ContentFormHybridElement.php',
+	'HeimrichHannot\FormHybrid\ContentFormHybridStart'   => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
 
 	// Classes
-	'HeimrichHannot\FormHybrid\Submission'             => 'system/modules/formhybrid/classes/Submission.php',
-	'HeimrichHannot\FormHybrid\Form'                   => 'system/modules/formhybrid/classes/Form.php',
+	'HeimrichHannot\FormHybrid\Submission'               => 'system/modules/formhybrid/classes/Submission.php',
+	'HeimrichHannot\FormHybrid\Form'                     => 'system/modules/formhybrid/classes/Form.php',
 ));
 
 
@@ -43,7 +44,8 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'formhybrid_default'  => 'system/modules/formhybrid/templates/form',
-	'ce_formhybrid_start' => 'system/modules/formhybrid/templates/elements',
-	'ce_formhybrid_stop'  => 'system/modules/formhybrid/templates/elements',
+	'formhybrid_default'    => 'system/modules/formhybrid/templates/form',
+	'ce_formhybrid_element' => 'system/modules/formhybrid/templates/elements',
+	'ce_formhybrid_start'   => 'system/modules/formhybrid/templates/elements',
+	'ce_formhybrid_stop'    => 'system/modules/formhybrid/templates/elements',
 ));

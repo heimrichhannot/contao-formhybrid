@@ -13,8 +13,26 @@ namespace HeimrichHannot\FormHybrid;
 
 class ContentFormHybridElement extends \ContentElement
 {
-	protected function compile()
-	{
+	protected $strTemplate = 'ce_formhybrid_element';
 
+	public function generate()
+	{
+		$strClass = $GLOBALS['TL_FORMHYBRID_ELEMENTS'][$this->formhybridElement];
+
+		if(!class_exists($strClass))
+		{
+			return '';
+		}
+
+		$objElement = new $strClass($this->objModel);
+
+		return $objElement->generate();
 	}
+
+
+
+	/**
+	 * Generate the content element
+	 */
+	protected function compile(){}
 }
