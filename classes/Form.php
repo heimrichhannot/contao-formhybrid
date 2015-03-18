@@ -81,6 +81,10 @@ abstract class Form extends \Controller
 			$this->generateFrontendUrl($objPage->row()));
 		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
 		$this->skipValidation = \Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION);
+		$this->strFormId = $this->strTable;
+		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
+		// GET is checked for each field separately
+		$this->isSubmitted = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 	}
 
 	public function generate()
@@ -89,14 +93,10 @@ abstract class Form extends \Controller
 
 		if(!$this->getFields()) return false;
 
-		$this->strFormId = $this->strTable;
-		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
-
-		$strModelClass = \Model::getClassFromTable($this->strTable);
-
 		$this->Template = new \FrontendTemplate($this->strTemplate);
 
 		// Load the model
+		$strModelClass = \Model::getClassFromTable($this->strTable);
 		if ($this->instanceId && is_numeric($this->instanceId)){
 			if(($objModel = $strModelClass::findByPk($this->instanceId)) !== null)
 			{
@@ -113,6 +113,16 @@ abstract class Form extends \Controller
 		}
 
 		$this->generateFields();
+		$this->processForm();
+		// regenerate fields after onsubmit callbacks...
+		if ($this->isSubmitted && !$this->doNotSubmit)
+		{
+			$this->arrFields = array();
+			$this->objModel->refresh();
+			// ... and use the model data (but only, if validation succeeded)
+			$this->generateFields(true);
+		}
+
 		$this->Template->fields = $this->arrFields;
 
 		$this->Template->formName = $this->strFormName;
@@ -204,40 +214,8 @@ abstract class Form extends \Controller
 		return !empty($this->arrEditable);
 	}
 
-	protected function generateFields()
+	protected function processForm()
 	{
-		$this->isSubmitted = \Input::post('FORM_SUBMIT') == $this->strFormId;
-
-		foreach($this->arrEditable as $name)
-		{
-			if(!in_array($name, array_keys($this->dc['fields']))) continue;
-
-			if ($strField = $this->generateField($name, $this->dc['fields'][$name]))
-				$this->arrFields[$name] = $strField;
-		}
-
-		// add default values not already rendered in the palette as hidden fields
-		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
-		{
-			foreach ($this->arrDefaultValues as $arrDefaults)
-			{
-				if(!in_array($arrDefaults['field'], $this->arrEditable))
-				{
-					if ($strField = $this->generateField($arrDefaults['field'], array(
-							'inputType' => 'hidden'
-						)))
-					$this->arrFields[$arrDefaults['field']] = $strField;
-				}
-			}
-		}
-
-		// add submit button if not configured in dca
-		if (!$this->hasSubmit)
-		{
-			$this->generateSubmitField();
-		}
-
-		// trigger onsubmit callbacks
 		if($this->isSubmitted && !$this->doNotSubmit)
 		{
 			$this->save();
@@ -285,10 +263,45 @@ abstract class Form extends \Controller
 
 			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
 		}
-
 	}
 
-	protected function generateField($strName, $arrData)
+	protected function generateFields($useModelData = false)
+	{
+		// reset the flag if the fields are updated
+		if ($useModelData)
+			$this->hasSubmit = false;
+
+		foreach($this->arrEditable as $name)
+		{
+			if(!in_array($name, array_keys($this->dc['fields']))) continue;
+
+			if ($objField = $this->generateField($name, $this->dc['fields'][$name], $useModelData))
+				$this->arrFields[$name] = $objField;
+		}
+
+		// add default values not already rendered in the palette as hidden fields
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
+		{
+			foreach ($this->arrDefaultValues as $arrDefaults)
+			{
+				if(!in_array($arrDefaults['field'], $this->arrEditable))
+				{
+					if ($objField = $this->generateField($arrDefaults['field'], array(
+							'inputType' => 'hidden'
+						), $useModelData))
+					$this->arrFields[$arrDefaults['field']] = $objField;
+				}
+			}
+		}
+
+		// add submit button if not configured in dca
+		if (!$this->hasSubmit)
+		{
+			$this->generateSubmitField();
+		}
+	}
+
+	protected function generateField($strName, $arrData, $useModelData = false)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 		$strInputMethod = $this->strInputMethod;
@@ -303,7 +316,14 @@ abstract class Form extends \Controller
 		}
 
 		// set value from request
-		if($this->isSubmitted)
+		if ($useModelData)
+		{
+			if(isset($this->objModel->{$strName}))
+			{
+				$varValue = $this->objModel->{$strName};
+			}
+		}
+		elseif ($this->isSubmitted)
 		{
 			$varValue = \Input::$strInputMethod($strName);
 			$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
@@ -353,7 +373,7 @@ abstract class Form extends \Controller
 
 		if ($this->isSubmitted)
 		{
-			if(!$this->skipValidation)
+			if(!$this->skipValidation && !$useModelData)
 			{
 				$objWidget->validate();
 			}
