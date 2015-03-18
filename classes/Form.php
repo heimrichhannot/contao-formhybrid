@@ -274,15 +274,6 @@ abstract class Form extends \Controller
 				$objEmail->sendTo($this->formHybridSubmissionMailRecipient);
 			}
 
-			// clear fields, set default value
-			if(!$this->instanceId)
-			{
-				foreach($this->arrFields as $name => $arrField)
-				{
-					$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
-				}
-			}
-
 			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
 		}
 	}
@@ -320,6 +311,15 @@ abstract class Form extends \Controller
 		if (!$this->hasSubmit)
 		{
 			$this->generateSubmitField();
+		}
+
+		// clear fields, set default value
+		if(!$this->instanceId)
+		{
+			foreach($this->arrFields as $name => $arrField)
+			{
+				$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
+			}
 		}
 	}
 
@@ -473,8 +473,8 @@ abstract class Form extends \Controller
 			}
 		}
 
-		// priority 2 -> set value from model entity
-		if(isset($this->objModel->{$strName}))
+		// priority 2 -> set value from model entity if instanceId isset (editable form)
+		if($this->instanceId && isset($this->objModel->{$strName}))
 		{
 			$varValue = $this->objModel->{$strName};
 		}
