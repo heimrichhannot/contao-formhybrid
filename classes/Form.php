@@ -478,7 +478,7 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
-		if($this->instanceId && isset($this->objModel->{$strName}))
+		if (isset($this->objModel->{$strName}))
 		{
 			$varValue = $this->objModel->{$strName};
 		}
