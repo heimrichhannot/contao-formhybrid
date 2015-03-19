@@ -246,16 +246,22 @@ abstract class Form extends \Controller
 				// support input arrays
 				if(is_array($strValue))
 				{
-					$strArrayValue =  "\n";;
+					$strArrayValue =  "\n";
 					foreach($strValue as $arrItem)
 					{
-						foreach($arrItem as $itemKey => $itemValue)
+						if (is_array($arrItem))
 						{
-							$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
+							foreach($arrItem as $itemKey => $itemValue)
+							{
+								$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
 
-							$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
+								$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
+							}
 						}
-
+						else
+						{
+							$strArrayValue = "\t" . $label . ": " . $arrItem . "\n";
+						}
 					}
 					
 					$arrTokenData['submission'] .= $strLabel . ": "  . "\n" . $strArrayValue . "\n";
