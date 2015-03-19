@@ -13,7 +13,6 @@ $arrFields = array
 	(
 		'inputType'								=> 'select',
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridDataContainer'],
-		'default'								=> 'default',
 		'options_callback'						=> array('tl_form_hybrid_module', 'getDataContainers'),
 		'eval'									=> array('chosen'=>true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 clr', 'mandatory' => true),
 		'exclude'								=> true,
