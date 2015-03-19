@@ -14,7 +14,7 @@ abstract class Form extends \Controller
 
 	protected $strFormName;
 
-	protected $dc;
+	protected $dca;
 
 	protected $arrFields = array();
 
@@ -172,7 +172,7 @@ abstract class Form extends \Controller
 
 		if(!isset($GLOBALS['TL_DCA'][$this->strTable])) return false;
 
-		$this->dc = $GLOBALS['TL_DCA'][$this->strTable];
+		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
 		return true;
 	}
@@ -183,13 +183,13 @@ abstract class Form extends \Controller
 		foreach ($this->arrEditable as $strField)
 		{
 			// check if field really exists
-			if (!$this->dc['fields'][$strField])
+			if (!$this->dca['fields'][$strField])
 				continue;
 
 			$arrEditable[] = $strField;
 
 			// add subpalette fields
-			if (is_array($this->dc['subpalettes']) && in_array($strField, array_keys($this->dc['subpalettes'])))
+			if (is_array($this->dca['subpalettes']) && in_array($strField, array_keys($this->dca['subpalettes'])))
 			{
 				foreach ($this->arrSubPalettes as $arrSubPalette)
 				{
@@ -197,12 +197,12 @@ abstract class Form extends \Controller
 					{
 						foreach ($arrSubPalette['fields'] as $strSubPaletteField)
 						{
-							if (!$this->dc['fields'][$strSubPaletteField])
+							if (!$this->dca['fields'][$strSubPaletteField])
 								continue;
 							else
 							{
 								$arrEditable[] = $strSubPaletteField;
-								$this->dc['fields'][$strSubPaletteField]['eval']['selector'] = $strField;
+								$this->dca['fields'][$strSubPaletteField]['eval']['selector'] = $strField;
 							}
 						}
 					}
@@ -287,9 +287,9 @@ abstract class Form extends \Controller
 
 		foreach($this->arrEditable as $name)
 		{
-			if(!in_array($name, array_keys($this->dc['fields']))) continue;
+			if(!in_array($name, array_keys($this->dca['fields']))) continue;
 
-			if ($objField = $this->generateField($name, $this->dc['fields'][$name], $useModelData))
+			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData))
 				$this->arrFields[$name] = $objField;
 		}
 
@@ -373,7 +373,10 @@ abstract class Form extends \Controller
 			$strName = '';
 		}
 
-		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this->dc);
+		// required by options_callback
+		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
+
+		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
 		$objWidget = new $strClass($arrWidget);
 
 		if (isset($arrData['formHybridOptions']))
@@ -459,7 +462,7 @@ abstract class Form extends \Controller
 	protected function getDefaultFieldValue($strName)
 	{
 		// priority 4 -> dca default value
-		$varValue = $this->dc['fields'][$strName]['default'];
+		$varValue = $this->dca['fields'][$strName]['default'];
 
 		// priority 3 -> default values defined in the module
 		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
@@ -483,9 +486,9 @@ abstract class Form extends \Controller
 		// priority 1 -> load_callback
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-		if (is_array($this->dc['fields'][$strName]['load_callback']))
+		if (is_array($this->dca['fields'][$strName]['load_callback']))
 		{
-			foreach ($this->dc['fields'][$strName]['load_callback'] as $callback)
+			foreach ($this->dca['fields'][$strName]['load_callback'] as $callback)
 			{
 				$this->import($callback[0]);
 				$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);

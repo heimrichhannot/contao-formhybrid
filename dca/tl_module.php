@@ -109,7 +109,7 @@ $arrFields = array
 	'formHybridTemplate'		=> array
 	(
 		'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'],
-		'default'                 => 'event_full',
+		'default'                 => 'formhybrid_default',
 		'exclude'                 => true,
 		'inputType'               => 'select',
 		'options_callback'        => array('tl_form_hybrid_module', 'getFormHybridTemplates'),
