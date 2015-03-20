@@ -160,7 +160,7 @@ $arrFields = array
 		'sql'       => "text NULL"
 	),
 	'formHybridSubmissionMailTemplate'  => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_form']['formHybridSubmissionMailTemplate'],
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'],
 		'exclude'   => true,
 		'filter'    => false,
 		'inputType' => 'fileTree',
