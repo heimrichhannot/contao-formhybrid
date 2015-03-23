@@ -87,6 +87,7 @@ abstract class Form extends \Controller
             $this->strTemplateStop = $this->formHybridStopTemplate ?: $this->strTemplateStop;
 		}
 
+
         $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
 		$this->strActionDefault = ($this->instanceId ?
 			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
@@ -139,6 +140,8 @@ abstract class Form extends \Controller
 
 		if(!$this->getFields()) return false;
 
+		$this->Template = new \FrontendTemplate($this->strTemplate);
+
 		// Load the model
 		$strModelClass = \Model::getClassFromTable($this->strTable);
 		if ($this->instanceId && is_numeric($this->instanceId)){
@@ -157,7 +160,7 @@ abstract class Form extends \Controller
 		}
 
 		$this->generateFields();
-        $this->processForm();
+		$this->processForm();
 
 		// regenerate fields after onsubmit callbacks...
 		if ($this->isSubmitted && !$this->doNotSubmit)
@@ -173,7 +176,6 @@ abstract class Form extends \Controller
         $this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 
-
         if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
         {
             $this->Template->messageType = 'success';
@@ -181,12 +183,12 @@ abstract class Form extends \Controller
             unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
         }
 
-        if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
-        {
-            $this->Template->messageType = 'danger';
-            $this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
-            unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
-        }
+		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
+		{
+			$this->Template->messageType = 'danger';
+			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
+			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
+		}
 
 		$this->compile();
 
@@ -347,6 +349,7 @@ abstract class Form extends \Controller
 		{
 			$this->generateSubmitField();
 		}
+
 	}
 
 	protected function generateField($strName, $arrData, $useModelData = false)
@@ -426,7 +429,7 @@ abstract class Form extends \Controller
 		{
 			if(!$this->skipValidation && !$useModelData)
 			{
-				$objWidget->validate();
+				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 			}
 
 			if($objWidget->hasErrors())
@@ -435,11 +438,6 @@ abstract class Form extends \Controller
 			}
 			elseif ($objWidget->submitInput())
 			{
-				if($this->strMethod == FORMHYBRID_METHOD_GET)
-				{
-					$objWidget->value = $varValue;
-				}
-
 				$varValue = $objWidget->value;
 
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
