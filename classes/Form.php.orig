@@ -157,7 +157,7 @@ abstract class Form extends \Controller
 		}
 
 		$this->generateFields();
-		$this->processForm();
+        $this->processForm();
 
 		// regenerate fields after onsubmit callbacks...
 		if ($this->isSubmitted && !$this->doNotSubmit)
@@ -173,6 +173,7 @@ abstract class Form extends \Controller
         $this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 
+
         if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
         {
             $this->Template->messageType = 'success';
@@ -180,12 +181,12 @@ abstract class Form extends \Controller
             unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
         }
 
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
-		{
-			$this->Template->messageType = 'danger';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
-			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
-		}
+        if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
+        {
+            $this->Template->messageType = 'danger';
+            $this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
+            unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
+        }
 
 		$this->compile();
 
@@ -346,7 +347,6 @@ abstract class Form extends \Controller
 		{
 			$this->generateSubmitField();
 		}
-
 	}
 
 	protected function generateField($strName, $arrData, $useModelData = false)
@@ -426,7 +426,11 @@ abstract class Form extends \Controller
 		{
 			if(!$this->skipValidation && !$useModelData)
 			{
+<<<<<<< HEAD
+				$objWidget->validate();
+=======
 				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
+>>>>>>> 0fd32a64fc769f98c83ddcc2422f734120d7e6fe
 			}
 
 			if($objWidget->hasErrors())
