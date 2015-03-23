@@ -64,6 +64,8 @@ abstract class Form extends \Controller
 
 		global $objPage;
 
+        $strInputMethod = strtolower($this->strMethod);
+
 		if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
 		{
 			$this->objModule = $objModule;
@@ -75,15 +77,16 @@ abstract class Form extends \Controller
 			$this->strTemplate = $objModule->formHybridTemplate;
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
+            $this->skipValidation = $objModule->formHybridSkipValidation ?: \Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION);
 			$this->instanceId = $instanceId;
 		}
 
-		$this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
+
+        $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
 		$this->strActionDefault = ($this->instanceId ?
 			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
 			$this->generateFrontendUrl($objPage->row()));
 		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
-		$this->skipValidation = \Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION);
 		$this->strFormId = $this->strTable;
 		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
@@ -410,6 +413,12 @@ abstract class Form extends \Controller
 			if(!$this->skipValidation && !$useModelData)
 			{
 				$objWidget->validate();
+
+                ob_start();
+                var_dump($objWidget->hasErrors());
+                print "\n";
+                file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
+                ob_end_clean();
 			}
 
 			if($objWidget->hasErrors())
@@ -467,7 +476,7 @@ abstract class Form extends \Controller
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
 	}
 
-	protected function getDefaultFieldValue($strName)
+	protected function getDefaultFieldValue($strName, $skipModel=false)
 	{
 		// priority 4 -> dca default value
 		$varValue = $this->dca['fields'][$strName]['default'];
@@ -486,7 +495,7 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
-		if (isset($this->objModel->{$strName}))
+		if (!$skipModel && isset($this->objModel->{$strName}))
 		{
 			$varValue = $this->objModel->{$strName};
 		}
@@ -591,6 +600,29 @@ abstract class Form extends \Controller
 	{
 		$this->arrSubmitCallbacks = $callbacks;
 	}
+
+    /**
+     * Clear inputs, set default values
+     * @return bool
+     */
+    public function clearInputs()
+    {
+        if(!is_array($this->arrFields) || empty($this->arrFields)) return false;
+
+        foreach($this->arrFields as $strName => $objWidget)
+        {
+            switch($this->strMethod)
+            {
+                case FORMHYBRID_METHOD_GET:
+                    \Input::setGet($strName, $this->getDefaultFieldValue($strName, true));
+                    break;
+                case FORMHYBRID_METHOD_POST:
+                    \Input::setPost($strName, $this->getDefaultFieldValue($strName, true));
+                    break;
+            }
+        }
+
+    }
 
 	abstract protected function compile();
 
