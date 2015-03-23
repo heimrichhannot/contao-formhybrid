@@ -44,8 +44,9 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'formhybrid_default'    => 'system/modules/formhybrid/templates/form',
-	'ce_formhybrid_element' => 'system/modules/formhybrid/templates/elements',
-	'ce_formhybrid_start'   => 'system/modules/formhybrid/templates/elements',
-	'ce_formhybrid_stop'    => 'system/modules/formhybrid/templates/elements',
+	'formhybrid_default'      => 'system/modules/formhybrid/templates/form',
+	'formhybridStart_default' => 'system/modules/formhybrid/templates/form',
+	'formhybridStop_default'  => 'system/modules/formhybrid/templates/form',
+	'ce_formhybrid_start'     => 'system/modules/formhybrid/templates/elements',
+	'ce_formhybrid_stop'      => 'system/modules/formhybrid/templates/elements',
 ));

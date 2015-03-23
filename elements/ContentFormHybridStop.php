@@ -35,6 +35,8 @@ class ContentFormHybridStop extends \ContentElement
 
 		if($objModule === null) return;
 
+        $objModule->refresh();
+
 		$strClass = \Module::findClass($objModule->type);
 
 
@@ -49,15 +51,9 @@ class ContentFormHybridStop extends \ContentElement
 
 		if($objArticle === null) return;
 
-		// do not send emails again, done by ContentFormHybridStart
-		$objModule->formHybridSendSubmissionViaEmail = false;
-        $objModule->formHybridSkipValidation = true;
+        $objModule->renderStop = true;
+        $objModule = new $strClass($objModule, $objArticle->inColumn);
 
-		$objModule = new $strClass($objModule, $objArticle->inColumn);
-		$strBuffer = $objModule->generate();
-
-		$intStart = strpos($strBuffer, '<!-- formhybrid::stop -->');
-
-		$this->Template->content = substr($strBuffer, $intStart + strlen('<!-- formhybrid::stop -->'));
+		$this->Template->content = $objModule->generate();
 	}
 }

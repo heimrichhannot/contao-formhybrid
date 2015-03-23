@@ -42,6 +42,10 @@ abstract class Form extends \Controller
 
 	protected $strTemplate = 'formhybrid_default';
 
+    protected $strTemplateStart = 'formhybridStart_default';
+
+    protected $strTemplateStop = 'formhybridStop_default';
+
 	protected $strMethod = FORMHYBRID_METHOD_GET;
 
 	protected $strAction = null;
@@ -77,10 +81,11 @@ abstract class Form extends \Controller
 			$this->strTemplate = $objModule->formHybridTemplate;
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
-            $this->skipValidation = $objModule->formHybridSkipValidation ?: \Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION);
-			$this->instanceId = $instanceId;
+            $this->skipValidation = $objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
+            $this->instanceId = $instanceId;
+            $this->strTemplateStart = $this->formHybridStartTemplate ?: $this->strTemplateStart;
+            $this->strTemplateStop = $this->formHybridStopTemplate ?: $this->strTemplateStop;
 		}
-
 
         $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
 		$this->strActionDefault = ($this->instanceId ?
@@ -93,13 +98,46 @@ abstract class Form extends \Controller
 		$this->isSubmitted = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 	}
 
+    public function generateStart()
+    {
+        $this->Template->formName = $this->strFormName;
+        $this->Template->formId = $this->strFormId;
+        $this->Template->method = $this->strMethod;
+        $this->Template->action = $this->strAction;
+        $this->Template->enctype = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
+        $this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
+
+        $this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName ;
+        $this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
+        if (is_array($this->arrAttributes))
+        {
+            $arrAttributes = $this->arrAttributes;
+            $this->Template->attributes = implode(' ', array_map(function($strValue) use ($arrAttributes) {
+                return $strValue . '="' . $arrAttributes[$strValue] . '"';
+            }, array_keys($this->arrAttributes)));
+        }
+        $this->Template->cssID = ' id="' . $this->strFormName . '"';
+    }
+
 	public function generate()
 	{
+        if($this->renderStart)
+        {
+            $this->Template = new \FrontendTemplate($this->strTemplateStart);
+            $this->generateStart();
+            return $this->Template->parse();
+        }
+
+        $this->Template = new \FrontendTemplate($this->strTemplate);
+
+        if($this->renderStop)
+        {
+            $this->Template = new \FrontendTemplate($this->strTemplateStop);
+        }
+
 		if(!$this->loadDC()) return false;
 
 		if(!$this->getFields()) return false;
-
-		$this->Template = new \FrontendTemplate($this->strTemplate);
 
 		// Load the model
 		$strModelClass = \Model::getClassFromTable($this->strTable);
@@ -119,7 +157,8 @@ abstract class Form extends \Controller
 		}
 
 		$this->generateFields();
-		$this->processForm();
+        $this->processForm();
+
 		// regenerate fields after onsubmit callbacks...
 		if ($this->isSubmitted && !$this->doNotSubmit)
 		{
@@ -129,41 +168,25 @@ abstract class Form extends \Controller
 			$this->generateFields(true);
 		}
 
-		$this->Template->fields = $this->arrFields;
+        $this->generateStart();
 
-		$this->Template->formName = $this->strFormName;
+        $this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
-		$this->Template->model = $this->objModel;
-		$this->Template->formId = $this->strFormId;
-		$this->Template->method = $this->strMethod;
-		$this->Template->action = $this->strAction;
-		$this->Template->enctype = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
-		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
-		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName ;
-		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
-		if (is_array($this->arrAttributes))
-		{
-			$arrAttributes = $this->arrAttributes;
-			$this->Template->attributes = implode(' ', array_map(function($strValue) use ($arrAttributes) {
-				return $strValue . '="' . $arrAttributes[$strValue] . '"';
-			}, array_keys($this->arrAttributes)));
-		}
-		$this->Template->cssID = ' id="' . $this->strFormName . '"';
 
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
-		{
-			$this->Template->messageType = 'success';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
-			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
-		}
+        if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
+        {
+            $this->Template->messageType = 'success';
+            $this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
+            unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
+        }
 
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
-		{
-			$this->Template->messageType = 'danger';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
-			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
-		}
+        if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
+        {
+            $this->Template->messageType = 'danger';
+            $this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
+            unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
+        }
 
 		$this->compile();
 
@@ -324,15 +347,6 @@ abstract class Form extends \Controller
 		{
 			$this->generateSubmitField();
 		}
-
-		// clear fields, set default value (do not clear if GET Method)
-		if(!$this->instanceId && $this->strMethod != FORMHYBRID_METHOD_GET)
-		{
-			foreach($this->arrFields as $name => $arrField)
-			{
-				$this->arrFields[$name]->value = $this->getDefaultFieldValue($name);
-			}
-		}
 	}
 
 	protected function generateField($strName, $arrData, $useModelData = false)
@@ -365,7 +379,7 @@ abstract class Form extends \Controller
 		else
 		{
 			// contains the load_callback!
-			$varValue = $this->getDefaultFieldValue($strName);
+			$varValue = $this->getDefaultFieldValue($strName, !$useModelData);
 		}
 
 		// handle sub palette fields
@@ -413,12 +427,6 @@ abstract class Form extends \Controller
 			if(!$this->skipValidation && !$useModelData)
 			{
 				$objWidget->validate();
-
-                ob_start();
-                var_dump($objWidget->hasErrors());
-                print "\n";
-                file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-                ob_end_clean();
 			}
 
 			if($objWidget->hasErrors())
@@ -609,18 +617,8 @@ abstract class Form extends \Controller
     {
         if(!is_array($this->arrFields) || empty($this->arrFields)) return false;
 
-        foreach($this->arrFields as $strName => $objWidget)
-        {
-            switch($this->strMethod)
-            {
-                case FORMHYBRID_METHOD_GET:
-                    \Input::setGet($strName, $this->getDefaultFieldValue($strName, true));
-                    break;
-                case FORMHYBRID_METHOD_POST:
-                    \Input::setPost($strName, $this->getDefaultFieldValue($strName, true));
-                    break;
-            }
-        }
+        $this->isSubmitted = false;
+        $this->generateFields(false);
 
     }
 

@@ -49,6 +49,8 @@ class ContentFormHybridStart extends \ContentElement
 
 		if($objModule === null) return;
 
+        $objModule->refresh();
+
 		$strClass = \Module::findClass($objModule->type);
 
 
@@ -63,11 +65,10 @@ class ContentFormHybridStart extends \ContentElement
 
 		if($objArticle === null) return;
 
-		$objModule = new $strClass($objModule, $objArticle->inColumn);
-		$strBuffer = $objModule->generate();
+        $objModule->renderStart = true;
 
-		$intStop = strpos($strBuffer, '<!-- formhybrid::stop -->');
+        $objModule = new $strClass($objModule, $objArticle->inColumn);
 
-		$this->Template->content = substr($strBuffer, 0 , $intStop);
+		$this->Template->content = $objModule->generate();
 	}
 }

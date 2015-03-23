@@ -115,6 +115,26 @@ $arrFields = array
 		'eval'                    => array('tl_class'=>'w50'),
 		'sql'                     => "varchar(64) NOT NULL default ''"
 	),
+    'formHybridStartTemplate'		=> array
+    (
+        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridStartTemplate'],
+        'default'                 => 'formhybridStart_default',
+        'exclude'                 => true,
+        'inputType'               => 'select',
+        'options_callback'        => array('tl_form_hybrid_module', 'getFormHybridStartTemplates'),
+        'eval'                    => array('tl_class'=>'w50'),
+        'sql'                     => "varchar(64) NOT NULL default ''"
+    ),
+    'formHybridStopTemplate'		=> array
+    (
+        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridStopTemplate'],
+        'default'                 => 'formhybridStop_default',
+        'exclude'                 => true,
+        'inputType'               => 'select',
+        'options_callback'        => array('tl_form_hybrid_module', 'getFormHybridStopTemplates'),
+        'eval'                    => array('tl_class'=>'w50'),
+        'sql'                     => "varchar(64) NOT NULL default ''"
+    ),
 	'formHybridSuccessMessage'      => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'],
@@ -363,6 +383,16 @@ class tl_form_hybrid_module extends \Backend
 
 		return $arrOptions;
 	}
+
+    public function getFormHybridStartTemplates()
+    {
+        return \Controller::getTemplateGroup('formhybridStart_');
+    }
+
+    public function getFormHybridStopTemplates()
+    {
+        return \Controller::getTemplateGroup('formhybridStop_');
+    }
 
 	public function getFormHybridTemplates()
 	{
