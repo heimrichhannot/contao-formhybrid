@@ -412,13 +412,7 @@ abstract class Form extends \Controller
 		{
 			if(!$this->skipValidation && !$useModelData)
 			{
-				$objWidget->validate();
-
-                ob_start();
-                var_dump($objWidget->hasErrors());
-                print "\n";
-                file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-                ob_end_clean();
+				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 			}
 
 			if($objWidget->hasErrors())
@@ -427,11 +421,6 @@ abstract class Form extends \Controller
 			}
 			elseif ($objWidget->submitInput())
 			{
-				if($this->strMethod == FORMHYBRID_METHOD_GET)
-				{
-					$objWidget->value = $varValue;
-				}
-
 				$varValue = $objWidget->value;
 
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
