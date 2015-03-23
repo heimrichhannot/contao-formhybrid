@@ -16,6 +16,8 @@ abstract class Form extends \Controller
 
 	protected $dc;
 
+	protected $arrSubmitCallbacks = array();
+
 	protected $arrFields = array();
 
 	protected $strPalette = 'default';
@@ -583,6 +585,11 @@ abstract class Form extends \Controller
 	public function doNotSubmit()
 	{
 		return $this->doNotSubmit;
+	}
+
+	public function setSubmitCallbacks(array $callbacks)
+	{
+		$this->arrSubmitCallbacks = $callbacks;
 	}
 
 	abstract protected function compile();
