@@ -165,7 +165,7 @@ abstract class Form extends \Controller
 			$this->arrFields = array();
 			$this->objModel->refresh();
 			// ... and use the model data (but only, if validation succeeded)
-			$this->generateFields(true);
+			$this->generateFields(true, false);
 		}
 
         $this->generateStart();
@@ -312,7 +312,7 @@ abstract class Form extends \Controller
 		}
 	}
 
-	protected function generateFields($useModelData = false)
+	protected function generateFields($useModelData = false, $skipModel = false)
 	{
 		// reset the flag if the fields are updated
 		if ($useModelData)
@@ -322,7 +322,7 @@ abstract class Form extends \Controller
 		{
 			if(!in_array($name, array_keys($this->dca['fields']))) continue;
 
-			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData))
+			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData, $skipModel))
 				$this->arrFields[$name] = $objField;
 		}
 
@@ -335,7 +335,7 @@ abstract class Form extends \Controller
 				{
 					if ($objField = $this->generateField($arrDefaults['field'], array(
 							'inputType' => 'hidden'
-						), $useModelData))
+						), $useModelData, $skipModel))
 					$this->arrFields[$arrDefaults['field']] = $objField;
 				}
 			}
@@ -349,7 +349,7 @@ abstract class Form extends \Controller
 
 	}
 
-	protected function generateField($strName, $arrData, $useModelData = false)
+	protected function generateField($strName, $arrData, $useModelData = false, $skipModel = false)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 		$strInputMethod = $this->strInputMethod;
@@ -379,7 +379,7 @@ abstract class Form extends \Controller
 		else
 		{
 			// contains the load_callback!
-			$varValue = $this->getDefaultFieldValue($strName, !$useModelData);
+			$varValue = $this->getDefaultFieldValue($strName, $skipModel);
 		}
 
 		// handle sub palette fields
@@ -400,6 +400,9 @@ abstract class Form extends \Controller
 
 		// required by options_callback
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
+
+		// replace inserttags
+		$varValue = $this->replaceInsertTags($varValue);
 
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
 		$objWidget = new $strClass($arrWidget);
@@ -613,11 +616,11 @@ abstract class Form extends \Controller
         if(!is_array($this->arrFields) || empty($this->arrFields)) return false;
 
         $this->isSubmitted = false;
-        $this->generateFields(false);
-
+        $this->generateFields(false, true);
     }
 
 	abstract protected function compile();
 
 	abstract protected function onSubmitCallback(\DataContainer $dc);
 }
+
