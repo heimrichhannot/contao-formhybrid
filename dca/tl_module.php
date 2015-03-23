@@ -32,9 +32,9 @@ $arrFields = array
 	(
 		'inputType'								=> 'checkboxWizard',
 		'label'									=> &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
-		'options_callback'						=> array('tl_form_hybrid_module', 'getEditable'),
+		'options_callback'						=> array('tl_form_hybrid_module', 'getFields'),
 		'exclude'								=> true,
-		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight', 'mandatory' => true),
+		'eval'									=> array('multiple'=>true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight clr', 'mandatory' => true),
 		'sql'									=> "blob NULL"
 	),
 	'formHybridEditableSkip' => array
@@ -91,8 +91,8 @@ $arrFields = array
 					'exclude'          => true,
 					'inputType'        => 'select',
 					'options_callback' => array('tl_form_hybrid_module',
-												'getEditable'),
-					'eval'             => array('style' => 'width: 200px')
+												'getFields'),
+					'eval'             => array('style' => 'width: 200px', 'chosen' => true)
 				),
 				'value' => array(
 					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
@@ -160,7 +160,7 @@ $arrFields = array
 		'sql'       => "text NULL"
 	),
 	'formHybridSubmissionMailTemplate'  => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_form']['formHybridSubmissionMailTemplate'],
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'],
 		'exclude'   => true,
 		'filter'    => false,
 		'inputType' => 'fileTree',
@@ -268,7 +268,7 @@ class tl_form_hybrid_module extends \Backend
 
 		return $return;
 	}
-	
+
 	public function getEditable($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	{
 		// get dc for multicolumnwizard...
@@ -277,22 +277,22 @@ class tl_form_hybrid_module extends \Backend
 			$dc = new stdClass();
 			$dc->activeRecord = \ModuleModel::findByPk(\Input::get('id'));
 		}
-		
+
 		if (!$dc->activeRecord->formHybridDataContainer)
 			return array();
-		
+
 		$return = array();
-		
+
 		System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
 		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
-		
+
 		$boxes = trimsplit(';', $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'][$dc->activeRecord->formHybridPalette]);
-		
+
 		foreach ($boxes as $k=>$v)
 		{
 			$eCount = 1;
 			$boxes[$k] = trimsplit(',', $v);
-		
+
 			foreach ($boxes[$k] as $kk=>$vv)
 			{
 				if (preg_match('/^\[.*\]$/i', $vv))
@@ -301,7 +301,7 @@ class tl_form_hybrid_module extends \Backend
 					continue;
 				}
 
-                // legends
+				// legends
 				if (preg_match('/^\{.*\}$/i', $vv))
 				{
 					unset($boxes[$k][$kk]);
@@ -314,9 +314,9 @@ class tl_form_hybrid_module extends \Backend
 				unset($boxes[$k]);
 			}
 		}
-		
+
 		$return = array();
-		
+
 		// flatten array and set labels
 		foreach ($boxes as $k => $box)
 		{
@@ -326,8 +326,42 @@ class tl_form_hybrid_module extends \Backend
 				$return[$name] = $label ? $label : $name;
 			}
 		}
-		
+
+		asort($return);
+
 		return $return;
+	}
+
+	public function getFields($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
+	{
+		// get dc for multicolumnwizard...
+		if (!$dc)
+		{
+			$dc = new stdClass();
+			$dc->activeRecord = \ModuleModel::findByPk(\Input::get('id'));
+		}
+
+		if (!$dc->activeRecord->formHybridDataContainer)
+			return array();
+
+		\System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
+		\Controller::loadDataContainer($dc->activeRecord->formHybridDataContainer);
+
+		$arrOptions = array();
+
+		foreach ($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'] as $strField => $arrData)
+		{
+			if (is_array($arrData['label']))
+				$strLabel = $arrData['label'][0] ?: $strField;
+			else
+				$strLabel = $arrData['label'] ?: $strField;
+
+			$arrOptions[$strField] = $strLabel ?: $strField;
+		}
+
+		asort($arrOptions);
+
+		return $arrOptions;
 	}
 
 	public function getFormHybridTemplates()

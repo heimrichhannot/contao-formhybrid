@@ -16,6 +16,8 @@ abstract class Form extends \Controller
 
 	protected $dca;
 
+	protected $arrSubmitCallbacks = array();
+
 	protected $arrFields = array();
 
 	protected $strPalette = 'default';
@@ -246,16 +248,22 @@ abstract class Form extends \Controller
 				// support input arrays
 				if(is_array($strValue))
 				{
-					$strArrayValue =  "\n";;
+					$strArrayValue =  "\n";
 					foreach($strValue as $arrItem)
 					{
-						foreach($arrItem as $itemKey => $itemValue)
+						if (is_array($arrItem))
 						{
-							$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
+							foreach($arrItem as $itemKey => $itemValue)
+							{
+								$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
 
-							$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
+								$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
+							}
 						}
-
+						else
+						{
+							$strArrayValue = "\t" . $label . ": " . $arrItem . "\n";
+						}
 					}
 					
 					$arrTokenData['submission'] .= $strLabel . ": "  . "\n" . $strArrayValue . "\n";
@@ -478,7 +486,7 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
-		if($this->instanceId && isset($this->objModel->{$strName}))
+		if (isset($this->objModel->{$strName}))
 		{
 			$varValue = $this->objModel->{$strName};
 		}
@@ -577,6 +585,11 @@ abstract class Form extends \Controller
 	public function doNotSubmit()
 	{
 		return $this->doNotSubmit;
+	}
+
+	public function setSubmitCallbacks(array $callbacks)
+	{
+		$this->arrSubmitCallbacks = $callbacks;
 	}
 
 	abstract protected function compile();
