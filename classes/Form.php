@@ -154,6 +154,12 @@ abstract class Form extends \Controller
 		else
 		{
 			$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
+			// frontendedit saves the model initially in order to get an id
+			if ($this->initiallySaveModel)
+			{
+				$this->objModel->tstamp = 0;
+				$this->objModel->save();
+			}
 		}
 
 		$this->generateFields();
@@ -320,7 +326,7 @@ abstract class Form extends \Controller
 
 		foreach($this->arrEditable as $name)
 		{
-			if(!in_array($name, array_keys($this->dca['fields']))) continue;
+			if (!in_array($name, array_keys($this->dca['fields']))) continue;
 
 			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData, $skipModel))
 				$this->arrFields[$name] = $objField;
@@ -358,7 +364,7 @@ abstract class Form extends \Controller
 		if (!class_exists($strClass)) return false;
 
 		// GET fallback
-		if($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName))
+		if ($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName))
 		{
 			$this->isSubmitted = true;
 		}
@@ -366,8 +372,10 @@ abstract class Form extends \Controller
 		// set value from request
 		if ($useModelData)
 		{
-			if(isset($this->objModel->{$strName}))
+			if (isset($this->objModel->{$strName}))
 			{
+				// special handling for tags (not a real stored value)
+				$this->addTagsToModel($strName, $arrData);
 				$varValue = $this->objModel->{$strName};
 			}
 		}
@@ -379,13 +387,13 @@ abstract class Form extends \Controller
 		else
 		{
 			// contains the load_callback!
-			$varValue = $this->getDefaultFieldValue($strName, $skipModel);
+			$varValue = $this->getDefaultFieldValue($strName, $arrData, $skipModel);
 		}
 
 		// handle sub palette fields
 		if ($arrData['eval']['selector'])
 		{
-			if (!$this->getDefaultFieldValue($arrData['eval']['selector']) &&
+			if (!$this->getDefaultFieldValue($arrData['eval']['selector'], $arrData) &&
 				!call_user_func_array(array('\Input', $this->strInputMethod), array($arrData['eval']['selector'])))
 			{
 				return false;
@@ -402,7 +410,21 @@ abstract class Form extends \Controller
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
 		// replace inserttags
-		$varValue = $this->replaceInsertTags($varValue);
+		if (is_array($varValue))
+		{
+			$arrResult = array();
+			foreach ($varValue as $k => $v)
+			{
+				$arrResult[$k] = $this->replaceInsertTags($v);
+			}
+			$varValue = $arrResult;
+		}
+		else
+		{
+			$varValue = $this->replaceInsertTags($varValue);
+		}
+
+		$arrData['eval']['tagTable'] = $this->strTable;
 
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
 		$objWidget = new $strClass($arrWidget);
@@ -443,6 +465,7 @@ abstract class Form extends \Controller
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
 				$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
+				$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
 
 				// Trigger the save_callback
 				if (is_array($arrData['save_callback']))
@@ -454,7 +477,16 @@ abstract class Form extends \Controller
 					}
 				}
 
-				$this->objModel->{$strName} = $varValue;
+				// special handling for tags (not a real stored value)
+				// re-get the inputType, because it might have been overridden with hidden for default values not existing arrEditable
+				$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
+				if ($strInputType == 'tag' && $this->objModel->id) {
+					\HeimrichHannot\TagsExtended\TagsExtended::saveTags($this->strTable, $this->objModel->id, explode(',', $varValue));
+				}
+				else
+				{
+					$this->objModel->{$strName} = $varValue;
+				}
 			}
 		}
 
@@ -482,7 +514,7 @@ abstract class Form extends \Controller
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
 	}
 
-	protected function getDefaultFieldValue($strName, $skipModel=false)
+	protected function getDefaultFieldValue($strName, &$arrData, $skipModel=false)
 	{
 		// priority 4 -> dca default value
 		$varValue = $this->dca['fields'][$strName]['default'];
@@ -501,8 +533,9 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
-		if (!$skipModel && isset($this->objModel->{$strName}))
+		if (!$skipModel && isset($this->objModel->{$strName}) && $this->instanceId)
 		{
+			$this->addTagsToModel($strName, $arrData);
 			$varValue = $this->objModel->{$strName};
 		}
 
@@ -519,6 +552,17 @@ abstract class Form extends \Controller
 		}
 
 		return $varValue;
+	}
+
+	public function addTagsToModel($strName, &$arrData)
+	{
+		// special handling for tags (not a real stored value)
+		// re-get the inputType, because it might have been overridden with hidden for default values not existing arrEditable
+		$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
+		if (in_array('tags', \Config::getInstance()->getActiveModules()) && $strInputType == 'tag') {
+			$this->objModel->{$strName} = implode(',', \HeimrichHannot\TagsExtended\TagsExtended::loadTags($this->strTable, $this->objModel->id));
+			$arrData['eval']['tagTable'] = $this->strTable;
+		}
 	}
 
 	public function transformSpecialValues($strName, $varValue, $arrData)
