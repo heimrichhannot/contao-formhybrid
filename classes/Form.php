@@ -139,8 +139,11 @@ abstract class Form extends \Controller
 
 		if(!$this->getFields()) return false;
 
-		// Load the model
-		$strModelClass = \Model::getClassFromTable($this->strTable);
+		// load the model
+		// don't load any class if the form's a filter form -> submission should be used instead
+		if (!$this->isFilterForm)
+			$strModelClass = \Model::getClassFromTable($this->strTable);
+
 		if ($this->instanceId && is_numeric($this->instanceId)){
 			if(($objModel = $strModelClass::findByPk($this->instanceId)) !== null)
 			{
@@ -258,6 +261,7 @@ abstract class Form extends \Controller
 
 			$this->onSubmitCallback($dc);
 
+			if (!$this->skipValidation)
 			if(is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback']))
 			{
 				foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $callback)
@@ -375,7 +379,8 @@ abstract class Form extends \Controller
 			if (isset($this->objModel->{$strName}))
 			{
 				// special handling for tags (not a real stored value)
-				$this->addTagsToModel($strName, $arrData);
+				if (!$this->isFilterForm)
+					$this->addTagsToModel($strName, $arrData);
 				$varValue = $this->objModel->{$strName};
 			}
 		}
@@ -535,7 +540,8 @@ abstract class Form extends \Controller
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
 		if (!$skipModel && isset($this->objModel->{$strName}) && $this->instanceId)
 		{
-			$this->addTagsToModel($strName, $arrData);
+			if (!$this->isFilterForm)
+				$this->addTagsToModel($strName, $arrData);
 			$varValue = $this->objModel->{$strName};
 		}
 
