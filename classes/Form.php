@@ -88,7 +88,7 @@ abstract class Form extends \Controller
 			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
 			$this->generateFrontendUrl($objPage->row()));
 		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
-		$this->strFormId = $this->strTable;
+		$this->strFormId = $this->strTable . '_' . $this->id;
 		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
 		$this->isSubmitted = (\Input::post('FORM_SUBMIT') == $this->strFormId);
@@ -577,7 +577,7 @@ abstract class Form extends \Controller
 		}
 
 		// Make sure unique fields are unique
-		if ($arrData['eval']['unique'] && $varValue != '' && !$this->Database->isUniqueValue($this->strTable, $strName, $varValue, $this->instanceId))
+		if ($arrData['eval']['unique'] && $varValue != '' && !\Database::getInstance()->isUniqueValue($this->strTable, $strName, $varValue, $this->instanceId))
 		{
 			throw new \Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
 		}
@@ -669,3 +669,4 @@ abstract class Form extends \Controller
 
 	abstract protected function onSubmitCallback(\DataContainer $dc);
 }
+
