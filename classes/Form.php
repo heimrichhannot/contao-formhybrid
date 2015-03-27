@@ -54,8 +54,6 @@ abstract class Form extends \Controller
 
 	protected $hasSubmit = false;
 
-	protected $novalidate = true;
-
 	protected $strClass;
 
 	protected $strFormClass;
