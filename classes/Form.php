@@ -56,8 +56,6 @@ abstract class Form extends \Controller
 
 	protected $strClass;
 
-	protected $strFormClass;
-
 	protected $instanceId = 0; // id of model entitiy
 
 	public function __construct(\ModuleModel $objModule=null, $instanceId = 0)
@@ -671,4 +669,3 @@ abstract class Form extends \Controller
 
 	abstract protected function onSubmitCallback(\DataContainer $dc);
 }
-
