@@ -370,13 +370,16 @@ abstract class Form extends \Controller
 		}
 
 		// set value from request
-		if ($useModelData)
+		if ($useModelData && \Database::getInstance()->fieldExists($strName, $this->strTable))
 		{
 			if (isset($this->objModel->{$strName}))
 			{
 				// special handling for tags (not a real stored value)
 				if (!$this->isFilterForm)
+				{
 					$this->addTagsToModel($strName, $arrData);
+				}
+
 				$varValue = $this->objModel->{$strName};
 			}
 		}
