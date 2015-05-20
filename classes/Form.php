@@ -58,6 +58,8 @@ abstract class Form extends \Controller
 
 	protected $instanceId = 0; // id of model entitiy
 
+	private $useModelData = false;
+
 	public function __construct(\ModuleModel $objModule=null, $instanceId = 0)
 	{
 		parent::__construct();
@@ -92,6 +94,7 @@ abstract class Form extends \Controller
 		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
 		$this->isSubmitted = (\Input::post('FORM_SUBMIT') == $this->strFormId);
+		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
 	}
 
     public function generateStart()
@@ -170,7 +173,7 @@ abstract class Form extends \Controller
 			$this->arrFields = array();
 			$this->objModel->refresh();
 			// ... and use the model data (but only, if validation succeeded)
-			$this->generateFields(true, false);
+			$this->generateFields($this->useModelData, false);
 		}
 
         $this->generateStart();
