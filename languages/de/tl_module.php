@@ -19,13 +19,30 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][0] = 'Erfolgsmeldun
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][1] = 'Geben Sie hier eine alternative Erfolgsmeldung an.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][0] = 'Per E-Mail versenden';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][1] = 'Die Formulardaten an eine E-Mail-Adresse versenden.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSender'][0] = 'Absender';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSender'][1] = 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format: Email [Name]</strong>';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailRecipient'][0] = 'Empfänger-Adresse';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailRecipient'][1] = 'Mehrere E-Mail-Adressen können mit Komma getrennt werden.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][0] = 'Betreff';
-$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][1] = 'Bitte geben Sie die Betreffzeile ein.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'][1] = 'Bitte geben Sie eine Betreffzeile für die Bestätigungs-E-Mail ein. Wenn Sie keine Betreffzeile erfassen, steigt die Wahrscheinlichkeit, dass die E-Mail als SPAM identifiziert wird.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][0] = 'Text der E-Mail';
-$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein. Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'][0] = 'E-Mail-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'][1] = 'Hier können Sie das E-Mail-Template überschreiben.';
+
+$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'][0] = 'Bestätigung per E-Mail versenden';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'][1] = 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars versendet.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSender'][0] = 'Absender';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSender'][1] = 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format: Email [Name]</strong>';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailRecipientField'][0] = 'Formularfeld mit E-Mail-Adresse des Empfängers';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailRecipientField'][1] = 'Wählen Sie hier das Formularfeld, in dem der Absender seine E-Mail-Adresse angibt oder ein Formularfeld, das die Empfänger-Adresse als Wert enthält.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSubject'][0] = 'Betreff';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSubject'][1] = 'Bitte geben Sie eine Betreffzeile für die Bestätigungs-E-Mail ein. Wenn Sie keine Betreffzeile erfassen, steigt die Wahrscheinlichkeit, dass die E-Mail als SPAM identifiziert wird.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailText'][0] = 'Text der E-Mail';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'][0] = 'E-Mail-Template';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'][1] = 'Hier können Sie das E-Mail-Template überschreiben.';
+
+
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][0] = 'Formular-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][1] = 'Hier können Sie das Formular-Template überschreiben.';

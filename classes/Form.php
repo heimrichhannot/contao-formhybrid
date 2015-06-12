@@ -60,6 +60,8 @@ abstract class Form extends \Controller
 
 	private $useModelData = false;
 
+	protected $novalidate = true;
+
 	public function __construct(\ModuleModel $objModule=null, $instanceId = 0)
 	{
 		parent::__construct();
@@ -270,55 +272,125 @@ abstract class Form extends \Controller
 				}
 			}
 
-			$arrTokenData = array();
-
-			foreach($this->objModel->row() as $name => $value)
-			{
-				if(in_array($name, array('pid', 'id', 'tstamp')) || empty($value)) continue;
-				$strLabel = isset($GLOBALS['TL_LANG'][$this->strTable][$name][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$name][0] : $name;
-
-				$strValue = deserialize($value);
-
-				// support input arrays
-				if(is_array($strValue))
-				{
-					$strArrayValue =  "\n";
-					foreach($strValue as $arrItem)
-					{
-						if (is_array($arrItem))
-						{
-							foreach($arrItem as $itemKey => $itemValue)
-							{
-								$label = isset($GLOBALS['TL_LANG'][$this->strTable][$itemKey][0]) ? $GLOBALS['TL_LANG'][$this->strTable][$itemKey][0] : $itemKey;
-
-								$strArrayValue .= "\t" . $label . ": " . $itemValue . "\n";
-							}
-						}
-						else
-						{
-							$strArrayValue = "\t" . $label . ": " . $arrItem . "\n";
-						}
-					}
-					
-					$arrTokenData['submission'] .= $strLabel . ": "  . "\n" . $strArrayValue . "\n";
-				}
-				else{
-					$arrTokenData['submission'] .= $strLabel . ": "  . $strValue . "\n";
-				}
-			}
+			$arrMailData = $this->prepareMailData();
 
 			if($this->formHybridSendSubmissionViaEmail)
 			{
+				$arrRecipient = trimsplit(',', $this->formHybridSubmissionMailRecipient);
+
 				$objEmail = new \Email();
 				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
 				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
 				$objEmail->subject = $this->replaceInsertTags($this->formHybridSubmissionMailSubject, false);
-				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags($this->formHybridSubmissionMailText), $arrTokenData);
-				$objEmail->sendTo($this->formHybridSubmissionMailRecipient);
+				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrMailData)), $arrMailData);
+
+				// overwrite default from and
+				if (!empty($this->formHybridSubmissionMailSender))
+				{
+					list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridSubmissionMailSender);
+					$objEmail->from = $sender;
+					$objEmail->fromName = $senderName;
+				}
+
+				if($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrMailData))
+				{
+					if(is_array($arrRecipient))
+					{
+						$arrRecipient = array_filter(array_unique($arrRecipient));
+						$objEmail->sendTo($arrRecipient);
+					}
+				}
+			}
+
+			if($this->formHybridSendConfirmationViaEmail)
+			{
+				$arrRecipient = deserialize($arrMailData[$this->formHybridConfirmationMailRecipientField]['value'], true);
+
+				$objEmail = new \Email();
+				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
+				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
+				$objEmail->subject = $this->replaceInsertTags($this->formHybridConfirmationMailSubject, false);
+				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrMailData)), $arrMailData);
+
+				// overwrite default from and
+				if (!empty($this->formHybridConfirmationMailSender))
+				{
+					list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridConfirmationMailSender);
+					$objEmail->from = $sender;
+					$objEmail->fromName = $senderName;
+				}
+
+				if($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrMailData))
+				{
+					if(is_array($arrRecipient))
+					{
+						$arrRecipient = array_filter(array_unique($arrRecipient));
+						$objEmail->sendTo($arrRecipient);
+					}
+				}
 			}
 
 			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
 		}
+	}
+
+	protected function prepareMailData()
+	{
+		$arrMailData = array();
+
+		$dc = new DC_Hybrid($this->strTable, $this->objModel);
+
+		foreach($this->objModel->row() as $strName => $varValue)
+		{
+			if(in_array($strName, array('pid', 'id', 'tstamp')) || empty($varValue)) continue;
+
+			$arrData = $this->dca['fields'][$strName];
+
+			$arrFieldData = $this->prepareMailDataField($strName, $varValue, $arrData, $dc);
+
+			$arrMailData[$strName] = $arrFieldData;
+			$arrMailData['submission'] .= $arrFieldData['submission'];
+
+			$varValue = deserialize($varValue);
+
+			// multicolumnwizard support
+			if($arrData['inputType'] == 'multiColumnWizard')
+			{
+				foreach($varValue as $arrSet)
+				{
+					if(!is_array($arrSet)) continue;
+
+					// new line
+					$arrMailData['submission'] .= "\n";
+
+					foreach($arrSet as $strSetName => $strSetValue)
+					{
+						$arrSetData = $arrData['eval']['columnFields'][$strSetName];
+						$arrFieldData = $this->prepareMailDataField($strSetName, $strSetValue, $arrSetData, $dc);
+						// intend new line
+						$arrMailData['submission'] .= "\t" . $arrFieldData['submission'];
+					}
+
+					// new line
+					$arrMailData['submission'] .= "\n";
+				}
+			}
+		}
+
+		return $arrMailData;
+	}
+
+	protected function prepareMailDataField($strName, $varValue, $arrData, $dc)
+	{
+		$strLabel = isset($arrData['label'][0]) ? $arrData['label'][0] : $strName;
+
+		$strOutput = FormHelper::getFormatedValueByDca($varValue, $arrData, $dc);
+
+		$varValue = deserialize($varValue);
+
+		$strSubmission = $strLabel . ": " . (is_array($varValue) ? '' : $strOutput ) . "\n";
+
+		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);
 	}
 
 	protected function generateFields($useModelData = false, $skipModel = false)
@@ -504,7 +576,7 @@ abstract class Form extends \Controller
 	{
 		// TODO: handle Submission
 		if(!$this->objModel instanceof \Contao\Model) return;
-
+		
 		$this->objModel->tstamp = time();
 		$this->objModel->save();
 	}
@@ -674,5 +746,15 @@ abstract class Form extends \Controller
 	abstract protected function compile();
 
 	abstract protected function onSubmitCallback(\DataContainer $dc);
+
+	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrMailData)
+	{
+		return true;
+	}
+
+	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrMailData)
+	{
+		return true;
+	}
 }
 

@@ -20,11 +20,25 @@ abstract class FrontendWidget extends \Widget
 	public static function validateGetAndPost($objWidget, $strMethod)
 	{
 		if ($strMethod == FORMHYBRID_METHOD_GET)
+		{
 			$varValue = $objWidget->validator(static::getGet($objWidget, $objWidget->strName));
+		}
 		else
-			$varValue = $objWidget->validator($objWidget->getPost($objWidget->strName));
+		{
+			// Captcha needs no value, just simple validation
+			if($objWidget instanceof \FormCaptcha)
+			{
+				$varValue = '';
+				$objWidget->validate();
+			}
+			else
+			{
+				$varValue = $objWidget->validator($objWidget->getPost($objWidget->strName));
+			}
+		}
 
-		if ($objWidget->hasErrors()) {
+		if ($objWidget->hasErrors())
+		{
 			$objWidget->class = 'error';
 		}
 
