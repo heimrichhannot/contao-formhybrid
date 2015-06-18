@@ -42,9 +42,9 @@ abstract class Form extends \Controller
 
 	protected $strTemplate = 'formhybrid_default';
 
-    protected $strTemplateStart = 'formhybridStart_default';
+	protected $strTemplateStart = 'formhybridStart_default';
 
-    protected $strTemplateStop = 'formhybridStop_default';
+	protected $strTemplateStop = 'formhybridStop_default';
 
 	protected $strMethod = FORMHYBRID_METHOD_GET;
 
@@ -57,110 +57,87 @@ abstract class Form extends \Controller
 	protected $strClass;
 
 	protected $instanceId = 0; // id of model entitiy
-
+	protected $novalidate = true;
 	private $useModelData = false;
 
-	protected $novalidate = true;
-
-	public function __construct(\ModuleModel $objModule=null, $instanceId = 0)
+	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
 	{
 		parent::__construct();
 
 		global $objPage;
 
-        $strInputMethod = strtolower($this->strMethod);
+		$strInputMethod = strtolower($this->strMethod);
 
-		if($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette)
-		{
-			$this->objModule = $objModule;
-			$this->arrData = $objModule->row();
-			$this->strTable = $objModule->formHybridDataContainer;
-			$this->strPalette = $objModule->formHybridPalette;
-			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
-			$this->arrSubPalettes = deserialize($objModule->formHybridSubPalettes, true);
-			$this->strTemplate = $objModule->formHybridTemplate;
+		if ($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette) {
+			$this->objModule        = $objModule;
+			$this->arrData          = $objModule->row();
+			$this->strTable         = $objModule->formHybridDataContainer;
+			$this->strPalette       = $objModule->formHybridPalette;
+			$this->arrEditable      = deserialize($objModule->formHybridEditable, true);
+			$this->arrSubPalettes   = deserialize($objModule->formHybridSubPalettes, true);
+			$this->strTemplate      = $objModule->formHybridTemplate;
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues = deserialize($objModule->formHybridDefaultValues, true);
-            $this->skipValidation = $objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
-            $this->instanceId = $instanceId;
-            $this->strTemplateStart = $this->formHybridStartTemplate ?: $this->strTemplateStart;
-            $this->strTemplateStop = $this->formHybridStopTemplate ?: $this->strTemplateStop;
+			$this->skipValidation   = $objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
+			$this->instanceId       = $instanceId;
+			$this->strTemplateStart = $this->formHybridStartTemplate ?: $this->strTemplateStart;
+			$this->strTemplateStop  = $this->formHybridStopTemplate ?: $this->strTemplateStop;
 		}
 
-        $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
-		$this->strActionDefault = ($this->instanceId ?
-			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId) :
+		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
+		$this->strActionDefault = ($this->instanceId
+			?
+			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId)
+			:
 			$this->generateFrontendUrl($objPage->row()));
-		$this->strAction = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
-		$this->strFormId = $this->strTable . '_' . $this->id;
-		$this->strFormName = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
+		$this->strAction        = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
+		$this->strFormId        = $this->strTable . '_' . $this->id;
+		$this->strFormName      = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
-		$this->isSubmitted = (\Input::post('FORM_SUBMIT') == $this->strFormId);
+		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
 	}
 
-    public function generateStart()
-    {
-        $this->Template->formName = $this->strFormName;
-        $this->Template->formId = $this->strFormId;
-        $this->Template->method = $this->strMethod;
-        $this->Template->action = $this->strAction;
-        $this->Template->enctype = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
-        $this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
-
-        $this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName ;
-        $this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
-        if (is_array($this->arrAttributes))
-        {
-            $arrAttributes = $this->arrAttributes;
-            $this->Template->attributes = implode(' ', array_map(function($strValue) use ($arrAttributes) {
-                return $strValue . '="' . $arrAttributes[$strValue] . '"';
-            }, array_keys($this->arrAttributes)));
-        }
-        $this->Template->cssID = ' id="' . $this->strFormName . '"';
-    }
-
 	public function generate()
 	{
-        if($this->renderStart)
-        {
-            $this->Template = new \FrontendTemplate($this->strTemplateStart);
-            $this->generateStart();
-            return $this->Template->parse();
-        }
+		if ($this->renderStart) {
+			$this->Template = new \FrontendTemplate($this->strTemplateStart);
+			$this->generateStart();
 
-        $this->Template = new \FrontendTemplate($this->strTemplate);
+			return $this->Template->parse();
+		}
 
-        if($this->renderStop)
-        {
-            $this->Template = new \FrontendTemplate($this->strTemplateStop);
-        }
+		$this->Template = new \FrontendTemplate($this->strTemplate);
 
-		if(!$this->loadDC()) return false;
+		if ($this->renderStop) {
+			$this->Template = new \FrontendTemplate($this->strTemplateStop);
+		}
 
-		if(!$this->getFields()) return false;
+		if (!$this->loadDC()) {
+			return false;
+		}
+
+		if (!$this->getFields()) {
+			return false;
+		}
 
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
-		if (!$this->isFilterForm)
+		if (!$this->isFilterForm) {
 			$strModelClass = \Model::getClassFromTable($this->strTable);
+		}
 
-		if ($this->instanceId && is_numeric($this->instanceId)){
-			if(($objModel = $strModelClass::findByPk($this->instanceId)) !== null)
-			{
+		if ($this->instanceId && is_numeric($this->instanceId)) {
+			if (($objModel = $strModelClass::findByPk($this->instanceId)) !== null) {
 				$this->objModel = $objModel;
-			}else
-			{
-				$this->Template->invalid = true;
+			} else {
+				$this->Template->invalid            = true;
 				$_SESSION[FORMHYBRID_MESSAGE_ERROR] = $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'];
 			}
-		}
-		else
-		{
+		} else {
 			$this->objModel = class_exists($strModelClass) ? new $strModelClass : new Submission();
 			// frontendedit saves the model initially in order to get an id
-			if ($this->initiallySaveModel)
-			{
+			if ($this->initiallySaveModel) {
 				$this->objModel->tstamp = 0;
 				$this->objModel->save();
 			}
@@ -170,30 +147,27 @@ abstract class Form extends \Controller
 		$this->processForm();
 
 		// regenerate fields after onsubmit callbacks...
-		if ($this->isSubmitted && !$this->doNotSubmit)
-		{
+		if ($this->isSubmitted && !$this->doNotSubmit) {
 			$this->arrFields = array();
 			$this->objModel->refresh();
 			// ... and use the model data (but only, if validation succeeded)
 			$this->generateFields($this->useModelData, false);
 		}
 
-        $this->generateStart();
+		$this->generateStart();
 
-        $this->Template->fields = $this->arrFields;
+		$this->Template->fields      = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 
-        if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]))
-        {
-            $this->Template->messageType = 'success';
-            $this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
-            unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
-        }
+		if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS])) {
+			$this->Template->messageType = 'success';
+			$this->Template->message     = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
+			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
+		}
 
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR]))
-		{
+		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR])) {
 			$this->Template->messageType = 'danger';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
+			$this->Template->message     = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
 			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
 		}
 
@@ -202,12 +176,40 @@ abstract class Form extends \Controller
 		return $this->Template->parse();
 	}
 
+	public function generateStart()
+	{
+		$this->Template->formName   = $this->strFormName;
+		$this->Template->formId     = $this->strFormId;
+		$this->Template->method     = $this->strMethod;
+		$this->Template->action     = $this->strAction;
+		$this->Template->enctype    = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
+		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
+
+		$this->Template->class     = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName;
+		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
+		if (is_array($this->arrAttributes)) {
+			$arrAttributes              = $this->arrAttributes;
+			$this->Template->attributes = implode(
+				' ',
+				array_map(
+					function ($strValue) use ($arrAttributes) {
+						return $strValue . '="' . $arrAttributes[$strValue] . '"';
+					},
+					array_keys($this->arrAttributes)
+				)
+			);
+		}
+		$this->Template->cssID = ' id="' . $this->strFormName . '"';
+	}
+
 	protected function loadDC()
 	{
 		\Controller::loadDataContainer($this->strTable);
 		\System::loadLanguageFile($this->strTable);
 
-		if(!isset($GLOBALS['TL_DCA'][$this->strTable])) return false;
+		if (!isset($GLOBALS['TL_DCA'][$this->strTable])) {
+			return false;
+		}
 
 		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
@@ -217,28 +219,23 @@ abstract class Form extends \Controller
 	protected function getFields()
 	{
 		$arrEditable = array();
-		foreach ($this->arrEditable as $strField)
-		{
+		foreach ($this->arrEditable as $strField) {
 			// check if field really exists
-			if (!$this->dca['fields'][$strField])
+			if (!$this->dca['fields'][$strField]) {
 				continue;
+			}
 
 			$arrEditable[] = $strField;
 
 			// add subpalette fields
-			if (is_array($this->dca['subpalettes']) && in_array($strField, array_keys($this->dca['subpalettes'])))
-			{
-				foreach ($this->arrSubPalettes as $arrSubPalette)
-				{
-					if ($arrSubPalette['subpalette'] == $strField)
-					{
-						foreach ($arrSubPalette['fields'] as $strSubPaletteField)
-						{
-							if (!$this->dca['fields'][$strSubPaletteField])
+			if (is_array($this->dca['subpalettes']) && in_array($strField, array_keys($this->dca['subpalettes']))) {
+				foreach ($this->arrSubPalettes as $arrSubPalette) {
+					if ($arrSubPalette['subpalette'] == $strField) {
+						foreach ($arrSubPalette['fields'] as $strSubPaletteField) {
+							if (!$this->dca['fields'][$strSubPaletteField]) {
 								continue;
-							else
-							{
-								$arrEditable[] = $strSubPaletteField;
+							} else {
+								$arrEditable[]                                                = $strSubPaletteField;
 								$this->dca['fields'][$strSubPaletteField]['eval']['selector'] = $strField;
 							}
 						}
@@ -252,179 +249,44 @@ abstract class Form extends \Controller
 		return !empty($this->arrEditable);
 	}
 
-	protected function processForm()
-	{
-		if($this->isSubmitted && !$this->doNotSubmit)
-		{
-			$this->save();
-
-			$dc = new DC_Hybrid($this->strTable, $this->objModel);
-
-			$this->onSubmitCallback($dc);
-
-			if (!$this->skipValidation)
-			if(is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback']))
-			{
-				foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $callback)
-				{
-					$this->import($callback[0]);
-					$this->$callback[0]->$callback[1]($dc);
-				}
-			}
-
-			$arrMailData = $this->prepareMailData();
-
-			if($this->formHybridSendSubmissionViaEmail)
-			{
-				$arrRecipient = trimsplit(',', $this->formHybridSubmissionMailRecipient);
-
-				$objEmail = new \Email();
-				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
-				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-				$objEmail->subject = $this->replaceInsertTags($this->formHybridSubmissionMailSubject, false);
-				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrMailData)), $arrMailData);
-
-				// overwrite default from and
-				if (!empty($this->formHybridSubmissionMailSender))
-				{
-					list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridSubmissionMailSender);
-					$objEmail->from = $sender;
-					$objEmail->fromName = $senderName;
-				}
-
-				if($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrMailData))
-				{
-					if(is_array($arrRecipient))
-					{
-						$arrRecipient = array_filter(array_unique($arrRecipient));
-						$objEmail->sendTo($arrRecipient);
-					}
-				}
-			}
-
-			if($this->formHybridSendConfirmationViaEmail)
-			{
-				$arrRecipient = deserialize($arrMailData[$this->formHybridConfirmationMailRecipientField]['value'], true);
-
-				$objEmail = new \Email();
-				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
-				$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-				$objEmail->subject = $this->replaceInsertTags($this->formHybridConfirmationMailSubject, false);
-				$objEmail->text = \String::parseSimpleTokens($this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrMailData)), $arrMailData);
-
-				// overwrite default from and
-				if (!empty($this->formHybridConfirmationMailSender))
-				{
-					list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridConfirmationMailSender);
-					$objEmail->from = $sender;
-					$objEmail->fromName = $senderName;
-				}
-
-				if($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrMailData))
-				{
-					if(is_array($arrRecipient))
-					{
-						$arrRecipient = array_filter(array_unique($arrRecipient));
-						$objEmail->sendTo($arrRecipient);
-					}
-				}
-			}
-
-			$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = !empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
-		}
-	}
-
-	protected function prepareMailData()
-	{
-		$arrMailData = array();
-
-		$dc = new DC_Hybrid($this->strTable, $this->objModel);
-
-		foreach($this->objModel->row() as $strName => $varValue)
-		{
-			if(in_array($strName, array('pid', 'id', 'tstamp')) || empty($varValue)) continue;
-
-			$arrData = $this->dca['fields'][$strName];
-
-			$arrFieldData = $this->prepareMailDataField($strName, $varValue, $arrData, $dc);
-
-			$arrMailData[$strName] = $arrFieldData;
-			$arrMailData['submission'] .= $arrFieldData['submission'];
-
-			$varValue = deserialize($varValue);
-
-			// multicolumnwizard support
-			if($arrData['inputType'] == 'multiColumnWizard')
-			{
-				foreach($varValue as $arrSet)
-				{
-					if(!is_array($arrSet)) continue;
-
-					// new line
-					$arrMailData['submission'] .= "\n";
-
-					foreach($arrSet as $strSetName => $strSetValue)
-					{
-						$arrSetData = $arrData['eval']['columnFields'][$strSetName];
-						$arrFieldData = $this->prepareMailDataField($strSetName, $strSetValue, $arrSetData, $dc);
-						// intend new line
-						$arrMailData['submission'] .= "\t" . $arrFieldData['submission'];
-					}
-
-					// new line
-					$arrMailData['submission'] .= "\n";
-				}
-			}
-		}
-
-		return $arrMailData;
-	}
-
-	protected function prepareMailDataField($strName, $varValue, $arrData, $dc)
-	{
-		$strLabel = isset($arrData['label'][0]) ? $arrData['label'][0] : $strName;
-
-		$strOutput = FormHelper::getFormatedValueByDca($varValue, $arrData, $dc);
-
-		$varValue = deserialize($varValue);
-
-		$strSubmission = $strLabel . ": " . (is_array($varValue) ? '' : $strOutput ) . "\n";
-
-		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);
-	}
-
 	protected function generateFields($useModelData = false, $skipModel = false)
 	{
 		// reset the flag if the fields are updated
-		if ($useModelData)
+		if ($useModelData) {
 			$this->hasSubmit = false;
+		}
 
-		foreach($this->arrEditable as $name)
-		{
-			if (!in_array($name, array_keys($this->dca['fields']))) continue;
+		foreach ($this->arrEditable as $name) {
+			if (!in_array($name, array_keys($this->dca['fields']))) {
+				continue;
+			}
 
-			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData, $skipModel))
+			if ($objField = $this->generateField($name, $this->dca['fields'][$name], $useModelData, $skipModel)) {
 				$this->arrFields[$name] = $objField;
+			}
 		}
 
 		// add default values not already rendered in the palette as hidden fields
-		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
-		{
-			foreach ($this->arrDefaultValues as $arrDefaults)
-			{
-				if(!in_array($arrDefaults['field'], $this->arrEditable))
-				{
-					if ($objField = $this->generateField($arrDefaults['field'], array(
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues)) {
+			foreach ($this->arrDefaultValues as $arrDefaults) {
+				if (!in_array($arrDefaults['field'], $this->arrEditable)) {
+					if ($objField = $this->generateField(
+						$arrDefaults['field'],
+						array(
 							'inputType' => 'hidden'
-						), $useModelData, $skipModel))
-					$this->arrFields[$arrDefaults['field']] = $objField;
+						),
+						$useModelData,
+						$skipModel
+					)
+					) {
+						$this->arrFields[$arrDefaults['field']] = $objField;
+					}
 				}
 			}
 		}
 
 		// add submit button if not configured in dca
-		if (!$this->hasSubmit)
-		{
+		if (!$this->hasSubmit) {
 			$this->generateSubmitField();
 		}
 
@@ -432,56 +294,51 @@ abstract class Form extends \Controller
 
 	protected function generateField($strName, $arrData, $useModelData = false, $skipModel = false)
 	{
-		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+		$strClass       = $GLOBALS['TL_FFL'][$arrData['inputType']];
 		$strInputMethod = $this->strInputMethod;
 
 		// Continue if the class is not defined
-		if (!class_exists($strClass)) return false;
+		if (!class_exists($strClass)) {
+			return false;
+		}
 
 		// GET fallback
-		if ($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName))
-		{
+		if ($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName)) {
 			$this->isSubmitted = true;
 		}
 
 		// set value from request
-		if ($useModelData && \Database::getInstance()->fieldExists($strName, $this->strTable))
-		{
-			if (isset($this->objModel->{$strName}))
-			{
+		if ($useModelData && \Database::getInstance()->fieldExists($strName, $this->strTable)) {
+			if (isset($this->objModel->{$strName})) {
 				// special handling for tags (not a real stored value)
-				if (!$this->isFilterForm)
-				{
+				if (!$this->isFilterForm) {
 					$this->addTagsToModel($strName, $arrData);
 				}
 
 				$varValue = $this->objModel->{$strName};
 			}
-		}
-		elseif ($this->isSubmitted)
-		{
+		} elseif ($this->isSubmitted) {
 			$varValue = \Input::$strInputMethod($strName);
 			$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
-		}
-		else
-		{
+		} else {
 			// contains the load_callback!
 			$varValue = $this->getDefaultFieldValue($strName, $arrData, $skipModel);
 		}
 
 		// handle sub palette fields
-		if ($arrData['eval']['selector'])
-		{
-			if (!$this->getDefaultFieldValue($arrData['eval']['selector'], $arrData) &&
-				!call_user_func_array(array('\Input', $this->strInputMethod), array($arrData['eval']['selector'])))
-			{
+		if ($arrData['eval']['selector']) {
+			if (!$this->getDefaultFieldValue($arrData['eval']['selector'], $arrData)
+				&& !call_user_func_array(
+					array('\Input', $this->strInputMethod),
+					array($arrData['eval']['selector'])
+				)
+			) {
 				return false;
 			}
 		}
 
 		// prevent name for GET and submit widget, otherwise url will have submit name in
-		if($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit')
-		{
+		if ($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit') {
 			$strName = '';
 		}
 
@@ -489,17 +346,13 @@ abstract class Form extends \Controller
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
 		// replace inserttags
-		if (is_array($varValue))
-		{
+		if (is_array($varValue)) {
 			$arrResult = array();
-			foreach ($varValue as $k => $v)
-			{
+			foreach ($varValue as $k => $v) {
 				$arrResult[$k] = $this->replaceInsertTags($v);
 			}
 			$varValue = $arrResult;
-		}
-		else
-		{
+		} else {
 			$varValue = $this->replaceInsertTags($varValue);
 		}
 
@@ -508,49 +361,39 @@ abstract class Form extends \Controller
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $dc);
 		$objWidget = new $strClass($arrWidget);
 
-		if (isset($arrData['formHybridOptions']))
-		{
+		if (isset($arrData['formHybridOptions'])) {
 			$arrFormHybridOptions = $arrData['formHybridOptions'];
 
 			$this->import($arrFormHybridOptions[0]);
 			$objWidget->options = $this->$arrFormHybridOptions[0]->$arrFormHybridOptions[1]();
 		}
 
-		if ($objWidget instanceof \uploadable)
-		{
+		if ($objWidget instanceof \uploadable) {
 			$this->hasUpload = true;
 		}
 
-		if ($objWidget->type == 'submit')
-		{
+		if ($objWidget->type == 'submit') {
 			$this->hasSubmit = true;
 		}
 
-		if ($this->isSubmitted)
-		{
-			if(!$this->skipValidation && !$useModelData)
-			{
+		if ($this->isSubmitted) {
+			if (!$this->skipValidation && !$useModelData) {
 				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 			}
 
-			if($objWidget->hasErrors())
-			{
+			if ($objWidget->hasErrors()) {
 				$this->doNotSubmit = true;
-			}
-			elseif ($objWidget->submitInput())
-			{
+			} elseif ($objWidget->submitInput()) {
 				$varValue = $objWidget->value;
 
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-				$varValue = $this->transformSpecialValues($strName, $varValue, $arrData);
+				$varValue     = $this->transformSpecialValues($strName, $varValue, $arrData);
 				$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
 
 				// Trigger the save_callback
-				if (is_array($arrData['save_callback']))
-				{
-					foreach ($arrData['save_callback'] as $callback)
-					{
+				if (is_array($arrData['save_callback'])) {
+					foreach ($arrData['save_callback'] as $callback) {
 						$this->import($callback[0]);
 						$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
 					}
@@ -561,9 +404,7 @@ abstract class Form extends \Controller
 				$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
 				if ($strInputType == 'tag' && $this->objModel->id) {
 					\HeimrichHannot\TagsExtended\TagsExtended::saveTags($this->strTable, $this->objModel->id, explode(',', $varValue));
-				}
-				else
-				{
+				} else {
 					$this->objModel->{$strName} = $varValue;
 				}
 			}
@@ -572,35 +413,51 @@ abstract class Form extends \Controller
 		return $objWidget;
 	}
 
-	protected function save()
+	public function addTagsToModel($strName, &$arrData)
 	{
-		// TODO: handle Submission
-		if(!$this->objModel instanceof \Contao\Model) return;
-		
-		$this->objModel->tstamp = time();
-		$this->objModel->save();
+		// special handling for tags (not a real stored value)
+		// re-get the inputType, because it might have been overridden with hidden for default values not existing arrEditable
+		$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
+		if (in_array('tags', \Config::getInstance()->getActiveModules()) && $strInputType == 'tag') {
+			$this->objModel->{$strName}  = implode(',', \HeimrichHannot\TagsExtended\TagsExtended::loadTags($this->strTable, $this->objModel->id));
+			$arrData['eval']['tagTable'] = $this->strTable;
+		}
 	}
 
-	protected function generateSubmitField()
+	public function transformSpecialValues($strName, $varValue, $arrData)
 	{
-		$arrData = array
-		(
-			'inputType' => 'submit',
-			'label'		=> &$GLOBALS['TL_LANG']['formhybrid']['submit'],
-			'eval'		=> array('class' => 'btn btn-primary')
-		);
+		// Convert date formats into timestamps
+		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
+			$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
+			$varValue = $objDate->tstamp;
+		}
 
-		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
+		// Make sure unique fields are unique
+		if ($arrData['eval']['unique'] && $varValue != ''
+			&& !\Database::getInstance()->isUniqueValue(
+				$this->strTable,
+				$strName,
+				$varValue,
+				$this->instanceId
+			)
+		) {
+			throw new \Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
+		}
+
+		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
+			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
+		}
+
+		return $varValue;
 	}
 
-	protected function getDefaultFieldValue($strName, &$arrData, $skipModel=false)
+	protected function getDefaultFieldValue($strName, &$arrData, $skipModel = false)
 	{
 		// priority 4 -> dca default value
 		$varValue = $this->dca['fields'][$strName]['default'];
 
 		// priority 3 -> default values defined in the module
-		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues))
-		{
+		if ($this->addDefaultValues && is_array($this->arrDefaultValues) && !empty($this->arrDefaultValues)) {
 			foreach ($this->arrDefaultValues as $arrDefaults) {
 
 				if (empty($arrDefaults['field']) || ($arrDefaults['field'] != $strName)) {
@@ -612,20 +469,18 @@ abstract class Form extends \Controller
 		}
 
 		// priority 2 -> set value from model entity if instanceId isset (editable form)
-		if (!$skipModel && isset($this->objModel->{$strName}) && $this->instanceId)
-		{
-			if (!$this->isFilterForm)
+		if (!$skipModel && isset($this->objModel->{$strName}) && $this->instanceId) {
+			if (!$this->isFilterForm) {
 				$this->addTagsToModel($strName, $arrData);
+			}
 			$varValue = $this->objModel->{$strName};
 		}
 
 		// priority 1 -> load_callback
 		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-		if (is_array($this->dca['fields'][$strName]['load_callback']))
-		{
-			foreach ($this->dca['fields'][$strName]['load_callback'] as $callback)
-			{
+		if (is_array($this->dca['fields'][$strName]['load_callback'])) {
+			foreach ($this->dca['fields'][$strName]['load_callback'] as $callback) {
 				$this->import($callback[0]);
 				$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
 			}
@@ -634,53 +489,211 @@ abstract class Form extends \Controller
 		return $varValue;
 	}
 
-	public function addTagsToModel($strName, &$arrData)
+	protected function generateSubmitField()
 	{
-		// special handling for tags (not a real stored value)
-		// re-get the inputType, because it might have been overridden with hidden for default values not existing arrEditable
-		$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
-		if (in_array('tags', \Config::getInstance()->getActiveModules()) && $strInputType == 'tag') {
-			$this->objModel->{$strName} = implode(',', \HeimrichHannot\TagsExtended\TagsExtended::loadTags($this->strTable, $this->objModel->id));
-			$arrData['eval']['tagTable'] = $this->strTable;
+		$arrData = array
+		(
+			'inputType' => 'submit',
+			'label'     => &$GLOBALS['TL_LANG']['formhybrid']['submit'],
+			'eval'      => array('class' => 'btn btn-primary')
+		);
+
+		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
+	}
+
+	protected function processForm()
+	{
+		if ($this->isSubmitted && !$this->doNotSubmit) {
+			$this->save();
+
+			$dc = new DC_Hybrid($this->strTable, $this->objModel);
+
+			$this->onSubmitCallback($dc);
+
+			if (!$this->skipValidation) {
+				if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'])) {
+					foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $callback) {
+						$this->import($callback[0]);
+						$this->$callback[0]->$callback[1]($dc);
+					}
+				}
+			}
+
+			$arrSubmissionData = $this->prepareSubmissionData();
+
+			if ($this->formHybridSendSubmissionViaEmail) {
+				$this->createSubmissionEmail($arrSubmissionData);
+			}
+
+			if ($this->formHybridSendConfirmationViaEmail)
+			{
+				$this->createConfirmationEmail($arrSubmissionData);
+			}
+
+			$this->createSuccessMessage($arrSubmissionData);
 		}
 	}
 
-	public function transformSpecialValues($strName, $varValue, $arrData)
+	protected function save()
 	{
-		// Convert date formats into timestamps
-		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
-		{
-			$objDate = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
-			$varValue = $objDate->tstamp;
+		// TODO: handle Submission
+		if (!$this->objModel instanceof \Contao\Model) {
+			return;
 		}
 
-		// Make sure unique fields are unique
-		if ($arrData['eval']['unique'] && $varValue != '' && !\Database::getInstance()->isUniqueValue($this->strTable, $strName, $varValue, $this->instanceId))
-		{
-			throw new \Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
-		}
-
-		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv']))
-		{
-			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
-		}
-
-		return $varValue;
+		$this->objModel->tstamp = time();
+		$this->objModel->save();
 	}
 
-	/**
-	 * Set an object property
-	 * @param string
-	 * @param mixed
-	 */
-	public function __set($strKey, $varValue)
+	abstract protected function onSubmitCallback(\DataContainer $dc);
+
+	protected function prepareSubmissionData()
 	{
-		$this->arrData[$strKey] = $varValue;
+		$arrSubmissionData = array();
+
+		$dc = new DC_Hybrid($this->strTable, $this->objModel);
+
+		foreach ($this->objModel->row() as $strName => $varValue) {
+			if (in_array($strName, array('pid', 'id', 'tstamp')) || empty($varValue)) {
+				continue;
+			}
+
+			$arrData = $this->dca['fields'][$strName];
+
+			$arrFieldData = $this->prepareSubmissionDataField($strName, $varValue, $arrData, $dc);
+
+			$arrSubmissionData[$strName] = $arrFieldData;
+			$arrSubmissionData['submission'] .= $arrFieldData['submission'];
+
+			$varValue = deserialize($varValue);
+
+			// multicolumnwizard support
+			if ($arrData['inputType'] == 'multiColumnWizard') {
+				foreach ($varValue as $arrSet) {
+					if (!is_array($arrSet)) {
+						continue;
+					}
+
+					// new line
+					$arrSubmissionData['submission'] .= "\n";
+
+					foreach ($arrSet as $strSetName => $strSetValue) {
+						$arrSetData   = $arrData['eval']['columnFields'][$strSetName];
+						$arrFieldData = $this->prepareSubmissionDataField($strSetName, $strSetValue, $arrSetData, $dc);
+						// intend new line
+						$arrSubmissionData['submission'] .= "\t" . $arrFieldData['submission'];
+					}
+
+					// new line
+					$arrSubmissionData['submission'] .= "\n";
+				}
+			}
+		}
+
+		return $arrSubmissionData;
 	}
+
+	protected function prepareSubmissionDataField($strName, $varValue, $arrData, $dc)
+	{
+		$strLabel = isset($arrData['label'][0]) ? $arrData['label'][0] : $strName;
+
+		$strOutput = FormHelper::getFormatedValueByDca($varValue, $arrData, $dc);
+
+		$varValue = deserialize($varValue);
+
+		$strSubmission = $strLabel . ": " . (is_array($varValue) ? '' : $strOutput) . "\n";
+
+		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);
+	}
+
+	protected function createSubmissionEmail($arrSubmissionData)
+	{
+		$arrRecipient = trimsplit(',', $this->formHybridSubmissionMailRecipient);
+
+		$objEmail           = new \Email();
+		$objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
+		$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
+		$objEmail->subject  = $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailSubject, $arrSubmissionData), false);
+		$objEmail->text     = \String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData)),
+			$arrSubmissionData
+		);
+
+		// overwrite default from and
+		if (!empty($this->formHybridSubmissionMailSender)) {
+			list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridSubmissionMailSender);
+			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
+			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
+		}
+
+		if ($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
+			if (is_array($arrRecipient)) {
+				$arrRecipient = array_filter(array_unique($arrRecipient));
+				$objEmail->sendTo($this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false));
+			}
+		}
+	}
+
+	protected function createSuccessMessage($arrSubmissionData)
+	{
+		$this->formHybridSuccessMessage = \String::parseSimpleTokens(
+			$this->replaceInsertTags(
+				FormHelper::replaceFormDataTags(
+					!empty($this->formHybridSuccessMessage) ? $this->formHybridSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'],
+					$arrSubmissionData
+				)
+			),
+			$arrSubmissionData
+		);
+
+		$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = $this->formHybridSuccessMessage;
+	}
+
+	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
+	{
+		return true;
+	}
+
+	protected function createConfirmationEmail($arrSubmissionData)
+	{
+		$arrRecipient = deserialize($arrSubmissionData[$this->formHybridConfirmationMailRecipientField]['value'], true);
+
+		$objEmail           = new \Email();
+		$objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
+		$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
+		$objEmail->subject  = $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailSubject, $arrSubmissionData), false);
+		$objEmail->text     = \String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData)),
+			$arrSubmissionData
+		);
+
+		// overwrite default from and
+		if (!empty($this->formHybridConfirmationMailSender)) {
+			list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridConfirmationMailSender);
+			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
+			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
+		}
+
+		if ($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
+			if (is_array($arrRecipient)) {
+				$arrRecipient = array_filter(array_unique($arrRecipient));
+				$objEmail->sendTo($arrRecipient);
+			}
+		}
+	}
+
+	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)
+	{
+		return true;
+	}
+
+	abstract protected function compile();
 
 	/**
 	 * Return an object property
+	 *
 	 * @param string
+	 *
 	 * @return mixed
 	 */
 	public function __get($strKey)
@@ -700,10 +713,22 @@ abstract class Form extends \Controller
 		return parent::__get($strKey);
 	}
 
+	/**
+	 * Set an object property
+	 *
+	 * @param string
+	 * @param mixed
+	 */
+	public function __set($strKey, $varValue)
+	{
+		$this->arrData[$strKey] = $varValue;
+	}
 
 	/**
 	 * Check whether a property is set
+	 *
 	 * @param string
+	 *
 	 * @return boolean
 	 */
 	public function __isset($strKey)
@@ -731,30 +756,19 @@ abstract class Form extends \Controller
 		$this->arrSubmitCallbacks = $callbacks;
 	}
 
-    /**
-     * Clear inputs, set default values
-     * @return bool
-     */
-    public function clearInputs()
-    {
-        if(!is_array($this->arrFields) || empty($this->arrFields)) return false;
-
-        $this->isSubmitted = false;
-        $this->generateFields(false, true);
-    }
-
-	abstract protected function compile();
-
-	abstract protected function onSubmitCallback(\DataContainer $dc);
-
-	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrMailData)
+	/**
+	 * Clear inputs, set default values
+	 *
+	 * @return bool
+	 */
+	public function clearInputs()
 	{
-		return true;
-	}
+		if (!is_array($this->arrFields) || empty($this->arrFields)) {
+			return false;
+		}
 
-	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrMailData)
-	{
-		return true;
+		$this->isSubmitted = false;
+		$this->generateFields(false, true);
 	}
 }
 

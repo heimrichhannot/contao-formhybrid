@@ -16,8 +16,6 @@ class FormHelper extends \System
 
 	public static function replaceFormDataTags($strBuffer, $arrMailData)
 	{
-		global $objPage;
-
 		// Preserve insert tags
 		if (\Config::get('disableInsertTags'))
 		{
@@ -27,6 +25,7 @@ class FormHelper extends \System
 		$tags = preg_split('/\{\{(([^\{\}]*|(?R))*)\}\}/', $strBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		$strBuffer = '';
+		$runEval = false;
 
 		for ($_rit=0, $_cnt=count($tags); $_rit<$_cnt; $_rit+=3) {
 			$strBuffer .= $tags[$_rit];
@@ -37,17 +36,32 @@ class FormHelper extends \System
 				continue;
 			}
 
-			// Run the replacement again if there are more tags
-			if (strpos($strTag, '{{') !== false) {
-				$strTag = static::replaceFormDataTags($strTag, $arrMailData);
-			}
-
 			$flags = explode('|', $strTag);
 			$tag = array_shift($flags);
 			$elements = explode('::', $tag);
 
+			// Run the replacement again if there are more tags and not if/elseif condition
+			if (strpos($strTag, '{{') !== false)
+			{
+				$strTag = static::replaceFormDataTags($strTag, $arrMailData);
+			}
+
 			// Replace the tag
 			switch (strtolower($elements[0])) {
+				case (strrpos($elements[0], 'if', -strlen($elements[0])) !== FALSE):
+					$strTag = preg_replace('/if (.*)/i', '<?php if ($1): ?>', $strTag);
+					$runEval = true;
+				break;
+				case (strrpos($elements[0], 'elseif', -strlen($elements[0])) !== FALSE):
+					$strTag = preg_replace('/elseif (.*)/i', '<?php elseif ($1): ?>', $strTag);
+					$runEval = true;
+				break;
+				case 'else':
+					$strTag = '<?php else: ?>';
+				break;
+				case 'endif':
+					$strTag = '<?php endif; ?>';
+				break;
 				// form
 				case 'form':
 					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output'])) continue;
@@ -59,14 +73,53 @@ class FormHelper extends \System
 
 					$strTag = $arrMailData[$elements[1]]['value'];
 				break;
+				case 'form_submission':
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission']))  continue;
+
+					$strTag = rtrim($arrMailData[$elements[1]]['submission'], "\n");
+				break;
+				// restore inserttag for \Controller::replaceInsertTags()
 				default:
 					$strTag = '{{' . $tag . '}}';
 			}
 
 			$strBuffer .= $strTag;
 		}
+		
+		if($runEval)
+		{
+			$strBuffer = static::evalConditionTags($strBuffer);
+		}
 
+		// remove our inserttags here if not replaced
+		$strBuffer = preg_replace('#\n?form.*::.*#', '', $strBuffer);
+		
 		return \String::restoreBasicEntities($strBuffer);
+	}
+
+	public static function evalConditionTags($strBuffer)
+	{
+		if (!strlen($strBuffer))
+		{
+			return;
+		}
+
+		$strReturn = str_replace('?><br />', '?>', $strBuffer);
+
+		// Eval the code
+		ob_start();
+		$blnEval = eval("?>" . $strReturn);
+		$strReturn = ob_get_contents();
+		ob_end_clean();
+
+		// Throw an exception if there is an eval() error
+		if ($blnEval === false)
+		{
+			throw new \Exception("Error eval() in Formhelper::evalConditionTags ($strReturn)");
+		}
+
+		// Return the evaled code
+		return $strReturn;
 	}
 
 
