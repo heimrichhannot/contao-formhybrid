@@ -29,6 +29,8 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][0] = 'Text der 
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'][0] = 'E-Mail-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'][1] = 'Hier können Sie das E-Mail-Template überschreiben.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailAttachment'][0] = 'E-Mail Anhänge';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailAttachment'][1] = 'Versenden Sie Dateien aus der Dateiverwaltung als Anhang.';
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'][0] = 'Bestätigung per E-Mail versenden';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'][1] = 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars versendet.';
@@ -42,7 +44,8 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailText'][0] = 'Text de
 $GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailText'][1] = 'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'][0] = 'E-Mail-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'][1] = 'Hier können Sie das E-Mail-Template überschreiben.';
-
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'][0] = 'E-Mail Anhänge';
+$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'][1] = 'Versenden Sie Dateien aus der Dateiverwaltung als Anhang.';
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][0] = 'Formular-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][1] = 'Hier können Sie das Formular-Template überschreiben.';

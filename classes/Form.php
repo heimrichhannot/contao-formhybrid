@@ -626,6 +626,11 @@ abstract class Form extends \Controller
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
+		if($this->formHybridSubmissionMailAttachment != '')
+		{
+			$this->addAttachmentToEmail($objEmail, deserialize($this->formHybridSubmissionMailAttachment));
+		}
+
 		if ($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
 			if (is_array($arrRecipient)) {
 				$arrRecipient = array_filter(array_unique($arrRecipient));
@@ -674,6 +679,11 @@ abstract class Form extends \Controller
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
+		if($this->formHybridConfirmationMailAttachment != '')
+		{
+			$this->addAttachmentToEmail($objEmail, deserialize($this->formHybridConfirmationMailAttachment));
+		}
+
 		if ($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
 			if (is_array($arrRecipient)) {
 				$arrRecipient = array_filter(array_unique($arrRecipient));
@@ -685,6 +695,26 @@ abstract class Form extends \Controller
 	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)
 	{
 		return true;
+	}
+
+	protected function addAttachmentToEmail($objEmail, $arrUuids)
+	{
+		$objAttachments = \FilesModel::findMultipleByUuids($arrUuids);
+
+		if($objAttachments !== null)
+		{
+			while($objAttachments->next())
+			{
+				$strMime = 'application/octet-stream';
+
+				if(isset($GLOBALS['TL_MIME'][$objAttachments->extension]))
+				{
+					$strMime = $GLOBALS['TL_MIME'][$objAttachments->extension][0];
+				}
+
+				$objEmail->attachFile($objAttachments->path, $strMime);
+			}
+		}
 	}
 
 	abstract protected function compile();

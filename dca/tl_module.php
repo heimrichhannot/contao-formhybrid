@@ -7,10 +7,10 @@ $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissi
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
-	'formHybridSubmissionMailSender,formHybridSubmissionMailRecipient,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate';
+	'formHybridSubmissionMailSender,formHybridSubmissionMailRecipient,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 
 $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
-	'formHybridConfirmationMailRecipientField,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate';
+	'formHybridConfirmationMailRecipientField,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
 
 $arrFields = array
 (
@@ -232,6 +232,14 @@ $arrFields = array
 		),
 		'sql'         => "binary(16) NULL"
 	),
+	'formHybridSubmissionMailAttachment'       => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailAttachment'],
+		'exclude'   => true,
+		'inputType' => 'fileTree',
+		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
+		'sql'       => "blob NULL"
+	),
 	'formHybridSendConfirmationViaEmail'       => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'],
 		'exclude'   => true,
@@ -286,18 +294,26 @@ $arrFields = array
 		'sql'         => "text NULL"
 	),
 	'formHybridConfirmationMailTemplate'       => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'],
-		'exclude'   => true,
-		'filter'    => false,
-		'inputType' => 'fileTree',
+		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'],
+		'exclude'     => true,
+		'filter'      => false,
+		'inputType'   => 'fileTree',
 		'explanation' => 'formhybrid_inserttags_text',
-		'eval'      => array(
+		'eval'        => array(
 			'helpwizard' => true,
 			'files'      => true,
 			'fieldType'  => 'radio',
 			'extensions' => 'htm,html,txt,tpl'
 		),
-		'sql'       => "binary(16) NULL"
+		'sql'         => "binary(16) NULL"
+	),
+	'formHybridConfirmationMailAttachment'       => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'],
+		'exclude'   => true,
+		'inputType' => 'fileTree',
+		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
+		'sql'       => "blob NULL"
 	),
 );
 
