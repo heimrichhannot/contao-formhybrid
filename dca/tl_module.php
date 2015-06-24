@@ -237,7 +237,7 @@ $arrFields = array
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailAttachment'],
 		'exclude'   => true,
 		'inputType' => 'fileTree',
-		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
+		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
 		'sql'       => "blob NULL"
 	),
 	'formHybridSendConfirmationViaEmail'       => array(
@@ -312,7 +312,7 @@ $arrFields = array
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'],
 		'exclude'   => true,
 		'inputType' => 'fileTree',
-		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true, 'mandatory' => true),
+		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
 		'sql'       => "blob NULL"
 	),
 );
