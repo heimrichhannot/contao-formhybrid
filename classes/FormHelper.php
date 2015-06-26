@@ -64,17 +64,29 @@ class FormHelper extends \System
 				break;
 				// form
 				case 'form':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output'])) continue;
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output']))
+					{
+						$strTag = '';
+						continue;
+					}
 
 					$strTag = $arrMailData[$elements[1]]['output'];
 				break;
 				case 'form_value':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['value'])) continue;
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['value']))
+					{
+						$strTag = '';
+						continue;
+					}
 
 					$strTag = $arrMailData[$elements[1]]['value'];
 				break;
 				case 'form_submission':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission']))  continue;
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission']))
+					{
+						$strTag = '';
+						continue;
+					}
 
 					$strTag = rtrim($arrMailData[$elements[1]]['submission'], "\n");
 				break;
@@ -85,14 +97,12 @@ class FormHelper extends \System
 
 			$strBuffer .= $strTag;
 		}
-		
+
 		if($runEval)
 		{
 			$strBuffer = static::evalConditionTags($strBuffer);
 		}
 
-		// remove our inserttags here if not replaced
-		$strBuffer = preg_replace('#\n?form.*::.*#', '', $strBuffer);
 		
 		return \String::restoreBasicEntities($strBuffer);
 	}
