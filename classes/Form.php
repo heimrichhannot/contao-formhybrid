@@ -24,6 +24,8 @@ abstract class Form extends \Controller
 
 	protected $arrEditable = array();
 
+	protected $arrRequired = array();
+
 	protected $arrSubPalettes = array();
 
 	protected $arrEditableBoxes = array();
@@ -56,9 +58,9 @@ abstract class Form extends \Controller
 
 	protected $strClass;
 
-	protected $instanceId = 0; // id of model entitiy
-	protected $novalidate = true;
-	private $useModelData = false;
+	protected $instanceId   = 0; // id of model entitiy
+	protected $novalidate   = true;
+	private   $useModelData = false;
 
 	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
 	{
@@ -74,6 +76,12 @@ abstract class Form extends \Controller
 			$this->strTable         = $objModule->formHybridDataContainer;
 			$this->strPalette       = $objModule->formHybridPalette;
 			$this->arrEditable      = deserialize($objModule->formHybridEditable, true);
+
+			if($objModule->formHybridAddEditableRequired)
+			{
+				$this->arrRequired      = deserialize($objModule->formHybridEditableRequired, true);
+			}
+
 			$this->arrSubPalettes   = deserialize($objModule->formHybridSubPalettes, true);
 			$this->strTemplate      = $objModule->formHybridTemplate;
 			$this->addDefaultValues = $objModule->formHybridAddDefaultValues;
@@ -96,6 +104,8 @@ abstract class Form extends \Controller
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
+
+		$this->loadDC();
 	}
 
 	public function generate()
@@ -113,7 +123,7 @@ abstract class Form extends \Controller
 			$this->Template = new \FrontendTemplate($this->strTemplateStop);
 		}
 
-		if (!$this->loadDC()) {
+		if (empty($this->dca)) {
 			return false;
 		}
 
@@ -144,14 +154,23 @@ abstract class Form extends \Controller
 		}
 
 		$this->generateFields();
-		$this->processForm();
 
-		// regenerate fields after onsubmit callbacks...
-		if ($this->isSubmitted && !$this->doNotSubmit) {
-			$this->arrFields = array();
-			$this->objModel->refresh();
-			// ... and use the model data (but only, if validation succeeded)
-			$this->generateFields($this->useModelData, false);
+		if ($this->isSubmitted && !$this->doNotSubmit)
+		{
+			// save for save_callbacks
+			$this->save();
+
+			// run field callbacks
+			$this->runCallbacks();
+
+			// refresh model after field callbacks
+			if($this->useModelData)
+			{
+				$this->objModel->refresh();
+			}
+
+			// process form
+			$this->processForm();
 		}
 
 		$this->generateStart();
@@ -174,6 +193,27 @@ abstract class Form extends \Controller
 		$this->compile();
 
 		return $this->Template->parse();
+	}
+
+	private function runCallbacks()
+	{
+		// required by options_callback
+		$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
+
+		foreach($this->arrFields as $strName => $objWidget)
+		{
+			$arrData = $this->dca['fields'][$strName];
+
+			// Trigger the save_callback
+			if (is_array($arrData['save_callback']))
+			{
+				foreach ($arrData['save_callback'] as $callback)
+				{
+					$this->import($callback[0]);
+					$this->objModel->{$strName} = $this->$callback[0]->$callback[1]($objWidget->value, $dc);
+				}
+			}
+		}
 	}
 
 	public function generateStart()
@@ -337,6 +377,12 @@ abstract class Form extends \Controller
 			}
 		}
 
+		// overwrite mandatory by config
+		if(!$arrData['eval']['mandatory'] && in_array($strName, $this->arrRequired))
+		{
+			$arrData['eval']['mandatory'] = true;
+		}
+
 		// prevent name for GET and submit widget, otherwise url will have submit name in
 		if ($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit') {
 			$strName = '';
@@ -381,6 +427,18 @@ abstract class Form extends \Controller
 				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 			}
 
+			// Make sure unique fields are unique
+			if ($arrData['eval']['unique'] && $varValue != ''
+				&& !\Database::getInstance()->isUniqueValue(
+					$this->strTable,
+					$strName,
+					$varValue,
+					$this->instanceId > 0 ? $this->instanceId : null
+				)
+			) {
+				$objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
+			}
+
 			if ($objWidget->hasErrors()) {
 				$this->doNotSubmit = true;
 			} elseif ($objWidget->submitInput()) {
@@ -388,16 +446,8 @@ abstract class Form extends \Controller
 
 				$dc = new DC_Hybrid($this->strTable, $this->objModel, $this->objModule);
 
-				$varValue     = $this->transformSpecialValues($strName, $varValue, $arrData);
+				$varValue     = $this->transformSpecialValues($strName, $varValue, $arrData, $objWidget);
 				$strInputType = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]['inputType'];
-
-				// Trigger the save_callback
-				if (is_array($arrData['save_callback'])) {
-					foreach ($arrData['save_callback'] as $callback) {
-						$this->import($callback[0]);
-						$varValue = $this->$callback[0]->$callback[1]($varValue, $dc);
-					}
-				}
 
 				// special handling for tags (not a real stored value)
 				// re-get the inputType, because it might have been overridden with hidden for default values not existing arrEditable
@@ -430,18 +480,6 @@ abstract class Form extends \Controller
 		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
 			$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
 			$varValue = $objDate->tstamp;
-		}
-
-		// Make sure unique fields are unique
-		if ($arrData['eval']['unique'] && $varValue != ''
-			&& !\Database::getInstance()->isUniqueValue(
-				$this->strTable,
-				$strName,
-				$varValue,
-				$this->instanceId
-			)
-		) {
-			throw new \Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
 		}
 
 		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
@@ -504,7 +542,6 @@ abstract class Form extends \Controller
 	protected function processForm()
 	{
 		if ($this->isSubmitted && !$this->doNotSubmit) {
-			$this->save();
 
 			$dc = new DC_Hybrid($this->strTable, $this->objModel);
 
@@ -525,8 +562,7 @@ abstract class Form extends \Controller
 				$this->createSubmissionEmail($arrSubmissionData);
 			}
 
-			if ($this->formHybridSendConfirmationViaEmail)
-			{
+			if ($this->formHybridSendConfirmationViaEmail) {
 				$this->createConfirmationEmail($arrSubmissionData);
 			}
 
@@ -545,7 +581,9 @@ abstract class Form extends \Controller
 		$this->objModel->save();
 	}
 
-	abstract protected function onSubmitCallback(\DataContainer $dc);
+	protected function onSubmitCallback(\DataContainer $dc)
+	{
+	}
 
 	protected function prepareSubmissionData()
 	{
@@ -613,21 +651,24 @@ abstract class Form extends \Controller
 		$objEmail           = new \Email();
 		$objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
 		$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-		$objEmail->subject  = $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailSubject, $arrSubmissionData), false);
+		$objEmail->subject  =
+			\String::parseSimpleTokens(
+				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailSubject, $arrSubmissionData), false),
+				$arrSubmissionData
+			);
 		$objEmail->text     = \String::parseSimpleTokens(
-			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData)),
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData), false),
 			$arrSubmissionData
 		);
 
 		// overwrite default from and
 		if (!empty($this->formHybridSubmissionMailSender)) {
-			list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridSubmissionMailSender);
+			list($senderName, $sender) = \String::splitFriendlyEmail($this->formHybridSubmissionMailSender);
 			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
-		if($this->formHybridSubmissionMailAttachment != '')
-		{
+		if ($this->formHybridSubmissionMailAttachment != '') {
 			$this->addAttachmentToEmail($objEmail, deserialize($this->formHybridSubmissionMailAttachment));
 		}
 
@@ -666,21 +707,23 @@ abstract class Form extends \Controller
 		$objEmail           = new \Email();
 		$objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
 		$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-		$objEmail->subject  = $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailSubject, $arrSubmissionData), false);
+		$objEmail->subject  = \String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailSubject, $arrSubmissionData), false),
+			$arrSubmissionData
+		);
 		$objEmail->text     = \String::parseSimpleTokens(
-			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData)),
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData), false),
 			$arrSubmissionData
 		);
 
 		// overwrite default from and
 		if (!empty($this->formHybridConfirmationMailSender)) {
-			list($sender, $senderName) = \String::splitFriendlyEmail($this->formHybridConfirmationMailSender);
+			list($senderName, $sender) = \String::splitFriendlyEmail($this->formHybridConfirmationMailSender);
 			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
-		if($this->formHybridConfirmationMailAttachment != '')
-		{
+		if ($this->formHybridConfirmationMailAttachment != '') {
 			$this->addAttachmentToEmail($objEmail, deserialize($this->formHybridConfirmationMailAttachment));
 		}
 
@@ -701,14 +744,11 @@ abstract class Form extends \Controller
 	{
 		$objAttachments = \FilesModel::findMultipleByUuids($arrUuids);
 
-		if($objAttachments !== null)
-		{
-			while($objAttachments->next())
-			{
+		if ($objAttachments !== null) {
+			while ($objAttachments->next()) {
 				$strMime = 'application/octet-stream';
 
-				if(isset($GLOBALS['TL_MIME'][$objAttachments->extension]))
-				{
+				if (isset($GLOBALS['TL_MIME'][$objAttachments->extension])) {
 					$strMime = $GLOBALS['TL_MIME'][$objAttachments->extension][0];
 				}
 
@@ -796,7 +836,6 @@ abstract class Form extends \Controller
 		if (!is_array($this->arrFields) || empty($this->arrFields)) {
 			return false;
 		}
-
 		$this->isSubmitted = false;
 		$this->generateFields(false, true);
 	}

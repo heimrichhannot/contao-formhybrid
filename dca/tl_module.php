@@ -5,12 +5,15 @@ $dc = &$GLOBALS['TL_DCA']['tl_module'];
 $dc['palettes']['__selector__'][]                      = 'formHybridAddDefaultValues';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
+$dc['palettes']['__selector__'][]                      = 'formHybridAddEditableRequired';
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
 	'formHybridSubmissionMailSender,formHybridSubmissionMailRecipient,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 
 $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
 	'formHybridConfirmationMailRecipientField,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
+
+$dc['subpalettes']['formHybridAddEditableRequired'] = 'formHybridEditableRequired';
 
 $arrFields = array
 (
@@ -52,6 +55,23 @@ $arrFields = array
 		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight clr', 'mandatory' => true),
+		'sql'              => "blob NULL"
+	),
+	'formHybridAddEditableRequired'            => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddEditableRequired'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
+		'sql'       => "char(1) NOT NULL default ''"
+	),
+	'formHybridEditableRequired'               => array
+	(
+		'inputType'        => 'checkboxWizard',
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
+		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'exclude'          => true,
+		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
 		'sql'              => "blob NULL"
 	),
 	'formHybridEditableSkip'                   => array
@@ -198,7 +218,7 @@ $arrFields = array
 		'exclude'     => true,
 		'search'      => true,
 		'inputType'   => 'text',
-		'explanation' => 'formhybrid_inserttags',
+		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
 			'mandatory'      => true,
 			'maxlength'      => 255,
@@ -273,7 +293,7 @@ $arrFields = array
 		'exclude'     => true,
 		'search'      => true,
 		'inputType'   => 'text',
-		'explanation' => 'formhybrid_inserttags',
+		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
 			'mandatory'      => true,
 			'maxlength'      => 255,
@@ -307,7 +327,7 @@ $arrFields = array
 		),
 		'sql'         => "binary(16) NULL"
 	),
-	'formHybridConfirmationMailAttachment'       => array
+	'formHybridConfirmationMailAttachment'     => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'],
 		'exclude'   => true,

@@ -41,6 +41,9 @@ $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][17][1] =
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][0][0] = '##submission##';
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][0][1] = 'Liefert eine Kombination aus Feldbezeichnung (Label) und dem formatierten Eingabewert <strong>aller Eingaben des Formulars formatiert</strong> zurück. (Format: "Felzbezeichnung : Eingabebezeichnung")';
 
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][0] = '##domain##';
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][1] = 'Liefert den qualifizierten Domainnamen zurück über die das Formular abgesendet wurde.';
+
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_text'] = array_merge(
 	$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'],
 	$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags']

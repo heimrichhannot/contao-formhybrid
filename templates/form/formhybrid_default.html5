@@ -9,17 +9,22 @@
 	<?php if($this->formClass):?> class="<?php echo $this->formClass; ?>"<?php endif;?>>
 		<!-- formhybrid::stop -->
 		<div class="formbody">
-			<?php if ($this->method == FORMHYBRID_METHOD_POST): ?>
-				<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
-				<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
-				<?php if ($this->maxFileSize): ?>
-					<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->maxFileSize; ?>">
-				<?php endif; ?>
+			<?php if($this->message): ?>
+				<p class="alert alert-<?php echo $this->messageType; ?>" role="alert"><?php echo $this->message; ?></p>
 			<?php endif; ?>
-			<?php echo $this->hidden; ?>
-			<?php foreach($this->fields as $name => $objField): ?>
-				<?php echo $objField->parse(); ?>
-			<?php endforeach; ?>
+			<?php if(!$this->invalid): ?>
+				<?php if ($this->method == FORMHYBRID_METHOD_POST): ?>
+					<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
+					<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
+					<?php if ($this->maxFileSize): ?>
+						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->maxFileSize; ?>">
+					<?php endif; ?>
+				<?php endif; ?>
+				<?php echo $this->hidden; ?>
+				<?php foreach($this->fields as $name => $objField): ?>
+					<?php echo $objField->parse(); ?>
+				<?php endforeach; ?>
+			<?php endif; ?>
 		</div>
 	</form>
 
