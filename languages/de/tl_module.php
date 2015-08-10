@@ -17,6 +17,9 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes'] = array('Subpaletten',
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['subpalette'] = array('Subpalette', 'Wählen Sie hier die gewünschten Subpaletten aus.');
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['fields'] = array('Felder', 'Wählen Sie hier die gewünschten Felder aus.');
 
+$GLOBALS['TL_LANG']['tl_module']['formHybridAsync'][0] = 'Formular asynchron absenden';
+$GLOBALS['TL_LANG']['tl_module']['formHybridAsync'][1] = 'Wählen Sie diese Option, wenn Sie das Formular asynchron versenden wollen.';
+
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][0] = 'Erfolgsmeldung überschreiben';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][1] = 'Geben Sie hier eine alternative Erfolgsmeldung an.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][0] = 'Per E-Mail versenden';
@@ -51,3 +54,6 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'][1] = 'V
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][0] = 'Formular-Template';
 $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][1] = 'Hier können Sie das Formular-Template überschreiben.';
+
+$GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'][0] = 'Eigene Formular-Template für Subpaletten';
+$GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'][1] = 'Verwenden Sie eigene Templates für Subpaletten, dann erstellen Sie ein hängen Sie dem Formular-Template _sub_[SUBPALETTE_KEY] an.';

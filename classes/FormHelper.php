@@ -13,6 +13,185 @@ namespace HeimrichHannot\FormHybrid;
 
 class FormHelper extends \System
 {
+	/**
+	 * Find and return a $_GET variable
+	 *
+	 * @param string $strKey The variable name
+	 * @param boolean $decodeEntities If true, html entities will be decoded
+	 *
+	 * @return mixed The variable value
+	 */
+	public static function getGet($strKey, $decodeEntities = false)
+	{
+		$strMethod = 'get';
+
+		// Support arrays (thanks to Andreas Schempp)
+		$arrParts = explode('[', str_replace(']', '', $strKey));
+
+		if (!empty($arrParts))
+		{
+			$varValue = \Input::$strMethod(array_shift($arrParts), $decodeEntities);
+
+			foreach($arrParts as $part)
+			{
+				if (!is_array($varValue))
+				{
+					break;
+				}
+
+				$varValue = $varValue[$part];
+			}
+
+			return $varValue;
+		}
+
+		return \Input::$strMethod($strKey, $decodeEntities);
+	}
+
+	/**
+	 * Find and return a $_POST variable
+	 *
+	 * @param string $strKey The variable name
+	 * @param boolean $decodeEntities If true, html entities will be decoded
+	 * @param boolean $allowHtml If true, html will be allowed
+	 * @param boolean $preserveTags If true, html tags will be preserved
+	 *
+	 * @return mixed The variable value
+	 */
+	public static function getPost($strKey, $decodeEntities = false, $allowHtml = false, $preserveTags = false)
+	{
+		$strMethod = $allowHtml ? 'postHtml' : 'post';
+
+		if ($preserveTags)
+		{
+			$strMethod = 'postRaw';
+		}
+
+		// Support arrays (thanks to Andreas Schempp)
+		$arrParts = explode('[', str_replace(']', '', $strKey));
+
+		if (!empty($arrParts))
+		{
+			$varValue = \Input::$strMethod(array_shift($arrParts), $decodeEntities);
+
+			foreach($arrParts as $part)
+			{
+				if (!is_array($varValue))
+				{
+					break;
+				}
+
+				$varValue = $varValue[$part];
+			}
+
+			return $varValue;
+		}
+
+		return \Input::$strMethod($strKey, $decodeEntities);
+	}
+
+
+	public static function transformSpecialValues($varValue, $arrData)
+	{
+		// Convert date formats into timestamps
+		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
+			$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
+			$varValue = $objDate->tstamp;
+		}
+
+		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
+			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
+		}
+
+		return $varValue;
+	}
+
+	/**
+	 * Return the locale string
+	 * @return string
+	 */
+	public static function getLocaleString()
+	{
+		return
+			'var Formhybrid={'
+			. 'lang:{'
+			. 'close:"' . $GLOBALS['TL_LANG']['MSC']['close'] . '",'
+			. 'collapse:"' . $GLOBALS['TL_LANG']['MSC']['collapseNode'] . '",'
+			. 'expand:"' . $GLOBALS['TL_LANG']['MSC']['expandNode'] . '",'
+			. 'loading:"' . $GLOBALS['TL_LANG']['MSC']['loadingData'] . '",'
+			. 'apply:"' . $GLOBALS['TL_LANG']['MSC']['apply'] . '",'
+			. 'picker:"' . $GLOBALS['TL_LANG']['MSC']['pickerNoSelection'] . '"'
+			. '},'
+			. 'script_url:"' . TL_ASSETS_URL . '",'
+			. 'path:"' . TL_PATH . '",'
+			. 'request_token:"' . REQUEST_TOKEN . '",'
+			. 'referer_id:"' . TL_REFERER_ID . '"'
+			. '};';
+	}
+
+
+
+	public static function getAssocMultiColumnWizardList(array $arrValues, $strKey, $strValue)
+	{
+		$arrReturn = array();
+
+		foreach($arrValues as $arrValue)
+		{
+			if(!isset($arrValue[$strKey]) && !isset($arrValue[$strValue])) continue;
+
+			$arrReturn[$arrValue[$strKey]] = $arrValue[$strValue];
+		}
+
+		return $arrReturn;
+	}
+
+	public static function getPaletteFields($strTable, $strPalette)
+	{
+		\Controller::loadDataContainer($strTable);
+
+		$boxes = trimsplit(';', $strPalette);
+		$legends = array();
+
+		if (!empty($boxes))
+		{
+			foreach ($boxes as $k=>$v)
+			{
+				$eCount = 1;
+				$boxes[$k] = trimsplit(',', $v);
+
+				foreach ($boxes[$k] as $kk=>$vv)
+				{
+					if (preg_match('/^\[.*\]$/', $vv))
+					{
+						++$eCount;
+						continue;
+					}
+
+					if (preg_match('/^\{.*\}$/', $vv))
+					{
+						$legends[$k] = substr($vv, 1, -1);
+						unset($boxes[$k][$kk]);
+					}
+				}
+
+				// Unset a box if it does not contain any fields
+				if (count($boxes[$k]) < $eCount)
+				{
+					unset($boxes[$k]);
+				}
+			}
+		}
+
+		$arrFields = array();
+
+		if(!is_array($boxes)) return $arrFields;
+
+		// flatten
+		array_walk_recursive($boxes, function($a) use (&$arrFields) { $arrFields[] = $a; });
+
+		// remove empty values
+		return array_filter($arrFields);
+	}
 
 	public static function replaceFormDataTags($strBuffer, $arrMailData)
 	{
@@ -209,4 +388,6 @@ class FormHelper extends \System
 		array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
 		return $return;
 	}
+
+
 }

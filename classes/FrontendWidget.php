@@ -33,7 +33,8 @@ abstract class FrontendWidget extends \Widget
 			}
 			else
 			{
-				$varValue = $objWidget->validator($objWidget->getPost($objWidget->strName));
+				$objWidget->validate();
+				$varValue = $objWidget->value;
 			}
 		}
 

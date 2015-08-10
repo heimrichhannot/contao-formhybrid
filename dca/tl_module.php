@@ -27,10 +27,10 @@ $arrFields = array
 			'submitOnChange'     => true,
 			'includeBlankOption' => true,
 			'tl_class'           => 'w50 clr',
-			'mandatory'          => true
+			'mandatory'          => true,
 		),
 		'exclude'          => true,
-		'sql'              => "varchar(255) NOT NULL default ''"
+		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridPalette'                        => array
 	(
@@ -43,19 +43,19 @@ $arrFields = array
 			'submitOnChange'     => true,
 			'includeBlankOption' => true,
 			'tl_class'           => 'w50',
-			'mandatory'          => true
+			'mandatory'          => true,
 		),
 		'exclude'          => true,
-		'sql'              => "varchar(255) NOT NULL default ''"
+		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridEditable'                       => array
 	(
 		'inputType'        => 'checkboxWizard',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
-		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight clr', 'mandatory' => true),
-		'sql'              => "blob NULL"
+		'sql'              => "blob NULL",
 	),
 	'formHybridAddEditableRequired'            => array
 	(
@@ -63,16 +63,16 @@ $arrFields = array
 		'exclude'   => true,
 		'inputType' => 'checkbox',
 		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
-		'sql'       => "char(1) NOT NULL default ''"
+		'sql'       => "char(1) NOT NULL default ''",
 	),
 	'formHybridEditableRequired'               => array
 	(
 		'inputType'        => 'checkboxWizard',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
-		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
-		'sql'              => "blob NULL"
+		'sql'              => "blob NULL",
 	),
 	'formHybridEditableSkip'                   => array
 	(
@@ -81,7 +81,7 @@ $arrFields = array
 		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight'),
-		'sql'              => "blob NULL"
+		'sql'              => "blob NULL",
 	),
 	'formHybridSubPalettes'                    => array
 	(
@@ -95,26 +95,26 @@ $arrFields = array
 					'exclude'          => true,
 					'inputType'        => 'select',
 					'options_callback' => array('tl_form_hybrid_module', 'getSubPalettes'),
-					'eval'             => array('chosen' => true, 'submitOnChange' => true, 'style' => 'width: 200px')
+					'eval'             => array('chosen' => true, 'submitOnChange' => true, 'style' => 'width: 200px'),
 				),
 				'fields'     => array(
 					'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['fields'],
 					'exclude'          => true,
 					'inputType'        => 'checkboxWizard',
 					'eval'             => array('columnPos' => 1, 'chosen' => true, 'multiple' => true),
-					'options_callback' => array('tl_form_hybrid_module', 'getSubPaletteFields')
-				)
+					'options_callback' => array('tl_form_hybrid_module', 'getSubPaletteFields'),
+				),
 			),
-			'tl_class'     => 'clr long'
+			'tl_class'     => 'clr long',
 		),
-		'sql'       => "blob NULL"
+		'sql'       => "blob NULL",
 	),
 	'formHybridAddDefaultValues'               => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddDefaultValues'],
 		'exclude'   => true,
 		'inputType' => 'checkbox',
 		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
-		'sql'       => "char(1) NOT NULL default ''"
+		'sql'       => "char(1) NOT NULL default ''",
 	),
 	'formHybridDefaultValues'                  => array
 	(
@@ -129,20 +129,20 @@ $arrFields = array
 					'inputType'        => 'select',
 					'options_callback' => array(
 						'tl_form_hybrid_module',
-						'getFields'
+						'getFields',
 					),
-					'eval'             => array('style' => 'width: 200px', 'chosen' => true)
+					'eval'             => array('style' => 'width: 200px', 'chosen' => true),
 				),
 				'value' => array(
 					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
 					'exclude'   => true,
 					'inputType' => 'text',
-					'eval'      => array('style' => 'width: 200px')
-				)
+					'eval'      => array('style' => 'width: 200px'),
+				),
 			),
-			'tl_class'     => 'clr long'
+			'tl_class'     => 'clr long',
 		),
-		'sql'       => "blob NULL"
+		'sql'       => "blob NULL",
 	),
 	'formHybridTemplate'                       => array
 	(
@@ -151,8 +151,24 @@ $arrFields = array
 		'exclude'          => true,
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridTemplates'),
-		'eval'             => array('tl_class' => 'w50'),
-		'sql'              => "varchar(64) NOT NULL default ''"
+		'eval'             => array('tl_class' => 'w50 clr'),
+		'sql'              => "varchar(64) NOT NULL default ''",
+	),
+	'formHybridCustomSubTemplates'               => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('tl_class' => 'w50 clr'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridCssClass'           => array
+	(
+		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],
+		'exclude'     => true,
+		'filter'      => false,
+		'inputType'   => 'text',
+		'eval'        => array('maxlength' => 255, 'tl_class' => 'w50 clr'),
+		'sql'         => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridStartTemplate'                  => array
 	(
@@ -162,7 +178,7 @@ $arrFields = array
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridStartTemplates'),
 		'eval'             => array('tl_class' => 'w50'),
-		'sql'              => "varchar(64) NOT NULL default ''"
+		'sql'              => "varchar(64) NOT NULL default ''",
 	),
 	'formHybridStopTemplate'                   => array
 	(
@@ -172,7 +188,14 @@ $arrFields = array
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridStopTemplates'),
 		'eval'             => array('tl_class' => 'w50'),
-		'sql'              => "varchar(64) NOT NULL default ''"
+		'sql'              => "varchar(64) NOT NULL default ''",
+	),
+	'formHybridAsync'                          => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAsync'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('tl_class' => 'w50 clr'),
+		'sql'       => "char(1) NOT NULL default ''",
 	),
 	'formHybridSuccessMessage'                 => array
 	(
@@ -181,8 +204,8 @@ $arrFields = array
 		'filter'      => false,
 		'inputType'   => 'textarea',
 		'explanation' => 'formhybrid_inserttags_text',
-		'eval'        => array('allowHtml' => true, 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true),
-		'sql'         => "text NULL"
+		'eval'        => array('allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true),
+		'sql'         => "text NULL",
 	),
 	'formHybridSendSubmissionViaEmail'         => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'],
@@ -190,7 +213,7 @@ $arrFields = array
 		'inputType'   => 'checkbox',
 		'explanation' => 'formhybrid_inserttags',
 		'eval'        => array('submitOnChange' => true, 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "char(1) NOT NULL default ''"
+		'sql'         => "char(1) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailSender'           => array
 	(
@@ -200,7 +223,7 @@ $arrFields = array
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
 		'eval'        => array('mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(255) NOT NULL default ''"
+		'sql'         => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailRecipient'        => array
 	(
@@ -210,7 +233,7 @@ $arrFields = array
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
 		'eval'        => array('mandatory' => true, 'maxlength' => 1022, 'rgxp' => 'emails', 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(1022) NOT NULL default ''"
+		'sql'         => "varchar(1022) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailSubject'          => array
 	(
@@ -224,9 +247,9 @@ $arrFields = array
 			'maxlength'      => 255,
 			'decodeEntities' => true,
 			'tl_class'       => 'w50',
-			'helpwizard'     => true
+			'helpwizard'     => true,
 		),
-		'sql'         => "varchar(255) NOT NULL default ''"
+		'sql'         => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailText'             => array
 	(
@@ -236,7 +259,7 @@ $arrFields = array
 		'inputType'   => 'textarea',
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array('tl_class' => 'clr', 'decodeEntities' => true, 'alwaysSave' => true, 'helpwizard' => true),
-		'sql'         => "text NULL"
+		'sql'         => "text NULL",
 	),
 	'formHybridSubmissionMailTemplate'         => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'],
@@ -248,9 +271,9 @@ $arrFields = array
 			'helpwizard' => true,
 			'files'      => true,
 			'fieldType'  => 'radio',
-			'extensions' => 'htm,html,txt,tpl'
+			'extensions' => 'htm,html,txt,tpl',
 		),
-		'sql'         => "binary(16) NULL"
+		'sql'         => "binary(16) NULL",
 	),
 	'formHybridSubmissionMailAttachment'       => array
 	(
@@ -258,14 +281,14 @@ $arrFields = array
 		'exclude'   => true,
 		'inputType' => 'fileTree',
 		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
-		'sql'       => "blob NULL"
+		'sql'       => "blob NULL",
 	),
 	'formHybridSendConfirmationViaEmail'       => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'],
 		'exclude'   => true,
 		'inputType' => 'checkbox',
 		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
-		'sql'       => "char(1) NOT NULL default ''"
+		'sql'       => "char(1) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailRecipientField' => array
 	(
@@ -275,7 +298,7 @@ $arrFields = array
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getEmailFormFields'),
 		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr'),
-		'sql'              => "varchar(255) NOT NULL default ''"
+		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailSender'         => array
 	(
@@ -285,7 +308,7 @@ $arrFields = array
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
 		'eval'        => array('mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(255) NOT NULL default ''"
+		'sql'         => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailSubject'        => array
 	(
@@ -301,7 +324,7 @@ $arrFields = array
 			'tl_class'       => 'w50',
 			'helpwizard'     => true,
 		),
-		'sql'         => "varchar(255) NOT NULL default ''"
+		'sql'         => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailText'           => array
 	(
@@ -311,7 +334,7 @@ $arrFields = array
 		'inputType'   => 'textarea',
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array('tl_class' => 'clr', 'decodeEntities' => true, 'alwaysSave' => true, 'helpwizard' => true),
-		'sql'         => "text NULL"
+		'sql'         => "text NULL",
 	),
 	'formHybridConfirmationMailTemplate'       => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'],
@@ -323,9 +346,9 @@ $arrFields = array
 			'helpwizard' => true,
 			'files'      => true,
 			'fieldType'  => 'radio',
-			'extensions' => 'htm,html,txt,tpl'
+			'extensions' => 'htm,html,txt,tpl',
 		),
-		'sql'         => "binary(16) NULL"
+		'sql'         => "binary(16) NULL",
 	),
 	'formHybridConfirmationMailAttachment'     => array
 	(
@@ -333,7 +356,7 @@ $arrFields = array
 		'exclude'   => true,
 		'inputType' => 'fileTree',
 		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
-		'sql'       => "blob NULL"
+		'sql'       => "blob NULL",
 	),
 );
 
@@ -478,56 +501,42 @@ class tl_form_hybrid_module extends \Backend
 	{
 		// get dc for multicolumnwizard...
 		if (!$dc) {
-			$dc               = new stdClass();
-			$dc->activeRecord = \ModuleModel::findByPk(\Input::get('id'));
+			$objModule = \ModuleModel::findByPk(\Input::get('id'));
+
+			if ($objModule === null) {
+				return array();
+			}
+
+			$dc = new HeimrichHannot\FormHybrid\DC_Hybrid('tl_module', $objModule);
 		}
+
 
 		if (!$dc->activeRecord->formHybridDataContainer) {
 			return array();
 		}
 
-		$return = array();
 
-		System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
-		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
+		$arrFields = HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
+			$dc->activeRecord->formHybridDataContainer,
+			$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'][$dc->activeRecord->formHybridPalette]
+		);
 
-		$boxes = trimsplit(';', $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'][$dc->activeRecord->formHybridPalette]);
+		$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
 
-		foreach ($boxes as $k => $v) {
-			$eCount    = 1;
-			$boxes[$k] = trimsplit(',', $v);
+		// ignore subpalettes not in palette
+		$arrSubPalettes = array_intersect($arrSubPalettes, $arrFields);
 
-			foreach ($boxes[$k] as $kk => $vv) {
-				if (preg_match('/^\[.*\]$/i', $vv)) {
-					++$eCount;
-					continue;
-				}
-
-				// legends
-				if (preg_match('/^\{.*\}$/i', $vv)) {
-					unset($boxes[$k][$kk]);
-				}
-			}
-
-			// Unset a box if it does not contain any fields
-			if (count($boxes[$k]) < $eCount) {
-				unset($boxes[$k]);
-			}
+		foreach ($arrSubPalettes as $strSubPalette) {
+			$arrFields = array_merge(
+				$arrFields,
+				HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
+					$dc->activeRecord->formHybridDataContainer,
+					$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'][$strSubPalette]
+				)
+			);
 		}
 
-		$return = array();
-
-		// flatten array and set labels
-		foreach ($boxes as $k => $box) {
-			foreach ($box as $name) {
-				$label         = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'][$name]['label'][0];
-				$return[$name] = $label ? $label : $name;
-			}
-		}
-
-		asort($return);
-
-		return $return;
+		return $arrFields;
 	}
 
 	public function getFields($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(

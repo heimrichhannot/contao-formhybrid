@@ -1,0 +1,5 @@
+<div id="<?php echo $this->ajaxId; ?>">
+	<?php foreach($this->fields as $name => $objField): ?>
+		<?php echo $objField->parse(); ?>
+	<?php endforeach; ?>
+</div>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 define('FORMHYBRID_METHOD_GET', 'GET');
 define('FORMHYBRID_METHOD_POST', 'POST');
@@ -11,9 +11,9 @@ define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
  * Content elements
  */
 $GLOBALS['TL_CTE']['formhybrid'] = array(
-	'formhybridStart'   => 'HeimrichHannot\FormHybrid\ContentFormHybridStart',
-	'formhybridElement' => 'HeimrichHannot\FormHybrid\ContentFormHybridElement',
-	'formhybridStop'    => 'HeimrichHannot\FormHybrid\ContentFormHybridStop',
+	'formhybridStart'   => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStart',
+	'formhybridElement' => 'HeimrichHannot\\FormHybrid\\ContentFormHybridElement',
+	'formhybridStop'    => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStop',
 );
 
 /**
@@ -25,7 +25,12 @@ $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
 /**
  * Javascript
  */
-if(TL_MODE == 'FE')
-{
+if (TL_MODE == 'FE') {
 	$GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid.js|static';
+	$GLOBALS['TL_JAVASCRIPT']['jquery.tinymce4']   = 'assets/tinymce4/tinymce.min.js';
 }
+
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['parseWidget'][] = array('HeimrichHannot\\FormHybrid\\Hooks', 'parseWidgetHook');
