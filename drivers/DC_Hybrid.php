@@ -548,7 +548,7 @@ abstract class DC_Hybrid extends \DataContainer
 		return true;
 	}
 
-	protected function save()
+	protected function save($varValue)
 	{
 		if (!$this->objActiveRecord instanceof \Contao\Model) {
 			return;
