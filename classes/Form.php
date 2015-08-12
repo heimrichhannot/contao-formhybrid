@@ -153,10 +153,37 @@ abstract class Form extends DC_Hybrid
 				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailSubject, $arrSubmissionData), false),
 				$arrSubmissionData
 			);
-		$objEmail->text     = \String::parseSimpleTokens(
-			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData), false),
-			$arrSubmissionData
-		);
+
+		if($hasText = (strlen($this->formHybridSubmissionMailText) > 0))
+		{
+			$objEmail->text = \String::parseSimpleTokens(
+				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData), false),
+				$arrSubmissionData
+			);
+		}
+
+
+		if($this->formHybridSubmissionTemplate != '')
+		{
+			$objModel = \FilesModel::findByUuid($this->formHybridSubmissionTemplate);
+
+			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
+			{
+				$objFile = new \File($objModel->path, true);
+
+				$objEmail->html = \String::parseSimpleTokens(
+					$this->replaceInsertTags(FormHelper::replaceFormDataTags($objFile->getContent(), $arrSubmissionData), false),
+					$arrSubmissionData
+				);
+
+				// if no text is set, convert html to text
+				if(!$hasText)
+				{
+					$objHtml2Text = new \Html2Text\Html2Text($objEmail->html);
+					$objEmail->text = $objHtml2Text->getText();
+				}
+			}
+		}
 
 		// overwrite default from and
 		if (!empty($this->formHybridSubmissionMailSender)) {
@@ -210,10 +237,36 @@ abstract class Form extends DC_Hybrid
 			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailSubject, $arrSubmissionData), false),
 			$arrSubmissionData
 		);
-		$objEmail->text     = \String::parseSimpleTokens(
-			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData), false),
-			$arrSubmissionData
-		);
+
+		if($hasText = (strlen($this->formHybridConfirmationMailText) > 0))
+		{
+			$objEmail->text     = \String::parseSimpleTokens(
+				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData), false),
+				$arrSubmissionData
+			);
+		}
+
+		if($this->formHybridConfirmationMailTemplate != '')
+		{
+			$objModel = \FilesModel::findByUuid($this->formHybridConfirmationMailTemplate);
+
+			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
+			{
+				$objFile = new \File($objModel->path, true);
+
+				$objEmail->html = \String::parseSimpleTokens(
+					$this->replaceInsertTags(FormHelper::replaceFormDataTags($objFile->getContent(), $arrSubmissionData), false),
+					$arrSubmissionData
+				);
+
+				// if no text is set, convert html to text
+				if(!$hasText)
+				{
+					$objHtml2Text = new \Html2Text\Html2Text($objEmail->html);
+					$objEmail->text = $objHtml2Text->getText();
+				}
+			}
+		}
 
 		// overwrite default from and
 		if (!empty($this->formHybridConfirmationMailSender)) {
