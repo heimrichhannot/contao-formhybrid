@@ -37,8 +37,8 @@
 			});
 		},
 		scrollToMessages : function(){
-			// sroll to first alert message or first error field
-			var alert = $('.formhybrid:first').find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first');
+			// sroll to first alert message or first error field, inside formhybrid modules
+			var alert = $('.formhybrid:first').parent(['class^="mod_"']).find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first, p.alert:first');
 
 			if(alert.length > 0){
 				var alertOffset = alert.offset();
