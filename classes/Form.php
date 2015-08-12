@@ -26,6 +26,10 @@ abstract class Form extends DC_Hybrid
 
 	private $useModelData = false;
 
+	private $resetAfterSubmission = true;
+
+	private $afterSubmissionJumpTo = null;
+
 	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
 	{
 		global $objPage;
@@ -85,7 +89,6 @@ abstract class Form extends DC_Hybrid
 	{
 		if ($this->isSubmitted && !$this->doNotSubmit)
 		{
-
 			$this->onSubmitCallback($this);
 
 			if (!$this->skipValidation)
@@ -104,7 +107,7 @@ abstract class Form extends DC_Hybrid
 			// reload model from database, maybe something has changed in callback
 			$this->objActiveRecord->refresh();
 
-			$arrSubmissionData = FormSubmissionHelper::prepareData($this->objActiveRecord, $this->dca, $this);
+			$arrSubmissionData = $this->prepareSubmissionData();
 
 			if ($this->formHybridSendSubmissionViaEmail) {
 				$this->createSubmissionEmail($arrSubmissionData);
@@ -117,7 +120,17 @@ abstract class Form extends DC_Hybrid
 			$this->createSuccessMessage($arrSubmissionData);
 
 			$this->afterSubmitCallback($this);
+
+			if($this->getReset())
+			{
+				$this->reset();
+			}
 		}
+	}
+
+	protected function prepareSubmissionData()
+	{
+		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->dca, $this);
 	}
 
 	protected function onSubmitCallback(\DataContainer $dc)
@@ -243,6 +256,39 @@ abstract class Form extends DC_Hybrid
 		}
 	}
 
+	protected function reset()
+	{
+		if($this->async)
+		{
+			$this->isSubmitted = false;
+			$this->intId = null;
+			$this->initialize();
+			$this->generateFields();
+			return;
+		}
+
+		global $objPage;
+
+		$strJumpTo = null;
+
+		if(\Validator::isUrl($this->afterSubmissionJumpTo))
+		{
+			$strJumpTo = $this->afterSubmissionJumpTo;
+		}
+		else if(is_numeric($this->afterSubmissionJumpTo) && ($objTarget = \PageModel::findByPk($this->afterSubmissionJumpTo)) !== null)
+		{
+			$strJumpTo = \Controller::generateFrontendUrl($objTarget->row());
+		}
+
+		// if no jumpTo is set or jumpTo is equal to current page, reload
+		if($strJumpTo === null || $strJumpTo === \Controller::generateFrontendUrl($objPage->row()))
+		{
+			$this->reload();
+		}
+
+		$this->redirect($strJumpTo);
+	}
+
 	abstract protected function compile();
 
 	/**
@@ -316,14 +362,31 @@ abstract class Form extends DC_Hybrid
 	 * Clear inputs, set default values
 	 *
 	 * @return bool
+	 * @deprecated set $this->reset to true/fals on onsubmit_callback
 	 */
 	public function clearInputs()
 	{
-		if (!is_array($this->arrFields) || empty($this->arrFields)) {
-			return false;
-		}
-		$this->isSubmitted = false;
-		$this->generateFields();
+		$this->resetAfterSubmission = true;
+	}
+
+	public function setReset($varValue)
+	{
+		$this->resetAfterSubmission = (bool) $varValue;
+	}
+
+	public function getReset()
+	{
+		return $this->resetAfterSubmission;
+	}
+
+	public function setAfterSubmissionJumpTo($varValue)
+	{
+		$this->afterSubmissionJumpTo = $varValue;
+	}
+
+	public function getAfterSubmissionJumpTo()
+	{
+		return $this->afterSubmissionJumpTo;
 	}
 }
 

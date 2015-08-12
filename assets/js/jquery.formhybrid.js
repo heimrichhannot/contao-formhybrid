@@ -3,6 +3,7 @@
 	FormhybridPlugins = {
 		init : function(){
 			this.initTinyMce();
+			this.scrollToMessages();
 		},
 		initTinyMce : function ()
 		{
@@ -34,6 +35,19 @@
 					ed.settings.content_css =  $textarea.data('content-css') ? $textarea.data('content-css') : ed.settings.content_css;
 				}
 			});
+		},
+		scrollToMessages : function(){
+			// sroll to first alert message or first error field
+			var alert = $('.formhybrid:first').find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first');
+
+			if(alert.length > 0){
+				var alertOffset = alert.offset();
+				console.log(alert);
+
+				$('html,body').animate({
+					scrollTop: parseInt(alertOffset.top)
+				}, 500);
+			}
 		}
 	}
 

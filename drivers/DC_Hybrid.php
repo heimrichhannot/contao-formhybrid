@@ -57,6 +57,17 @@ abstract class DC_Hybrid extends \DataContainer
 		$this->objModule = $objModule;
 		$this->loadDC();
 
+		$this->initialize();
+
+		// Ajax request
+		if ($_POST && \Environment::get('isAjaxRequest')) {
+			$this->objAjax = new FormAjax(\Input::post('action'));
+			$this->objAjax->executePostActions($this);
+		}
+	}
+
+	protected function initialize()
+	{
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
 		if (!$this->isFilterForm) {
@@ -79,12 +90,6 @@ abstract class DC_Hybrid extends \DataContainer
 				$this->objActiveRecord->tstamp = 0;
 				$this->objActiveRecord->save();
 			}
-		}
-
-		// Ajax request
-		if ($_POST && \Environment::get('isAjaxRequest')) {
-			$this->objAjax = new FormAjax(\Input::post('action'));
-			$this->objAjax->executePostActions($this);
 		}
 	}
 
@@ -182,6 +187,13 @@ abstract class DC_Hybrid extends \DataContainer
 
 				// skip arrSubpaletteFields always, handled differently
 				$arrFields = array_diff($arrFields, $arrSubpaletteFields);
+
+				// if subpalette is active by default, add fields again
+				if(isset($this->arrDefaultValues[$strName]) && $this->arrDefaultValues[$strName])
+				{
+					$arrFields = array_merge($arrFields, $arrSubpaletteFields);
+				}
+
 
 				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette
 				if ($toggleSubpalette == $strName || $this->arrSubmission[$strName]) {
@@ -288,17 +300,6 @@ abstract class DC_Hybrid extends \DataContainer
 			$strName = '';
 		}
 
-		// replace inserttags
-		if (is_array($varValue)) {
-			$arrResult = array();
-			foreach ($varValue as $k => $v) {
-				$arrResult[$k] = $this->replaceInsertTags($v);
-			}
-			$varValue = $arrResult;
-		} else {
-			$varValue = $this->replaceInsertTags($varValue);
-		}
-
 		$arrData['eval']['tagTable'] = $this->strTable;
 
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this);
@@ -349,6 +350,27 @@ abstract class DC_Hybrid extends \DataContainer
 		}
 
 		return $objWidget;
+	}
+
+	protected function stripInsertTags($varValue, $arrResult = array())
+	{
+		if(!is_array($varValue))
+		{
+			return strip_insert_tags($varValue);
+		}
+
+		foreach ($varValue as $k => $v)
+		{
+			if(is_array($v))
+			{
+				$arrResult = $this->stripInsertTags($v, $arrResult);
+				continue;
+			}
+
+			$arrResult[$k] = strip_insert_tags($v);
+		}
+
+		return $arrResult;
 	}
 
 	protected function getDefaultFieldValue($strName)
@@ -488,8 +510,6 @@ abstract class DC_Hybrid extends \DataContainer
 				}
 			}
 		}
-
-
 	}
 
 	/**
@@ -548,7 +568,7 @@ abstract class DC_Hybrid extends \DataContainer
 		return true;
 	}
 
-	protected function save($varValue)
+	protected function save($varValue='')
 	{
 		if (!$this->objActiveRecord instanceof \Contao\Model) {
 			return;

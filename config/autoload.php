@@ -23,6 +23,9 @@ ClassLoader::addNamespaces(array
  */
 ClassLoader::addClasses(array
 (
+	// Forms
+	'HeimrichHannot\FormHybrid\FormMultiColumnWizard'    => 'system/modules/formhybrid/forms/FormMultiColumnWizard.php',
+
 	// Drivers
 	'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
 
