@@ -550,7 +550,7 @@ abstract class DC_Hybrid extends \DataContainer
 			}
 		}
 		
-		// add default fields without sql field
+		// add more fields, for example from other palettes or fields that have no palette or no sql
 		foreach ($this->arrDefaultValues as $strField => $varDefault)
 		{
 			$arrData = $this->dca['fields'][$strField];
