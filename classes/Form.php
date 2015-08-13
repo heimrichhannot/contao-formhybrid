@@ -52,7 +52,7 @@ abstract class Form extends DC_Hybrid
 			$this->strTemplate           = $objModule->formHybridTemplate;
 			$this->addDefaultValues      = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues      =
-				FormHelper::getAssocMultiColumnWizardList(deserialize($objModule->formHybridDefaultValues, true), 'field', 'value');
+				FormHelper::getAssocMultiColumnWizardList(deserialize($objModule->formHybridDefaultValues, true), 'field');
 			$this->skipValidation        =
 				$objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
 			$this->instanceId            = $instanceId;

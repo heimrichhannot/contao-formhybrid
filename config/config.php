@@ -6,6 +6,7 @@ define('FORMHYBRID_NAME_SUBMIT', 'submit');
 define('FORMHYBRID_MESSAGE_SUCCESS', 'FORMHYBRID_SUCCESS');
 define('FORMHYBRID_MESSAGE_ERROR', 'FORMHYBRID_ERROR');
 define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
+define('FORMHYBRID_USERNAME', 'Formhybrid');
 
 /**
  * Content elements

@@ -131,7 +131,7 @@ class FormHelper extends \System
 
 
 
-	public static function getAssocMultiColumnWizardList(array $arrValues, $strKey, $strValue)
+	public static function getAssocMultiColumnWizardList(array $arrValues, $strKey, $strValue = '')
 	{
 		$arrReturn = array();
 
@@ -139,7 +139,16 @@ class FormHelper extends \System
 		{
 			if(!isset($arrValue[$strKey]) && !isset($arrValue[$strValue])) continue;
 
-			$arrReturn[$arrValue[$strKey]] = $arrValue[$strValue];
+			$varValue = $arrValue[$strValue];
+
+			if(empty($strValue))
+			{
+				$varValue = $arrValue;
+				unset($varValue[$strKey]);
+
+			}
+
+			$arrReturn[$arrValue[$strKey]] = $varValue;
 		}
 
 		return $arrReturn;

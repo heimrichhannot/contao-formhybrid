@@ -131,14 +131,27 @@ $arrFields = array
 						'tl_form_hybrid_module',
 						'getFields',
 					),
-					'eval'             => array('style' => 'width: 200px', 'chosen' => true),
+					'eval'             => array('style' => 'width: 150px', 'chosen' => true),
 				),
 				'value' => array(
 					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
 					'exclude'   => true,
 					'inputType' => 'text',
-					'eval'      => array('style' => 'width: 200px'),
+					'eval'      => array('style' => 'width: 100px'),
 				),
+				'label' => array(
+					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['label'],
+					'exclude'   => true,
+					'inputType' => 'text',
+					'eval'      => array('style' => 'width: 350px', 'allowHtml' => true),
+				),
+				'hidden' => array
+				(
+					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['hidden'],
+					'exclude'   => true,
+					'inputType' => 'checkbox',
+					'eval'      => array('style' => 'width: 50px'),
+				)
 			),
 			'tl_class'     => 'clr long',
 		),

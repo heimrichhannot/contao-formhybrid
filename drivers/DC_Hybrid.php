@@ -49,6 +49,8 @@ abstract class DC_Hybrid extends \DataContainer
 
 	protected $useCustomSubTemplates = false;
 
+	protected $username = FORMHYBRID_USERNAME;
+
 	public $objModule; // public, required by callbacks
 
 	public function __construct($strTable, $objModule = null)
@@ -143,6 +145,9 @@ abstract class DC_Hybrid extends \DataContainer
 
 			$this->objActiveRecord->refresh();
 
+			// create new version
+			$this->createVersion();
+
 			// process form
 			$this->processForm();
 		}
@@ -189,8 +194,7 @@ abstract class DC_Hybrid extends \DataContainer
 				$arrFields = array_diff($arrFields, $arrSubpaletteFields);
 
 				// if subpalette is active by default, add fields again
-				if(isset($this->arrDefaultValues[$strName]) && $this->arrDefaultValues[$strName])
-				{
+				if (isset($this->arrDefaultValues[$strName]) && $this->arrDefaultValues[$strName]) {
 					$arrFields = array_merge($arrFields, $arrSubpaletteFields);
 				}
 
@@ -284,8 +288,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 
 		// overwrite required fields
-		if($this->overwriteRequired)
-		{
+		if ($this->overwriteRequired) {
 			// set mandatory to false
 			$arrData['eval']['mandatory'] = false;
 
@@ -354,15 +357,12 @@ abstract class DC_Hybrid extends \DataContainer
 
 	protected function stripInsertTags($varValue, $arrResult = array())
 	{
-		if(!is_array($varValue))
-		{
+		if (!is_array($varValue)) {
 			return strip_insert_tags($varValue);
 		}
 
-		foreach ($varValue as $k => $v)
-		{
-			if(is_array($v))
-			{
+		foreach ($varValue as $k => $v) {
+			if (is_array($v)) {
 				$arrResult = $this->stripInsertTags($v, $arrResult);
 				continue;
 			}
@@ -445,14 +445,71 @@ abstract class DC_Hybrid extends \DataContainer
 		foreach ($this->arrFields as $strName => $objWidget) {
 			$arrData = $this->dca['fields'][$strName];
 
+			$varValue = $objWidget->value;
+
 			// Trigger the save_callback
 			if (is_array($arrData['save_callback'])) {
 				foreach ($arrData['save_callback'] as $callback) {
+					if (is_array($callback)) {
+						$this->import($callback[0]);
+						$varValue = $this->$callback[0]->$callback[1]($varValue, $this);
+					} elseif (is_callable($callback)) {
+						$varValue = $callback($varValue, $this);
+					}
+				}
+			}
+
+			// Set the correct empty value (see #6284, #6373)
+			if ($varValue === '') {
+				$varValue = \Widget::getEmptyValueByFieldType($arrData['sql']);
+			}
+
+			// Save the value if there was no error
+			if (($varValue != '' || !$arrData['eval']['doNotSaveEmpty'])
+				&& ($this->objActiveRecord->{$strName} !== $varValue
+					|| $arrData['eval']['alwaysSave'])
+			) {
+				$this->objActiveRecord->{$strName} = $varValue;
+			}
+		}
+	}
+
+	protected function createVersion()
+	{
+		// Create the initial version (see #7816)
+		$objVersion = new \Versions($this->strTable, $this->objActiveRecord->id);
+		$objVersion->setUserId(0);
+		$objVersion->setUsername($this->username);
+
+		$objVersion = $this->modifyVersion($objVersion);
+
+		$objVersion->initialize();
+
+		// Call the onversion_callback
+		if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onversion_callback'])) {
+			foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onversion_callback'] as $callback) {
+				if (is_array($callback)) {
 					$this->import($callback[0]);
-					$this->objActiveRecord->{$strName} = $this->$callback[0]->$callback[1]($objWidget->value, $this);
+					$this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this);
+				} elseif (is_callable($callback)) {
+					$callback($this->strTable, $this->intId, $this);
 				}
 			}
 		}
+
+		$this->log(
+			'A new version of record "' . $this->strTable . '.id=' . $this->intId . '" has been created' . $this->getParentEntries(
+				$this->strTable,
+				$this->intId
+			),
+			__METHOD__,
+			TL_GENERAL
+		);
+	}
+
+	protected function modifyVersion($objVersion)
+	{
+		return $objVersion;
 	}
 
 	protected function getFields()
@@ -492,22 +549,29 @@ abstract class DC_Hybrid extends \DataContainer
 				$this->objActiveRecord->{$strName} = $varDefault;
 			}
 		}
-
+		
 		// add default fields without sql field
 		foreach ($this->arrDefaultValues as $strField => $varDefault) {
 			$arrData = $this->dca['fields'][$strField];
-			
+
 			if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
-				switch ($arrData['inputType'])
-				{
+				if ($varDefault['hidden']) {
+					$this->dca['fields'][$strField]['inputType'] = 'hidden';
+				}
+
+				if (strlen($varDefault['label']) > 0) {
+					$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
+				}
+
+				switch ($arrData['inputType']) {
 					case 'submit':
-						$this->hasSubmit                            = true;
-						$this->dca['fields'][$strField]['label'][0] = $varDefault;
-						$this->arrEditable[]                        = $strField;
+						$this->hasSubmit = true;
 						break;
 					default:
-						$this->objActiveRecord->{$strField} = $varDefault;
+						$this->objActiveRecord->{$strField} = $varDefault['value'];
 				}
+
+				$this->arrEditable[] = $strField;
 			}
 		}
 	}
@@ -568,7 +632,7 @@ abstract class DC_Hybrid extends \DataContainer
 		return true;
 	}
 
-	protected function save($varValue='')
+	protected function save($varValue = '')
 	{
 		if (!$this->objActiveRecord instanceof \Contao\Model) {
 			return;
@@ -576,6 +640,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 		$this->objActiveRecord->tstamp = time();
 		$this->objActiveRecord->save();
+		$this->intId = $this->objActiveRecord->id;
 	}
 
 	/**
@@ -595,7 +660,7 @@ abstract class DC_Hybrid extends \DataContainer
 	public function addEditableField($strName, array $arrData)
 	{
 		$this->dca['fields'][$strName] = $arrData;
-		$this->arrEditable[] = $strName;
+		$this->arrEditable[]           = $strName;
 	}
 
 	public function getDca()
