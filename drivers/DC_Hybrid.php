@@ -551,10 +551,12 @@ abstract class DC_Hybrid extends \DataContainer
 		}
 		
 		// add default fields without sql field
-		foreach ($this->arrDefaultValues as $strField => $varDefault) {
+		foreach ($this->arrDefaultValues as $strField => $varDefault)
+		{
 			$arrData = $this->dca['fields'][$strField];
 
 			if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
+
 				if ($varDefault['hidden']) {
 					$this->dca['fields'][$strField]['inputType'] = 'hidden';
 				}
@@ -571,7 +573,12 @@ abstract class DC_Hybrid extends \DataContainer
 						$this->objActiveRecord->{$strField} = $varDefault['value'];
 				}
 
-				$this->arrEditable[] = $strField;
+				// do not render hidden fields yet, just set them as value in $this->objActiveRecord
+				// otherwise they will get overwritten by request and checkboxes will not be checked
+				if (!$varDefault['hidden'])
+				{
+					$this->arrEditable[] = $strField;
+				}
 			}
 		}
 	}
