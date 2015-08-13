@@ -69,7 +69,7 @@ $arrFields = array
 	(
 		'inputType'        => 'checkboxWizard',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
-		'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
+		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
 		'sql'              => "blob NULL",
@@ -78,7 +78,7 @@ $arrFields = array
 	(
 		'inputType'        => 'checkboxWizard',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableSkip'],
-		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'options_callback' => array('tl_form_hybrid_module', 'getFields'),  // all fields, cause formHybridDefaultValues will suffer from all fields
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight'),
 		'sql'              => "blob NULL",
