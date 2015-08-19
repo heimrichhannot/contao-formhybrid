@@ -53,6 +53,8 @@ abstract class DC_Hybrid extends \DataContainer
 
 	public $objModule; // public, required by callbacks
 
+	protected $isFilterForm = false;
+
 	public function __construct($strTable, $objModule = null)
 	{
 		$this->strTable  = $strTable;
@@ -129,7 +131,8 @@ abstract class DC_Hybrid extends \DataContainer
 
 		$blnAjax = $this->generateFields($ajaxId);
 
-		if ($blnAjax) {
+		if ($blnAjax)
+		{
 			$objTemplate = $this->generateSubpalette($ajaxId);
 
 			return $this->replaceInsertTags($objTemplate->parse(), false);
@@ -146,7 +149,7 @@ abstract class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord->refresh();
 
 			// create new version
-			$this->createVersion();
+//			$this->createVersion();
 
 			// process form
 			$this->processForm();
@@ -198,7 +201,6 @@ abstract class DC_Hybrid extends \DataContainer
 					$arrFields = array_merge($arrFields, $arrSubpaletteFields);
 				}
 
-
 				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette
 				if ($toggleSubpalette == $strName || $this->arrSubmission[$strName]) {
 					$arrSubFields[$strName] = array_intersect($this->arrEditable, $arrSubpaletteFields);
@@ -215,7 +217,7 @@ abstract class DC_Hybrid extends \DataContainer
 		foreach ($arrFields as $strName) {
 			$this->addField($strName);
 		}
-		
+
 		// add subpalette fields
 		foreach ($arrSubFields as $strParent => $arrFields) {
 			foreach ($arrFields as $strName) {
@@ -227,7 +229,7 @@ abstract class DC_Hybrid extends \DataContainer
 				$this->arrFields[$strParent]->sub = $this->replaceInsertTags($objSubTemplate->parse(), false);
 			}
 		}
-		
+
 
 		// add submit button if not configured in dca
 		if (!$this->hasSubmit && !$blnAjax) {
@@ -256,7 +258,8 @@ abstract class DC_Hybrid extends \DataContainer
 			return false;
 		}
 
-		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName])) {
+		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName]))
+		{
 			$this->arrSubFields[$strParent][$strName] = $objField;
 		}
 
@@ -307,8 +310,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this);
 
-		if (isset($this->dca['subpalettes'][$strName]) && in_array($strName, $this->dca['palettes']['__selector__']))
-		{
+		if (isset($this->dca['subpalettes'][$strName])) {
 			$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "')";
 			unset($arrWidget['submitOnChange']);
 		}
@@ -472,6 +474,15 @@ abstract class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
+		if($this->isFilterForm)
+		{
+			return;
+		}
+
+		if (!$this->objActiveRecord instanceof \Contao\Model) {
+			return;
+		}
+
 		// Create the initial version (see #7816)
 		$objVersion = new \Versions($this->strTable, $this->objActiveRecord->id);
 		$objVersion->setUserId(0);
@@ -542,7 +553,7 @@ abstract class DC_Hybrid extends \DataContainer
 			}
 
 			if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
-				$this->objActiveRecord->{$strName} = $varDefault;
+				$this->objActiveRecord->{$strName} = $varDefault['value'];
 			}
 		}
 		
@@ -637,6 +648,11 @@ abstract class DC_Hybrid extends \DataContainer
 
 	protected function save($varValue = '')
 	{
+		if($this->isFilterForm)
+		{
+			return;
+		}
+
 		if (!$this->objActiveRecord instanceof \Contao\Model) {
 			return;
 		}
