@@ -57,6 +57,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 	public function __construct($strTable, $objModule = null)
 	{
+		$this->import('Database');
 		$this->strTable  = $strTable;
 		$this->objModule = $objModule;
 		$this->loadDC();
@@ -149,7 +150,7 @@ abstract class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord->refresh();
 
 			// create new version
-//			$this->createVersion();
+			$this->createVersion();
 
 			// process form
 			$this->processForm();
