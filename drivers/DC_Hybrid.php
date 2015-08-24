@@ -199,7 +199,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 				// if subpalette is active by default, add fields again
 				if (isset($this->arrDefaultValues[$strName]) && $this->arrDefaultValues[$strName]) {
-					$arrFields = array_merge($arrFields, $arrSubpaletteFields);
+					$arrFields = array_merge($arrFields, array_intersect($arrSubpaletteFields, $this->arrEditable));
 				}
 
 				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette
@@ -557,7 +557,7 @@ abstract class DC_Hybrid extends \DataContainer
 				$this->objActiveRecord->{$strName} = $varDefault['value'];
 			}
 		}
-		
+
 		// add more fields, for example from other palettes or fields that have no palette or no sql
 		foreach ($this->arrDefaultValues as $strField => $varDefault)
 		{
@@ -690,3 +690,4 @@ abstract class DC_Hybrid extends \DataContainer
 
 	abstract protected function processForm();
 }
+
