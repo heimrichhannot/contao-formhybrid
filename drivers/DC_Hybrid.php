@@ -194,12 +194,9 @@ abstract class DC_Hybrid extends \DataContainer
 			foreach ($this->dca['subpalettes'] as $strName => $strPalette) {
 				$arrSubpaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strName]);
 
-				// skip arrSubpaletteFields always, handled differently
-				$arrFields = array_diff($arrFields, $arrSubpaletteFields);
-
-				// if subpalette is active by default, add fields again
-				if (isset($this->arrDefaultValues[$strName]) && $this->arrDefaultValues[$strName]) {
-					$arrFields = array_merge($arrFields, array_intersect($arrSubpaletteFields, $this->arrEditable));
+				// if subpalette isn't active, remove the fields
+				if (!isset($this->arrDefaultValues[$strName]) || !$this->arrDefaultValues[$strName]) {
+					$arrFields = array_diff($arrFields, $arrSubpaletteFields);
 				}
 
 				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette
@@ -690,4 +687,5 @@ abstract class DC_Hybrid extends \DataContainer
 
 	abstract protected function processForm();
 }
+
 
