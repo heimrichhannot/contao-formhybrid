@@ -2,19 +2,30 @@
 
 $dc = &$GLOBALS['TL_DCA']['tl_module'];
 
+/**
+ * Subpalettes
+ */
 $dc['palettes']['__selector__'][]                      = 'formHybridAddDefaultValues';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddEditableRequired';
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
-	'formHybridSubmissionMailSender,formHybridSubmissionMailRecipient,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
+	'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 
 $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
-	'formHybridConfirmationMailRecipientField,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
+	'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
 
 $dc['subpalettes']['formHybridAddEditableRequired'] = 'formHybridEditableRequired';
 
+/**
+ * Callbacks
+ */
+$dc['config']['onload_callback'][] = array('tl_form_hybrid_module', 'modifyPalette');
+
+/**
+ * Fields
+ */
 $arrFields = array
 (
 	'formHybridDataContainer'                  => array
@@ -256,7 +267,7 @@ $arrFields = array
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
-			'mandatory'      => true,
+			'mandatory'      => false,
 			'maxlength'      => 255,
 			'decodeEntities' => true,
 			'tl_class'       => 'w50',
@@ -331,7 +342,7 @@ $arrFields = array
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
-			'mandatory'      => true,
+			'mandatory'      => false,
 			'maxlength'      => 255,
 			'decodeEntities' => true,
 			'tl_class'       => 'w50',
@@ -373,10 +384,91 @@ $arrFields = array
 	),
 );
 
+if (in_array('avisota-core', \ModuleLoader::getActive()))
+{
+	$arrFields['formHybridSubmissionAvisotaMessage'] = array
+	(
+		'exclude'          => true,
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionAvisotaMessage'],
+		'inputType'        => 'select',
+		'options_callback' => \ContaoCommunityAlliance\Contao\Events\CreateOptions\CreateOptionsEventCallbackFactory::createCallback(
+			\Avisota\Contao\Message\Core\MessageEvents::CREATE_BOILERPLATE_MESSAGE_OPTIONS,
+			'Avisota\Contao\Core\Event\CreateOptionsEvent'
+		),
+		'eval'             => array(
+			'includeBlankOption' => true,
+			'tl_class'           => 'w50 clr',
+			'chosen' => true,
+			'submitOnChange'     => true
+		),
+		'sql' => "char(36) NOT NULL default ''"
+	);
+
+	$arrFields['formHybridSubmissionAvisotaSalutationGroup'] = array
+	(
+		'exclude'          => true,
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionAvisotaSalutationGroup'],
+		'inputType'        => 'select',
+		'options_callback' => array('tl_form_hybrid_module', 'getSalutationGroupOptions'),
+		'eval'             => array(
+			'includeBlankOption' => true,
+			'tl_class'           => 'w50',
+			'chosen' => true
+		),
+		'sql' => "char(36) NOT NULL default ''"
+	);
+
+	$arrFields['formHybridConfirmationAvisotaMessage'] = array
+	(
+		'exclude'          => true,
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationAvisotaMessage'],
+		'inputType'        => 'select',
+		'options_callback' => \ContaoCommunityAlliance\Contao\Events\CreateOptions\CreateOptionsEventCallbackFactory::createCallback(
+			\Avisota\Contao\Message\Core\MessageEvents::CREATE_BOILERPLATE_MESSAGE_OPTIONS,
+			'Avisota\Contao\Core\Event\CreateOptionsEvent'
+		),
+		'eval'             => array(
+			'includeBlankOption' => true,
+			'tl_class'           => 'w50 clr',
+			'chosen' => true,
+			'submitOnChange'     => true
+		),
+		'sql' => "char(36) NOT NULL default ''"
+	);
+
+	$arrFields['formHybridConfirmationAvisotaSalutationGroup'] = array
+	(
+		'exclude'          => true,
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationAvisotaSalutationGroup'],
+		'inputType'        => 'select',
+		'options_callback' => array('tl_form_hybrid_module', 'getSalutationGroupOptions'),
+		'eval'             => array(
+			'includeBlankOption' => true,
+			'tl_class'           => 'w50',
+			'chosen' => true
+		),
+		'sql' => "char(36) NOT NULL default ''"
+	);
+}
+
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
 
 class tl_form_hybrid_module extends \Backend
 {
+
+	public static function getSalutationGroupOptions()
+	{
+		$arrOptions = array();
+
+		$salutationGroupRepository = \Contao\Doctrine\ORM\EntityHelper::getRepository('Avisota\Contao:SalutationGroup');
+		/** @var SalutationGroup[] $salutationGroups */
+		$salutationGroups = $salutationGroupRepository->findAll();
+
+		foreach ($salutationGroups as $salutationGroup) {
+			$arrOptions[$salutationGroup->getId()] = $salutationGroup->getTitle();
+		}
+		return $arrOptions;
+	}
 
 	/**
 	 * Return all possible Email fields  as array
@@ -598,5 +690,59 @@ class tl_form_hybrid_module extends \Backend
 	{
 		return \Controller::getTemplateGroup('formhybrid_');
 	}
-	
+
+	public function modifyPalette()
+	{
+		if (!in_array('avisota-core', \ModuleLoader::getActive()))
+			return;
+
+		$objModule = \ModuleModel::findByPk(\Input::get('id'));
+		$arrDc = &$GLOBALS['TL_DCA']['tl_module'];
+
+		// submission
+		$arrFieldsToHide = array
+		(
+			'formHybridSubmissionMailSender',
+			'formHybridSubmissionMailSubject',
+			'formHybridSubmissionMailText',
+			'formHybridSubmissionMailTemplate',
+			'formHybridSubmissionMailAttachment'
+		);
+
+		if ($objModule->formHybridSendSubmissionViaEmail && $objModule->formHybridSubmissionAvisotaMessage)
+		{
+			$arrDc['subpalettes']['formHybridSendSubmissionViaEmail'] = str_replace(
+				$arrFieldsToHide, array_map(function() {return '';}, $arrFieldsToHide),
+				$arrDc['subpalettes']['formHybridSendSubmissionViaEmail']
+			);
+
+			$arrDc['subpalettes']['formHybridSendSubmissionViaEmail'] = str_replace(
+				'formHybridSubmissionAvisotaMessage', 'formHybridSubmissionAvisotaMessage,formHybridSubmissionAvisotaSalutationGroup',
+				$arrDc['subpalettes']['formHybridSendSubmissionViaEmail']
+			);
+		}
+
+		// confirmation
+		$arrFieldsToHide = array
+		(
+			'formHybridConfirmationMailSender',
+			'formHybridConfirmationMailSubject',
+			'formHybridConfirmationMailText',
+			'formHybridConfirmationMailTemplate',
+			'formHybridConfirmationMailAttachment'
+		);
+
+		if ($objModule->formHybridSendConfirmationViaEmail && $objModule->formHybridConfirmationAvisotaMessage)
+		{
+			$arrDc['subpalettes']['formHybridSendConfirmationViaEmail'] = str_replace(
+				$arrFieldsToHide, array_map(function() {return '';}, $arrFieldsToHide),
+				$arrDc['subpalettes']['formHybridSendConfirmationViaEmail']
+			);
+
+			$arrDc['subpalettes']['formHybridSendConfirmationViaEmail'] = str_replace(
+				'formHybridConfirmationAvisotaMessage', 'formHybridConfirmationAvisotaMessage,formHybridConfirmationAvisotaSalutationGroup',
+				$arrDc['subpalettes']['formHybridSendConfirmationViaEmail']
+			);
+		}
+	}
 }

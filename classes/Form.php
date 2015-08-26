@@ -110,11 +110,25 @@ abstract class Form extends DC_Hybrid
 			$arrSubmissionData = $this->prepareSubmissionData();
 
 			if ($this->formHybridSendSubmissionViaEmail) {
-				$this->createSubmissionEmail($arrSubmissionData);
+				if ($this->formHybridSubmissionAvisotaMessage)
+					$this->createSubmissionAvisotaEmail(
+						$this->formHybridSubmissionAvisotaMessage,
+						$this->formHybridSubmissionAvisotaSalutationGroup,
+						$arrSubmissionData
+					);
+				else
+					$this->createSubmissionEmail($arrSubmissionData);
 			}
 
 			if ($this->formHybridSendConfirmationViaEmail) {
-				$this->createConfirmationEmail($arrSubmissionData);
+				if ($this->formHybridConfirmationAvisotaMessage)
+					$this->createConfirmationAvisotaEmail(
+						$this->formHybridConfirmationAvisotaMessage,
+						$this->formHybridConfirmationAvisotaSalutationGroup,
+						$arrSubmissionData
+					);
+				else
+					$this->createConfirmationEmail($arrSubmissionData);
 			}
 
 			$this->createSuccessMessage($arrSubmissionData);
@@ -204,6 +218,44 @@ abstract class Form extends DC_Hybrid
 		}
 	}
 
+	protected function createSubmissionAvisotaEmail($intMessageId, $strSalutationGroupId, $arrSubmissionData)
+	{
+		$arrRecipient = array_filter(array_unique(trimsplit(',', $this->formHybridSubmissionMailRecipient)));
+
+		$objMessage = AvisotaHelper::getAvisotaMessage($intMessageId);
+
+		$objMessage->setSubject(\String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($objMessage->getSubject(), $arrSubmissionData), false),
+			$arrSubmissionData
+		));
+
+		foreach ($objMessage->getContents() as $objContent)
+		{
+			$strText = $objContent->getText();
+
+			if (!$strText)
+				continue;
+
+			$objContent->setText(str_replace("\n", '<br>', \String::parseSimpleTokens(
+				$this->replaceInsertTags(FormHelper::replaceFormDataTags($strText, $arrSubmissionData), false),
+				$arrSubmissionData
+			)));
+		}
+
+		AvisotaHelper::sendAvisotaEMailByMessage(
+			$objMessage,
+			explode(',', $this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false)),
+			array_map(function($arrValue) {
+				if (isset($arrValue['value']))
+					return $arrValue['value'];
+				else
+					return $arrValue;
+			}, $arrSubmissionData),
+			$strSalutationGroupId,
+			AvisotaHelper::RECIPIENT_MODE_USE_MEMBER_DATA
+		);
+	}
+
 	protected function createSuccessMessage($arrSubmissionData)
 	{
 		$this->formHybridSuccessMessage = \String::parseSimpleTokens(
@@ -285,6 +337,42 @@ abstract class Form extends DC_Hybrid
 				$objEmail->sendTo($arrRecipient);
 			}
 		}
+	}
+
+	protected function createConfirmationAvisotaEmail($intMessageId, $strSalutationGroupId, $arrSubmissionData)
+	{
+		$objMessage = AvisotaHelper::getAvisotaMessage($intMessageId);
+
+		$objMessage->setSubject(\String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($objMessage->getSubject(), $arrSubmissionData), false),
+			$arrSubmissionData
+		));
+
+		foreach ($objMessage->getContents() as $objContent)
+		{
+			$strText = $objContent->getText();
+
+			if (!$strText)
+				continue;
+
+			$objContent->setText(\String::parseSimpleTokens(
+				$this->replaceInsertTags(FormHelper::replaceFormDataTags($strText, $arrSubmissionData), false),
+				$arrSubmissionData
+			));
+		}
+
+		AvisotaHelper::sendAvisotaEMailByMessage(
+			$objMessage,
+			$arrSubmissionData[$this->formHybridConfirmationMailRecipientField]['value'],
+			array_map(function($arrValue) {
+				if (isset($arrValue['value']))
+					return $arrValue['value'];
+				else
+					return $arrValue;
+			}, $arrSubmissionData),
+			$strSalutationGroupId,
+			AvisotaHelper::RECIPIENT_MODE_USE_SUBMISSION_DATA
+		);
 	}
 
 	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)
