@@ -39,10 +39,13 @@ $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][17][1] =
 	'Beendet eine <i>if</i>-Kontrollstruktur. <strong>Achtung: Muss bei Verwendung einer {{if-Bedingung}} verwendet werden.</strong>';
 
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][0][0] = '##submission##';
-$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][0][1] = 'Liefert eine Kombination aus Feldbezeichnung (Label) und dem formatierten Eingabewert <strong>aller Eingaben des Formulars formatiert</strong> zurück. (Format: "Felzbezeichnung : Eingabebezeichnung")';
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][0][1] = 'Liefert eine Kombination aus Feldbezeichnung (Label) und dem formatierten Eingabewert <strong>aller Nutzereingaben des Formulars formatiert</strong> zurück. (Format: "Felzbezeichnung : Eingabebezeichnung")';
 
-$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][0] = '##domain##';
-$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][1] = 'Liefert den qualifizierten Domainnamen zurück über die das Formular abgesendet wurde.';
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][0] = '##submission_all##';
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][1][1] = 'Liefert eine Kombination aus Feldbezeichnung (Label) und dem formatierten Eingabewert <strong>aller Nutzereingaben und Standardwerte des Formulars formatiert</strong> zurück. (Format: "Felzbezeichnung : Eingabebezeichnung")';
+
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][2][0] = '##domain##';
+$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'][2][1] = 'Liefert den qualifizierten Domainnamen zurück über die das Formular abgesendet wurde.';
 
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_text'] = array_merge(
 	$GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags_tokens'],

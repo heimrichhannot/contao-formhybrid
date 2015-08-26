@@ -110,6 +110,8 @@ abstract class DC_Hybrid extends \DataContainer
 	{
 		// render
 		if ($this->renderStart) {
+			$this->async = false; // async form submission for start/elements/stop not available yet
+
 			$this->Template = new \FrontendTemplate($this->strTemplateStart);
 			$this->generateStart();
 
@@ -540,10 +542,21 @@ abstract class DC_Hybrid extends \DataContainer
 	 */
 	protected function setDefaults()
 	{
-		$arrFields = \Database::getInstance()->listFields($this->strTable);
+		if(\Database::getInstance()->tableExists($this->strTable))
+		{
+			$arrFields = \Database::getInstance()->listFields($this->strTable);
+		} else
+		{
+			$arrFields = $this->dca['fields'];
+		}
 
-		foreach ($arrFields as $arrField) {
-			$strName = $arrField['name'];
+		foreach ($arrFields as $strName => $arrField) {
+
+			// if database field
+			if(isset($arrField['name']))
+			{
+				$strName = $arrField['name'];
+			}
 
 			// set from default field value
 			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
@@ -593,10 +606,22 @@ abstract class DC_Hybrid extends \DataContainer
 	 */
 	protected function setSubmission()
 	{
-		$arrFields = \Database::getInstance()->listFields($this->strTable);
+		if(\Database::getInstance()->tableExists($this->strTable))
+		{
+			$arrFields = \Database::getInstance()->listFields($this->strTable);
+		} else
+		{
+			$arrFields = $this->dca['fields'];
+		}
 
-		foreach ($arrFields as $arrField) {
-			$strName = $arrField['name'];
+		foreach ($arrFields as $strName => $arrField)
+		{
+			// if database field
+			if(isset($arrField['name']))
+			{
+				$strName = $arrField['name'];
+			}
+
 			$arrData = $this->dca['fields'][$strName];
 
 			// unset options_callback, as long as we have no valid backend user

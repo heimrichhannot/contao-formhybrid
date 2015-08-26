@@ -533,21 +533,26 @@ class tl_form_hybrid_module extends \Backend
 			$dc->activeRecord->formHybridDataContainer,
 			$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'][$dc->activeRecord->formHybridPalette]
 		);
+		
+		if(is_array($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']))
+		{
+			$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
 
-		$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
+			// ignore subpalettes not in palette
+			$arrSubPalettes = array_intersect($arrSubPalettes, $arrFields);
 
-		// ignore subpalettes not in palette
-		$arrSubPalettes = array_intersect($arrSubPalettes, $arrFields);
-
-		foreach ($arrSubPalettes as $strSubPalette) {
-			$arrFields = array_merge(
-				$arrFields,
-				HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
-					$dc->activeRecord->formHybridDataContainer,
-					$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'][$strSubPalette]
-				)
-			);
+			foreach ($arrSubPalettes as $strSubPalette) {
+				$arrFields = array_merge(
+					$arrFields,
+					HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
+						$dc->activeRecord->formHybridDataContainer,
+						$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'][$strSubPalette]
+					)
+				);
+			}
 		}
+		
+
 
 		return $arrFields;
 	}

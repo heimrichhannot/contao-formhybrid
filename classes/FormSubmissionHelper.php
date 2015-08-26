@@ -15,7 +15,7 @@ namespace HeimrichHannot\FormHybrid;
 class FormSubmissionHelper extends FormHelper
 {
 
-	public static function prepareData(\Model $objSubmission, array $arrDca, $dc)
+	public static function prepareData(\Model $objSubmission, array $arrDca, $dc, $arrFields=array())
 	{
 		$arrSubmissionData = array();
 
@@ -29,7 +29,7 @@ class FormSubmissionHelper extends FormHelper
 			$arrFieldData = static::prepareDataField($strName, $varValue, $arrData, $dc);
 
 			$arrSubmissionData[$strName] = $arrFieldData;
-			$arrSubmissionData['submission'] .= $arrFieldData['submission'];
+			$strSubmission = $arrFieldData['submission'];
 
 			$varValue = deserialize($varValue);
 
@@ -41,18 +41,25 @@ class FormSubmissionHelper extends FormHelper
 					}
 
 					// new line
-					$arrSubmissionData['submission'] .= "\n";
+					$strSubmission .= "\n";
 
 					foreach ($arrSet as $strSetName => $strSetValue) {
 						$arrSetData   = $arrData['eval']['columnFields'][$strSetName];
 						$arrFieldData = static::prepareDataField($strSetName, $strSetValue, $arrSetData, $dc);
 						// intend new line
-						$arrSubmissionData['submission'] .= "\t" . $arrFieldData['submission'];
+						$strSubmission .= "\t" . $arrFieldData['submission'];
 					}
 
 					// new line
-					$arrSubmissionData['submission'] .= "\n";
+					$strSubmission .= "\n";
 				}
+			}
+
+			$arrSubmissionData['submission_all'] .= $strSubmission;
+
+			if(in_array($strName, $arrFields))
+			{
+				$arrSubmissionData['submission'] .= $strSubmission;
 			}
 		}
 

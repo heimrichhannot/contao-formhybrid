@@ -121,7 +121,9 @@ abstract class Form extends DC_Hybrid
 
 			$this->afterSubmitCallback($this);
 
-			if($this->getReset())
+			// reset form is default. disable by $this->setReset(false)
+			// Exception: filter forms should never been reset after submit
+			if($this->getReset() && !$this->isFilterForm)
 			{
 				$this->reset();
 			}
@@ -130,7 +132,7 @@ abstract class Form extends DC_Hybrid
 
 	protected function prepareSubmissionData()
 	{
-		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->dca, $this);
+		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->dca, $this, $this->arrEditable);
 	}
 
 	protected function onSubmitCallback(\DataContainer $dc)
