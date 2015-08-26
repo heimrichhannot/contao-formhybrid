@@ -69,13 +69,6 @@ class FormAjax extends \Controller
 			case 'asyncFormSubmit':
 				if (\Input::post('load'))
 				{
-					ob_start();
-					print_r($this);
-					print "\n";
-					file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-					ob_end_clean();
-					
-					
 					echo $dc->edit(\Input::post('id'));
 				}
 			exit; break;
