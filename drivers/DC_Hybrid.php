@@ -201,7 +201,7 @@ abstract class DC_Hybrid extends \DataContainer
 					$arrFields = array_diff($arrFields, $arrSubpaletteFields);
 				}
 
-				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette
+				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette or active in user form submission
 				if ($toggleSubpalette == $strName || $this->arrSubmission[$strName]) {
 					$arrSubFields[$strName] = array_intersect($this->arrEditable, $arrSubpaletteFields);
 
@@ -217,10 +217,12 @@ abstract class DC_Hybrid extends \DataContainer
 		foreach ($arrFields as $strName) {
 			$this->addField($strName);
 		}
-
+		
 		// add subpalette fields
-		foreach ($arrSubFields as $strParent => $arrFields) {
-			foreach ($arrFields as $strName) {
+		foreach ($arrSubFields as $strParent => $arrFields)
+		{
+			foreach ($arrFields as $strName)
+			{
 				$this->addSubField($strName, $strParent);
 			}
 
