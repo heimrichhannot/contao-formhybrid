@@ -42,7 +42,6 @@
 
 			if(alert.length > 0){
 				var alertOffset = alert.offset();
-				console.log(alert);
 
 				$('html,body').animate({
 					scrollTop: parseInt(alertOffset.top)
