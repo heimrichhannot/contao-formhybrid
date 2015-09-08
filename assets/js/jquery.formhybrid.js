@@ -37,7 +37,6 @@
 			});
 		},
 		scrollToMessages : function(action){
-console.log(action);
 			// do not scroll if ajax request
 			if(action == 'toggleSubpalette') return false;
 
