@@ -1,11 +1,11 @@
 (function ($) {
 
 	FormhybridPlugins = {
-		init : function(){
-			this.initTinyMce();
-			this.scrollToMessages();
+		init : function(action){
+			this.initTinyMce(action);
+			this.scrollToMessages(action);
 		},
-		initTinyMce : function ()
+		initTinyMce : function (action)
 		{
 			if(!window.tinymce) return false;
 
@@ -36,7 +36,11 @@
 				}
 			});
 		},
-		scrollToMessages : function(){
+		scrollToMessages : function(action){
+console.log(action);
+			// do not scroll if ajax request
+			if(action == 'toggleSubpalette') return false;
+
 			// sroll to first alert message or first error field, inside formhybrid modules
 			var alert = $('.formhybrid:first').parent(['class^="mod_"']).find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first, p.alert:first, fieldset.error:first');
 
@@ -157,14 +161,31 @@
 		}
 	};
 
+	var FormHybridHelper = {
+		getParameterByName : function(sParam, href) {
+			var sPageURL = decodeURIComponent(href),
+				sURLVariables = sPageURL.split('&'),
+				sParameterName,
+				i;
+
+			for (i = 0; i < sURLVariables.length; i++) {
+				sParameterName = sURLVariables[i].split('=');
+
+				if (sParameterName[0] === sParam) {
+					return sParameterName[1] === undefined ? true : sParameterName[1];
+				}
+			}
+		}
+	};
+
 
 	$(document).ready(function () {
 		FormhybridAjaxRequest.registerEvents();
 		FormhybridPlugins.init();
 	})
 
-	$(document).ajaxComplete(function(){
-		FormhybridPlugins.init();
+	$(document).ajaxComplete(function(event, jqXHR, ajaxOptions){
+		FormhybridPlugins.init(FormHybridHelper.getParameterByName('action', ajaxOptions.data));
 	})
 
 })(jQuery);

@@ -347,8 +347,15 @@ abstract class DC_Hybrid extends \DataContainer
 
 			if ($objWidget->hasErrors()) {
 				$this->doNotSubmit = true;
-			} elseif ($objWidget->submitInput()) {
+			}
+			elseif ($objWidget->submitInput())
+			{
 				$this->objActiveRecord->{$strName} = FormHelper::transformSpecialValues($objWidget->value, $arrData, $objWidget);
+			}
+			// support file uploads
+			elseif($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName]) && \Validator::isUuid($_SESSION['FILES'][$strName]['uuid']))
+			{
+				$this->objActiveRecord->{$strName} = $_SESSION['FILES'][$strName]['uuid'];
 			}
 		}
 
