@@ -382,6 +382,10 @@ class FormHelper extends \System
 		{
 			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
 		}
+		elseif (\Validator::isBinaryUuid($value))
+		{
+			$value = \String::binToUuid($value);
+		}
 		else
 		{
 			$value = $value;

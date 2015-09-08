@@ -73,7 +73,7 @@ class FormSubmissionHelper extends FormHelper
 		$strOutput = static::getFormatedValueByDca($varValue, $arrData, $dc);
 
 		$varValue = deserialize($varValue);
-
+		
 		$strSubmission = $strLabel . ": " . (is_array($varValue) ? '' : $strOutput) . "\n";
 
 		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);
