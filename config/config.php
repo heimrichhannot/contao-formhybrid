@@ -27,8 +27,8 @@ $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
  * Javascript
  */
 if (TL_MODE == 'FE') {
-	$GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid.js|static';
-	$GLOBALS['TL_JAVASCRIPT']['jquery.tinymce4']   = 'assets/tinymce4/tinymce.min.js';
+	$GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid' . (!$GLOBALS['TL_CONFIG']['debugMode'] ? '.min' : '') . '.js|static';
+	$GLOBALS['TL_JAVASCRIPT']['jquery.tinymce4']   = 'assets/tinymce4/tinymce' . (!$GLOBALS['TL_CONFIG']['debugMode'] ? '.min' : '') . '.js|static';
 }
 
 /**
