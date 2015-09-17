@@ -2,39 +2,7 @@
 
 	FormhybridPlugins = {
 		init : function(action){
-			this.initTinyMce(action);
 			this.scrollToMessages(action);
-		},
-		initTinyMce : function (action)
-		{
-			if(!window.tinymce) return false;
-
-			var lang = $('html').attr('lang');
-
-			tinymce.remove();
-
-			tinymce.init({
-				skin: "contao",
-				selector: ".formhybrid .tinyMCE",
-				theme : 'modern',
-				language : lang,
-				plugins: ["link paste lists"],
-				toolbar: "undo redo | bold italic | bullist numlist outdent indent | link unlink | table",
-				menubar : false,
-				statusbar : false,
-				width: '100%',
-				height: 250,
-				autoresize_min_height: 200,
-				autoresize_max_height: 400,
-				//content_css : '/system/modules/pintao/assets/css/bootstrap.min.css',
-				paste_as_text: true,
-				setup : function(ed) {
-					var $textarea = $(ed.getElement());
-
-					ed.settings.toolbar = $textarea.data('toolbar') ? $textarea.data('toolbar') : ed.settings.toolbar;
-					ed.settings.content_css =  $textarea.data('content-css') ? $textarea.data('content-css') : ed.settings.content_css;
-				}
-			});
 		},
 		scrollToMessages : function(action){
 			// do not scroll if ajax request
