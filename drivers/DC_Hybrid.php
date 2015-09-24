@@ -317,6 +317,12 @@ abstract class DC_Hybrid extends \DataContainer
 			unset($arrWidget['submitOnChange']);
 		}
 
+		// support submitOnChange as form submission
+		if($arrData['eval']['submitOnChange'] )
+		{
+			$arrWidget['onchange'] = "this.form.submit();";
+		}
+
 		$objWidget = new $strClass($arrWidget);
 
 		if (isset($arrData['formHybridOptions'])) {
@@ -615,14 +621,15 @@ abstract class DC_Hybrid extends \DataContainer
 	 */
 	protected function setSubmission()
 	{
-		if(\Database::getInstance()->tableExists($this->strTable))
+		// if it is a filter form we can also provide non db fields here
+		if(\Database::getInstance()->tableExists($this->strTable) && !$this->isFilterForm)
 		{
 			$arrFields = \Database::getInstance()->listFields($this->strTable);
 		} else
 		{
 			$arrFields = $this->dca['fields'];
 		}
-
+		
 		foreach ($arrFields as $strName => $arrField)
 		{
 			// if database field
@@ -630,6 +637,9 @@ abstract class DC_Hybrid extends \DataContainer
 			{
 				$strName = $arrField['name'];
 			}
+
+			// skip index fields
+			if($arrField['type'] === 'index') continue;
 
 			$arrData = $this->dca['fields'][$strName];
 

@@ -5,8 +5,10 @@ namespace HeimrichHannot\FormHybrid;
 class Submission extends \Model
 {
 
-	public function __construct(){}
-
+    public function __construct($arrData=array())
+    {
+        $this->arrData = $arrData;
+    }
 
     public function save(){}
 

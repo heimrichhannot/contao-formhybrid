@@ -481,9 +481,35 @@ abstract class Form extends DC_Hybrid
 		return isset($this->arrData[$strKey]);
 	}
 
-	public function getSubmission()
+	public function getSubmission($blnFormated = true)
 	{
-		return $this->objActiveRecord;
+		if(!$this->isSubmitted()) return null;
+
+		if($this->isFilterForm && is_array($this->arrSubmission))
+		{
+			$arrDca = $this->getDca();
+
+			$objSubmission = new Submission();
+			
+			foreach($this->arrSubmission as $strField => $varValue)
+			{
+				$arrData = $arrDca['fields'][$strField];
+
+				// unset options_callback, as long as we have no valid backend user
+				unset($arrData['options_callback'], $arrData['options_callback']);
+
+				if($blnFormated)
+				{
+					$objSubmission->{$strField} = FormHelper::getFormatedValueByDca($varValue, $arrData, $this, false);
+				}
+				else
+				{
+					$objSubmission->{$strField} = $varValue;
+				}
+			}
+		}
+
+		return $this->isFilterForm ? $objSubmission : $this->objActiveRecord;
 	}
 
 	public function isSubmitted()
