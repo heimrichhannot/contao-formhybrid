@@ -312,7 +312,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this);
 
-		if (isset($this->dca['subpalettes'][$strName])) {
+		if (isset($this->dca['subpalettes'][$strName]) && $arrData['eval']['submitOnChange']) {
 			$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "')";
 			unset($arrWidget['submitOnChange']);
 		}
