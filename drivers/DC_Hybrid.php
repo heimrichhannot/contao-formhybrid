@@ -336,7 +336,7 @@ abstract class DC_Hybrid extends \DataContainer
 			$this->hasUpload = true;
 		}
 
-		if ($this->isSubmitted) {
+		if ($this->isSubmitted && !$this->skipValidation) {
 			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 
 			// Make sure unique fields are unique
