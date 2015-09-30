@@ -318,9 +318,16 @@ abstract class DC_Hybrid extends \DataContainer
 		}
 
 		// support submitOnChange as form submission
-		if($arrData['eval']['submitOnChange'] )
+		if($arrData['eval']['submitOnChange'])
 		{
-			$arrWidget['onchange'] = "this.form.submit();";
+			if (isset($this->dca['subpalettes'][$strName])) {
+				$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "')";
+				unset($arrWidget['submitOnChange']);
+			}
+			else
+			{
+				$arrWidget['onchange'] = "this.form.submit();";
+			}
 		}
 
 		$objWidget = new $strClass($arrWidget);
@@ -731,5 +738,3 @@ abstract class DC_Hybrid extends \DataContainer
 
 	abstract protected function processForm();
 }
-
-
