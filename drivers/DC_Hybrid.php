@@ -87,7 +87,7 @@ abstract class DC_Hybrid extends \DataContainer
 				$_SESSION[FORMHYBRID_MESSAGE_ERROR] = $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'];
 			}
 		} else {
-			$this->objActiveRecord = class_exists($strModelClass) ? new $strModelClass : new Submission();
+			$this->objActiveRecord = class_exists($strModelClass) && !(new \ReflectionClass($strModelClass))->isAbstract() ? new $strModelClass : new Submission();
 			$this->setDefaults();
 			$this->setSubmission();
 			// frontendedit saves the model initially in order to get an id
