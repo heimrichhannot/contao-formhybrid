@@ -26,6 +26,8 @@ abstract class Form extends DC_Hybrid
 
 	private $useModelData = false;
 
+	private $resetAfterSubmission = true;
+
 
 	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
 	{
@@ -413,6 +415,9 @@ abstract class Form extends DC_Hybrid
 		if ($this->jumpTo && $this->jumpTo != $objPage->id &&
 			($objTargetPage = \PageModel::findByPk($this->jumpTo)) !== null)
 		{
+			// unset messages
+			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
+			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
 			\Controller::redirect(\Controller::generateFrontendUrl($objTargetPage->row()));
 		}
 		else
@@ -479,7 +484,7 @@ abstract class Form extends DC_Hybrid
 			$arrDca = $this->getDca();
 
 			$objSubmission = new Submission();
-			
+
 			foreach($this->arrSubmission as $strField => $varValue)
 			{
 				$arrData = $arrDca['fields'][$strField];
