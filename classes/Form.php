@@ -26,9 +26,6 @@ abstract class Form extends DC_Hybrid
 
 	private $useModelData = false;
 
-	private $resetAfterSubmission = true;
-
-	private $afterSubmissionJumpTo = null;
 
 	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
 	{
@@ -412,24 +409,16 @@ abstract class Form extends DC_Hybrid
 
 		global $objPage;
 
-		$strJumpTo = null;
-
-		if(\Validator::isUrl($this->afterSubmissionJumpTo))
-		{
-			$strJumpTo = $this->afterSubmissionJumpTo;
-		}
-		else if(is_numeric($this->afterSubmissionJumpTo) && ($objTarget = \PageModel::findByPk($this->afterSubmissionJumpTo)) !== null)
-		{
-			$strJumpTo = \Controller::generateFrontendUrl($objTarget->row());
-		}
-
 		// if no jumpTo is set or jumpTo is equal to current page, reload
-		if($strJumpTo === null || $strJumpTo === \Controller::generateFrontendUrl($objPage->row()))
+		if ($this->jumpTo && $this->jumpTo != $objPage->id &&
+			($objTargetPage = \PageModel::findByPk($this->jumpTo)) !== null)
 		{
-			$this->reload();
+			\Controller::redirect(\Controller::generateFrontendUrl($objTargetPage->row()));
 		}
-
-		$this->redirect($strJumpTo);
+		else
+		{
+			\Controller::reload();
+		}
 	}
 
 	abstract protected function compile();
@@ -547,15 +536,4 @@ abstract class Form extends DC_Hybrid
 	{
 		return $this->resetAfterSubmission;
 	}
-
-	public function setAfterSubmissionJumpTo($varValue)
-	{
-		$this->afterSubmissionJumpTo = $varValue;
-	}
-
-	public function getAfterSubmissionJumpTo()
-	{
-		return $this->afterSubmissionJumpTo;
-	}
 }
-
