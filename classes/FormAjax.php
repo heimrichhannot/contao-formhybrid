@@ -64,6 +64,8 @@ class FormAjax extends \Controller
 	{
 		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
 
+		$dca = $dc->getDca();
+
 		switch ($this->strAction)
 		{
 			case 'asyncFormSubmit':
@@ -74,8 +76,7 @@ class FormAjax extends \Controller
 			exit; break;
 			case 'toggleSubpalette':
 
-				// Check whether the field is a selector field and allowed for regular users (thanks to Fabian Mihailowitsch) (see #4427)
-				if (!is_array($GLOBALS['TL_DCA'][$dc->table]['palettes']['__selector__']) || !in_array($this->Input->post('field'), $GLOBALS['TL_DCA'][$dc->table]['palettes']['__selector__']))
+				if (!is_array($dca['palettes']['__selector__']) || !in_array($this->Input->post('field'), $dca['palettes']['__selector__']))
 				{
 					$this->log('Field "' . $this->Input->post('field') . '" is not an allowed selector field (possible SQL injection attempt)', __METHOD__, TL_ERROR);
 					header('HTTP/1.1 400 Bad Request');
