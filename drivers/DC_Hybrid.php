@@ -628,26 +628,8 @@ abstract class DC_Hybrid extends \DataContainer
 	 */
 	protected function setSubmission()
 	{
-		// if it is a filter form we can also provide non db fields here
-		if(\Database::getInstance()->tableExists($this->strTable) && !$this->isFilterForm)
+		foreach ($this->dca['fields'] as $strName => $arrField)
 		{
-			$arrFields = \Database::getInstance()->listFields($this->strTable);
-		} else
-		{
-			$arrFields = $this->dca['fields'];
-		}
-		
-		foreach ($arrFields as $strName => $arrField)
-		{
-			// if database field
-			if(isset($arrField['name']))
-			{
-				$strName = $arrField['name'];
-			}
-
-			// skip index fields
-			if($arrField['type'] === 'index') continue;
-
 			$arrData = $this->dca['fields'][$strName];
 
 			// unset options_callback, as long as we have no valid backend user
