@@ -15,14 +15,13 @@ namespace HeimrichHannot\FormHybrid;
 class FormSubmissionHelper extends FormHelper
 {
 
-	public static function prepareData(\Model $objSubmission, array $arrDca, $dc, $arrFields=array())
+	public static function prepareData(\Model $objSubmission, array $arrDca, $dc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
 	{
 		$arrSubmissionData = array();
 
-		foreach ($objSubmission->row() as $strName => $varValue) {
-			if (in_array($strName, array('pid', 'id', 'tstamp')) || empty($varValue)) {
-				continue;
-			}
+		foreach ($objSubmission->row() as $strName => $varValue)
+		{
+			if(empty($varValue)) continue;
 
 			$arrData = $arrDca['fields'][$strName];
 
@@ -57,7 +56,7 @@ class FormSubmissionHelper extends FormHelper
 
 			$arrSubmissionData['submission_all'] .= $strSubmission;
 
-			if(in_array($strName, $arrFields))
+			if(in_array($strName, $arrFields) && !in_array($strName, $arrSkipFields))
 			{
 				$arrSubmissionData['submission'] .= $strSubmission;
 			}
