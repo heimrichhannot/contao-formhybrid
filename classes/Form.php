@@ -175,6 +175,9 @@ abstract class Form extends DC_Hybrid
 				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridSubmissionMailText, $arrSubmissionData), false),
 				$arrSubmissionData
 			);
+
+			// convert <br> to new line and strip tags, except links
+			$objEmail->text = strip_tags(preg_replace('/<br(\s+)?\/?>/i', "\n", $objEmail->text), '<a>');
 		}
 
 
@@ -297,6 +300,9 @@ abstract class Form extends DC_Hybrid
 				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->formHybridConfirmationMailText, $arrSubmissionData), false),
 				$arrSubmissionData
 			);
+
+			// convert <br> to new line and strip tags, except links
+			$objEmail->text = strip_tags(preg_replace('/<br(\s+)?\/?>/i', "\n", $objEmail->text), '<a>');
 		}
 
 		if($this->formHybridConfirmationMailTemplate != '')
