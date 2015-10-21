@@ -9,7 +9,7 @@
 			if(action == 'toggleSubpalette') return false;
 
 			// sroll to first alert message or first error field, inside formhybrid modules
-			var alert = $('.formhybrid:first').parent(['class^="mod_"']).find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first, p.alert:first, fieldset.error:first');
+			var alert = $('.formhybrid:first').not('.noscroll').parent(['class^="mod_"']).find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first, p.alert:first, fieldset.error:first');
 
 			if(alert.length > 0){
 				var alertOffset = alert.offset();

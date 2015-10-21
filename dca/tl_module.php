@@ -231,6 +231,13 @@ $arrFields = array
 		'eval'        => array('allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true),
 		'sql'         => "text NULL",
 	),
+	'formHybridSkipScrollingToSuccessMessage'   => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSkipScrollingToSuccessMessage'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('tl_class' => 'w50 clr'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
 	'formHybridSendSubmissionViaEmail'         => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'],
 		'exclude'     => true,
@@ -615,11 +622,9 @@ class tl_form_hybrid_module extends \Backend
 			$dc = new HeimrichHannot\FormHybrid\DC_Hybrid('tl_module', $objModule);
 		}
 
-
 		if (!$dc->activeRecord->formHybridDataContainer) {
 			return array();
 		}
-
 
 		$arrFields = HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
 			$dc->activeRecord->formHybridDataContainer,
@@ -643,8 +648,6 @@ class tl_form_hybrid_module extends \Backend
 				);
 			}
 		}
-		
-
 
 		return $arrFields;
 	}

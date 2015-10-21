@@ -2,8 +2,9 @@
 namespace HeimrichHannot\FormHybrid;
 
 use Contao\Widget;
+use HeimrichHannot\HastePlus\Environment;
 
-abstract class DC_Hybrid extends \DataContainer
+class DC_Hybrid extends \DataContainer
 {
 	protected $strFormId;
 
@@ -90,10 +91,12 @@ abstract class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord = class_exists($strModelClass) && !(new \ReflectionClass($strModelClass))->isAbstract() ? new $strModelClass : new Submission();
 			$this->setDefaults();
 			$this->setSubmission();
+
 			// frontendedit saves the model initially in order to get an id
-			if ($this->initiallySaveModel) {
+			if ($this->initiallySaveModel && !$this->intId) {
 				$this->objActiveRecord->tstamp = 0;
 				$this->objActiveRecord->save();
+				\Controller::redirect(Environment::addParameterToUri(Environment::getUrl(), 'id', $this->objActiveRecord->id));
 			}
 		}
 	}
@@ -142,7 +145,6 @@ abstract class DC_Hybrid extends \DataContainer
 		}
 
 		if ($this->isSubmitted && !$this->doNotSubmit) {
-
 			// save for save_callbacks
 			$this->save();
 
@@ -197,7 +199,8 @@ abstract class DC_Hybrid extends \DataContainer
 				$arrSubpaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strName]);
 
 				// if subpalette isn't active, remove the fields
-				if (!isset($this->arrDefaultValues[$strName]) || !$this->arrDefaultValues[$strName]) {
+				if (($this->intId && !$this->objActiveRecord->{$strName}) &&
+					(!isset($this->arrDefaultValues[$strName]) || !$this->arrDefaultValues[$strName])) {
 					$arrFields = array_diff($arrFields, $arrSubpaletteFields);
 				}
 
@@ -310,7 +313,7 @@ abstract class DC_Hybrid extends \DataContainer
 
 		$arrData['eval']['tagTable'] = $this->strTable;
 
-		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, $varValue, $strName, $this->strTable, $this);
+		$arrWidget = \Widget::getAttributesFromDca($arrData, $strName, is_array($varValue) ? $varValue : $this->replaceInsertTags($varValue), $strName, $this->strTable, $this);
 
 		if (isset($this->dca['subpalettes'][$strName]) && $arrData['eval']['submitOnChange']) {
 			$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "')";
@@ -352,7 +355,7 @@ abstract class DC_Hybrid extends \DataContainer
 					$this->strTable,
 					$strName,
 					$varValue,
-					$this->instanceId > 0 ? $this->instanceId : null
+					$this->intId > 0 ? $this->intId : null
 				)
 			) {
 				$objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
@@ -418,6 +421,7 @@ abstract class DC_Hybrid extends \DataContainer
 		$this->Template->method     = $this->strMethod;
 		$this->Template->action     = $this->strAction;
 		$this->Template->enctype    = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
+		$this->Template->skipScrollingToSuccessMessage = $this->skipScrollingToSuccessMessage;
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
 		$this->Template->class     = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName . ' formhybrid';
@@ -496,19 +500,14 @@ abstract class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
-		if($this->isFilterForm)
-		{
-			return;
-		}
-
-		if (!$this->objActiveRecord instanceof \Contao\Model) {
+		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model) {
 			return;
 		}
 
 		// Create the initial version (see #7816)
 		$objVersion = new \Versions($this->strTable, $this->objActiveRecord->id);
-		$objVersion->setUserId(0);
-		$objVersion->setUsername($this->username);
+		$objVersion->userid = 0;
+		$objVersion->username = $this->username;
 
 		$objVersion = $this->modifyVersion($objVersion);
 
@@ -582,11 +581,11 @@ abstract class DC_Hybrid extends \DataContainer
 
 			// set from default field value
 			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
-				$this->objActiveRecord->{$strName} = $varDefault;
+				$this->objActiveRecord->{$strName} = $this->replaceInsertTags($varDefault);
 			}
 
 			if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
-				$this->objActiveRecord->{$strName} = $varDefault['value'];
+				$this->objActiveRecord->{$strName} = $this->replaceInsertTags($varDefault['value']);
 			}
 		}
 
@@ -610,7 +609,7 @@ abstract class DC_Hybrid extends \DataContainer
 						$this->hasSubmit = true;
 						break;
 					default:
-						$this->objActiveRecord->{$strField} = $varDefault['value'];
+						$this->objActiveRecord->{$strField} = $this->replaceInsertTags($varDefault['value']);
 				}
 
 				// do not render hidden fields yet, just set them as value in $this->objActiveRecord
@@ -635,15 +634,16 @@ abstract class DC_Hybrid extends \DataContainer
 			// unset options_callback, as long as we have no valid backend user
 			unset($arrData['options_callback'], $arrData['options_callback']);
 
-			$arrAttribues = \Widget::getAttributesFromDca($arrData, $strName, $this->objActiveRecord->{$strName}, $strName, $this->strTable, $this);
+			$arrAttribues = \Widget::getAttributesFromDca($arrData, $strName, $this->replaceInsertTags($this->objActiveRecord->{$strName}), $strName, $this->strTable, $this);
 
 			switch ($this->strMethod) {
 				case FORMHYBRID_METHOD_GET:
-					$this->arrSubmission[$strName] = FormHelper::getGet($strName);
+					$this->arrSubmission[$strName] = $this->replaceInsertTags(FormHelper::getGet($strName));
 					break;
 				case FORMHYBRID_METHOD_POST:
-					$this->arrSubmission[$strName] =
-						FormHelper::getPost($strName, $arrAttribues['decodeEntities'], $arrAttribues['allowHtml'], $arrAttribues['preserveTags']);
+					$this->arrSubmission[$strName] = $this->replaceInsertTags(
+						FormHelper::getPost($strName, $arrAttribues['decodeEntities'], $arrAttribues['allowHtml'], $arrAttribues['preserveTags'])
+					);
 					break;
 			}
 		}
@@ -718,5 +718,5 @@ abstract class DC_Hybrid extends \DataContainer
 		return $this->dca;
 	}
 
-	abstract protected function processForm();
+	protected function processForm() {}
 }

@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\HastePlus\Environment;
+
 abstract class Form extends DC_Hybrid
 {
 	protected $arrData = array();
@@ -22,14 +24,14 @@ abstract class Form extends DC_Hybrid
 
 	protected $strClass;
 
-	protected $instanceId = 0; // id of model entitiy
+	protected $intId = 0; // id of model entitiy
 
 	private $useModelData = false;
 
 	private $resetAfterSubmission = true;
 
 
-	public function __construct(\ModuleModel $objModule = null, $instanceId = 0)
+	public function __construct(\ModuleModel $objModule = null, $intId = 0)
 	{
 		global $objPage;
 
@@ -41,6 +43,7 @@ abstract class Form extends DC_Hybrid
 			$this->strTable    = $objModule->formHybridDataContainer;
 			$this->strPalette  = $objModule->formHybridPalette;
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
+			$this->skipScrollingToSuccessMessage = $objModule->formHybridSkipScrollingToSuccessMessage;
 
 			if ($objModule->formHybridAddEditableRequired) {
 				$this->overwriteRequired = true;
@@ -54,7 +57,7 @@ abstract class Form extends DC_Hybrid
 				FormHelper::getAssocMultiColumnWizardList(deserialize($objModule->formHybridDefaultValues, true), 'field');
 			$this->skipValidation        =
 				$objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
-			$this->instanceId            = $instanceId;
+			$this->intId            = $intId;
 			$this->strTemplateStart      = $this->formHybridStartTemplate ?: $this->strTemplateStart;
 			$this->strTemplateStop       = $this->formHybridStopTemplate ?: $this->strTemplateStop;
 			$this->async                 = $this->formHybridAsync;
@@ -63,10 +66,8 @@ abstract class Form extends DC_Hybrid
 		}
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
-		$this->strActionDefault = ($this->instanceId
-			?
-			XCommonEnvironment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->instanceId)
-			:
+		$this->strActionDefault = ($this->intId ?
+			Environment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->intId) :
 			$this->generateFrontendUrl($objPage->row()));
 		$this->strAction        = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
 		$this->strFormId        = $this->strTable . '_' . $this->id;
@@ -481,7 +482,7 @@ abstract class Form extends DC_Hybrid
 		return isset($this->arrData[$strKey]);
 	}
 
-	public function getSubmission($blnFormated = true)
+	public function getSubmission($blnFormatted = true)
 	{
 		if(!$this->isSubmitted()) return null;
 
@@ -498,7 +499,7 @@ abstract class Form extends DC_Hybrid
 				// unset options_callback, as long as we have no valid backend user
 				unset($arrData['options_callback'], $arrData['options_callback']);
 
-				if($blnFormated)
+				if($blnFormatted)
 				{
 					$objSubmission->{$strField} = FormHelper::getFormatedValueByDca($varValue, $arrData, $this, false);
 				}

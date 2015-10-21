@@ -73,7 +73,7 @@ class FormSubmissionHelper extends FormHelper
 
 		$varValue = deserialize($varValue);
 		
-		$strSubmission = $strLabel . ": " . (is_array($varValue) ? '' : $strOutput) . "\n";
+		$strSubmission = $strLabel . ": " . $strOutput . "\n";
 
 		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);
 	}

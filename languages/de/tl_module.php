@@ -24,6 +24,8 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridAsync'][1] = 'Wählen Sie diese Opti
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][0] = 'Erfolgsmeldung überschreiben';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSuccessMessage'][1] = 'Geben Sie hier eine alternative Erfolgsmeldung an.';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSkipScrollingToSuccessMessage'][0] = 'Nicht zur Erfolsmeldung scrollen';
+$GLOBALS['TL_LANG']['tl_module']['formHybridSkipScrollingToSuccessMessage'][1] = 'Wählen Sie diese Option, damit nicht automatisch zur Erfolgsmeldung gescrollt wird.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][0] = 'Per E-Mail versenden';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'][1] = 'Die Formulardaten an eine E-Mail-Adresse versenden.';
 $GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSender'][0] = 'Absender';

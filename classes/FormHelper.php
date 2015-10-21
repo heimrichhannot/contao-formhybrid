@@ -372,7 +372,14 @@ class FormHelper extends \System
 
 			$value = array_filter($value); // remove empty elements
 
-			$value = implode(', ', $value);
+			$value = implode(', ', array_map(function($value) use ($rfrc) {
+				if (is_array($rfrc))
+				{
+					return isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
+				}
+				else
+					return $value;
+			}, $value));
 		}
 		elseif (is_array($opts) && array_is_assoc($opts))
 		{

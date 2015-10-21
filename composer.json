@@ -18,7 +18,8 @@
     },
     "require": {
         "contao/core": ">=3.2,<4-dev",
-        "html2text/html2text": ">=2.0.0,<3.0.0-dev"
+        "html2text/html2text": ">=2.0.0,<3.0.0-dev",
+        "heimrichhannot/haste_plus": ">=1.0.9"
     },
     "autoload": {
         "classmap": [""]
