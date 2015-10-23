@@ -650,16 +650,14 @@ class DC_Hybrid extends \DataContainer
 			// unset options_callback, as long as we have no valid backend user
 			unset($arrData['options_callback'], $arrData['options_callback']);
 
-			$arrAttribues = \Widget::getAttributesFromDca($arrData, $strName, $this->replaceInsertTags($this->objActiveRecord->{$strName}), $strName, $this->strTable, $this);
+			$arrAttribues = \Widget::getAttributesFromDca($arrData, $strName, $this->objActiveRecord->{$strName}, $strName, $this->strTable, $this);
 
 			switch ($this->strMethod) {
 				case FORMHYBRID_METHOD_GET:
-					$this->arrSubmission[$strName] = $this->replaceInsertTags(FormHelper::getGet($strName));
+					$this->arrSubmission[$strName] = FormHelper::getGet($strName);
 					break;
 				case FORMHYBRID_METHOD_POST:
-					$this->arrSubmission[$strName] = $this->replaceInsertTags(
-						FormHelper::getPost($strName, $arrAttribues['decodeEntities'], $arrAttribues['allowHtml'], $arrAttribues['preserveTags'])
-					);
+					$this->arrSubmission[$strName] = FormHelper::getPost($strName, $arrAttribues['decodeEntities'], $arrAttribues['allowHtml'], $arrAttribues['preserveTags']);
 					break;
 			}
 		}
