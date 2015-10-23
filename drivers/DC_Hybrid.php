@@ -30,6 +30,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $dca;
 
+	protected $arrDefaults = array();
+
 	protected $arrFields = array();
 
 	protected $arrSubFields = array();
@@ -581,11 +583,11 @@ class DC_Hybrid extends \DataContainer
 
 			// set from default field value
 			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
-				$this->objActiveRecord->{$strName} = $this->replaceInsertTags($varDefault);
+				$this->arrDefaults[$strName] = $this->replaceInsertTags($varDefault);
 			}
 
 			if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
-				$this->objActiveRecord->{$strName} = $this->replaceInsertTags($varDefault['value']);
+				$this->arrDefaults[$strName] = $this->replaceInsertTags($varDefault['value']);
 			}
 		}
 
@@ -609,7 +611,7 @@ class DC_Hybrid extends \DataContainer
 						$this->hasSubmit = true;
 						break;
 					default:
-						$this->objActiveRecord->{$strField} = $this->replaceInsertTags($varDefault['value']);
+						$this->arrDefaults[$strName] = $this->replaceInsertTags($varDefault['value']);
 				}
 
 				// do not render hidden fields yet, just set them as value in $this->objActiveRecord
@@ -620,6 +622,20 @@ class DC_Hybrid extends \DataContainer
 				}
 			}
 		}
+
+		// set active record from defaults
+		if(is_array($this->arrDefaults))
+		{
+			foreach($this->arrDefaults as $strName => $varValue)
+			{
+				$this->objActiveRecord->{$strName} = $varValue;
+			}
+		}
+	}
+
+	public function getDefaults()
+	{
+		return is_array($this->arrDefaults) ? $this->arrDefaults : array();
 	}
 
 	/**

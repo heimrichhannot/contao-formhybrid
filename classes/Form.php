@@ -484,15 +484,20 @@ abstract class Form extends DC_Hybrid
 
 	public function getSubmission($blnFormatted = true)
 	{
-		if(!$this->isSubmitted()) return null;
+		$arrSubmission = $this->arrSubmission;
 
-		if($this->isFilterForm && is_array($this->arrSubmission))
+		if(!$this->isSubmitted())
+		{
+			$arrSubmission = $this->getDefaults();
+		}
+
+		if($this->isFilterForm && is_array($arrSubmission))
 		{
 			$arrDca = $this->getDca();
 
 			$objSubmission = new Submission();
 
-			foreach($this->arrSubmission as $strField => $varValue)
+			foreach($arrSubmission as $strField => $varValue)
 			{
 				$arrData = $arrDca['fields'][$strField];
 
