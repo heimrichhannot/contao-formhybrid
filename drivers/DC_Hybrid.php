@@ -58,6 +58,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $isFilterForm = false;
 
+	protected $blnIsComplete;
+
 	public function __construct($strTable, $objModule = null)
 	{
 		$this->import('Database');
@@ -152,6 +154,8 @@ class DC_Hybrid extends \DataContainer
 
 			// run field callbacks
 			$this->runCallbacks();
+
+			$this->blnIsComplete = true;
 
 			$this->objActiveRecord->refresh();
 
@@ -427,6 +431,8 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
 		$this->Template->class     = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName . ' formhybrid';
+		if ($this->isComplete)
+			$this->Template->class .= ' complete';
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
@@ -733,4 +739,9 @@ class DC_Hybrid extends \DataContainer
 	}
 
 	protected function processForm() {}
+
+	public function isComplete()
+	{
+		return $this->blnIsComplete;
+	}
 }

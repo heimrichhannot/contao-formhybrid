@@ -389,6 +389,13 @@ $arrFields = array
 		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
 		'sql'       => "blob NULL",
 	),
+	'formHybridIsComplete'               => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridIsComplete'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('tl_class' => 'w50 clr', 'disabled'=>true),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
 );
 
 if (in_array('avisota-core', \ModuleLoader::getActive()))

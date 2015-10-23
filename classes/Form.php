@@ -44,6 +44,7 @@ abstract class Form extends DC_Hybrid
 			$this->strPalette  = $objModule->formHybridPalette;
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
 			$this->skipScrollingToSuccessMessage = $objModule->formHybridSkipScrollingToSuccessMessage;
+			$this->isComplete = $objModule->formHybridIsComplete;
 
 			if ($objModule->formHybridAddEditableRequired) {
 				$this->overwriteRequired = true;

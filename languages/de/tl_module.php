@@ -69,3 +69,6 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridTemplate'][1] = 'Hier können Sie da
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'][0] = 'Eigene Formular-Template für Subpaletten';
 $GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'][1] = 'Verwenden Sie eigene Templates für Subpaletten, dann erstellen Sie ein hängen Sie dem Formular-Template _sub_[SUBPALETTE_KEY] an.';
+
+$GLOBALS['TL_LANG']['tl_module']['formHybridIsComplete'][0] = 'Komplett';
+$GLOBALS['TL_LANG']['tl_module']['formHybridIsComplete'][1] = 'Diese Option wird automatisch vom Modul gesetzt, wenn das Formular mindestens einmal ';
