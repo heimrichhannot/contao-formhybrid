@@ -1,5 +1,5 @@
-<div id="<?php echo $this->ajaxId; ?>">
+<div id="<?= $this->ajaxId; ?>">
 	<?php foreach($this->fields as $name => $objField): ?>
-		<?php echo $objField->parse(); ?>
+		<?= $objField->parse(); ?>
 	<?php endforeach; ?>
 </div>

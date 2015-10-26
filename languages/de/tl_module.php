@@ -15,9 +15,6 @@ $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['field'] = array('Fe
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'] = array('Wert', 'Geben Sie hier den gewünschten Standardwert ein. Arrays bitte serialisiert eingeben.');
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['label'] = array('Label', 'Geben Sie eine alternative Bezeichnung/Label an?');
 $GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['hidden'] = array('Feld verstecken', 'Soll das Feld versteckt werden?');
-$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes'] = array('Subpaletten', 'Wählen Sie hier die gewünschten Subpaletten aus.');
-$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['subpalette'] = array('Subpalette', 'Wählen Sie hier die gewünschten Subpaletten aus.');
-$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['fields'] = array('Felder', 'Wählen Sie hier die gewünschten Felder aus.');
 
 $GLOBALS['TL_LANG']['tl_module']['formHybridAsync'][0] = 'Formular asynchron absenden';
 $GLOBALS['TL_LANG']['tl_module']['formHybridAsync'][1] = 'Wählen Sie diese Option, wenn Sie das Formular asynchron versenden wollen.';

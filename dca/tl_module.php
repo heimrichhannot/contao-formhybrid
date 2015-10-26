@@ -94,32 +94,6 @@ $arrFields = array
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight'),
 		'sql'              => "blob NULL",
 	),
-	'formHybridSubPalettes'                    => array
-	(
-		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes'],
-		'inputType' => 'multiColumnWizard',
-		'exclude'   => true,
-		'eval'      => array(
-			'columnFields' => array(
-				'subpalette' => array(
-					'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['subpalette'],
-					'exclude'          => true,
-					'inputType'        => 'select',
-					'options_callback' => array('tl_form_hybrid_module', 'getSubPalettes'),
-					'eval'             => array('chosen' => true, 'submitOnChange' => true, 'style' => 'width: 200px'),
-				),
-				'fields'     => array(
-					'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubPalettes']['fields'],
-					'exclude'          => true,
-					'inputType'        => 'checkboxWizard',
-					'eval'             => array('columnPos' => 1, 'chosen' => true, 'multiple' => true),
-					'options_callback' => array('tl_form_hybrid_module', 'getSubPaletteFields'),
-				),
-			),
-			'tl_class'     => 'clr long',
-		),
-		'sql'       => "blob NULL",
-	),
 	'formHybridAddDefaultValues'               => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddDefaultValues'],
 		'exclude'   => true,
@@ -567,54 +541,6 @@ class tl_form_hybrid_module extends \Backend
 		return $return;
 	}
 
-	public function getSubPalettes($dc)
-	{
-		$return = array();
-
-		if (!$dc->activeRecord->formHybridDataContainer) {
-			return $return;
-		}
-
-		\System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
-		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
-
-		$arrPalettes = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'];
-
-		if (!is_array($arrPalettes)) {
-			return $return;
-		}
-
-		foreach ($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'] as $strSelector => $strSubPalette) {
-			$return[$strSelector] = $strSelector;
-		}
-
-		sort($return);
-
-		return $return;
-	}
-
-	public function getSubPaletteFields($dc)
-	{
-		$return = array();
-
-		if (!$dc->activeRecord->formHybridDataContainer || !$dc->value[0]['subpalette']) {
-			return $return;
-		}
-
-		\System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
-		$this->loadDataContainer($dc->activeRecord->formHybridDataContainer);
-
-		foreach (
-			explode(',', $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'][$dc->value[0]['subpalette']])
-			as $v
-		) {
-			$label = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'][$v]['label'][0];
-
-			$return[$v] = $label ? $label : $v;
-		}
-
-		return $return;
-	}
 
 	public function getEditable($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	{
