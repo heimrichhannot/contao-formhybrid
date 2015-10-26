@@ -106,8 +106,17 @@ class DC_Hybrid extends \DataContainer
 			if ($this->initiallySaveModel && !$this->intId) {
 				$this->objActiveRecord->tstamp = 0;
 				$this->objActiveRecord->save();
+				$strUrl = Environment::getUrl();
+
+				if (in_array('frontendedit', \ModuleLoader::getActive()))
+				{
+					// create -> edit
+					$strUrl = Environment::removeParameterFromUri($strUrl, 'act');
+					$strUrl = Environment::addParameterToUri($strUrl, 'act', FRONTENDEDIT_ACT_EDIT);
+				}
+
 				\Controller::redirect(
-					Environment::addParameterToUri(Environment::getUrl(), 'id', $this->objActiveRecord->id)
+					Environment::addParameterToUri($strUrl, 'id', $this->objActiveRecord->id)
 				);
 			}
 		}
