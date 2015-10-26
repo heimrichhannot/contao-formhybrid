@@ -367,7 +367,7 @@ $arrFields = array
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridIsComplete'],
 		'exclude'   => true,
 		'inputType' => 'checkbox',
-		'eval'      => array('tl_class' => 'w50 clr', 'disabled'=>true),
+		'eval'      => array('tl_class' => 'w50 clr', 'disabled'=>true, 'doNotCopy' => true),
 		'sql'       => "char(1) NOT NULL default ''",
 	),
 );
