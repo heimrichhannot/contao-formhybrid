@@ -662,11 +662,6 @@ class DC_Hybrid extends \DataContainer
 				$this->objActiveRecord->{$strName} = $varValue;
 			}
 		}
-
-		ob_start();
-		var_dump($this->objActiveRecord);
-		file_put_contents('/home/dennis/debug.txt', ob_get_contents(), FILE_APPEND);
-		ob_end_clean();
 	}
 
 	public function getDefaults()
