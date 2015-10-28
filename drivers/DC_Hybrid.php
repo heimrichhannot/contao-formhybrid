@@ -60,11 +60,12 @@ class DC_Hybrid extends \DataContainer
 
 	protected $blnIsComplete;
 
-	public function __construct($strTable, $objModule = null)
+	public function __construct($strTable, $objModule = null, $intId = 0)
 	{
 		$this->import('Database');
 		$this->strTable = $strTable;
 		$this->objModule = $objModule;
+		$this->intId = $intId;
 		$this->loadDC();
 
 		$this->initialize();
@@ -627,31 +628,34 @@ class DC_Hybrid extends \DataContainer
 		}
 
 		// add more fields, for example from other palettes or fields that have no palette or no sql
-		foreach ($this->arrDefaultValues as $strField => $varDefault) {
-			$arrData = $this->dca['fields'][$strField];
+		if (is_array($this->arrDefaultValues))
+		{
+			foreach ($this->arrDefaultValues as $strField => $varDefault) {
+				$arrData = $this->dca['fields'][$strField];
 
-			if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
+				if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
 
-				if ($varDefault['hidden']) {
-					$this->dca['fields'][$strField]['inputType'] = 'hidden';
-				}
+					if ($varDefault['hidden']) {
+						$this->dca['fields'][$strField]['inputType'] = 'hidden';
+					}
 
-				if (strlen($varDefault['label']) > 0) {
-					$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
-				}
+					if (strlen($varDefault['label']) > 0) {
+						$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
+					}
 
-				switch ($arrData['inputType']) {
-					case 'submit':
-						$this->hasSubmit = true;
-						break;
-					default:
-						$this->arrDefaults[$strField] = \Controller::replaceInsertTags($varDefault['value']);
-				}
+					switch ($arrData['inputType']) {
+						case 'submit':
+							$this->hasSubmit = true;
+							break;
+						default:
+							$this->arrDefaults[$strField] = \Controller::replaceInsertTags($varDefault['value']);
+					}
 
-				// do not render hidden fields yet, just set them as value in $this->objActiveRecord
-				// otherwise they will get overwritten by request and checkboxes will not be checked
-				if (!$varDefault['hidden']) {
-					$this->arrEditable[] = $strField;
+					// do not render hidden fields yet, just set them as value in $this->objActiveRecord
+					// otherwise they will get overwritten by request and checkboxes will not be checked
+					if (!$varDefault['hidden']) {
+						$this->arrEditable[] = $strField;
+					}
 				}
 			}
 		}
