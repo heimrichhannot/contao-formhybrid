@@ -65,7 +65,7 @@ class DC_Hybrid extends \DataContainer
 		$this->import('Database');
 		$this->strTable = $strTable;
 		$this->objModule = $objModule;
-		$this->intId = $intId;
+		$this->intId = ($this->intId ? $this->intId : $intId);
 		$this->loadDC();
 
 		$this->initialize();
