@@ -67,10 +67,6 @@ abstract class Form extends DC_Hybrid
 		}
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
-		$this->strActionDefault = ($this->intId ?
-			Environment::addParameterToUri($this->generateFrontendUrl($objPage->row()), 'id', $this->intId) :
-			$this->generateFrontendUrl($objPage->row()));
-		$this->strAction        = is_null($this->strAction) ? $this->strActionDefault : $this->strAction;
 		$this->strFormId        = $this->strTable . '_' . $this->id;
 		$this->strFormName      = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
