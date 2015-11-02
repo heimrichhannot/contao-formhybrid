@@ -9,6 +9,7 @@ $dc['palettes']['__selector__'][]                      = 'formHybridAddDefaultVa
 $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddEditableRequired';
+$dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
 	'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
@@ -17,6 +18,8 @@ $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
 	'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
 
 $dc['subpalettes']['formHybridAddEditableRequired'] = 'formHybridEditableRequired';
+
+$dc['subpalettes']['formHybridAddFieldDependentRedirect'] = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
 
 /**
  * Callbacks
@@ -363,14 +366,34 @@ $arrFields = array
 		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
 		'sql'       => "blob NULL",
 	),
-	'formHybridIsComplete'               => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridIsComplete'],
+	'formHybridAddFieldDependentRedirect'            => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddFieldDependentRedirect'],
 		'exclude'   => true,
 		'inputType' => 'checkbox',
-		'eval'      => array('tl_class' => 'w50 clr', 'disabled'=>true, 'doNotCopy' => true),
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
 		'sql'       => "char(1) NOT NULL default ''",
 	),
+	'formHybridFieldDependentRedirectKeepParams'            => array
+	(
+		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectKeepParams'],
+		'inputType'   => 'text',
+		'eval'        => array('tl_class' => 'w50'),
+		'sql'         => "varchar(255) NOT NULL default ''",
+	)
 );
+
+// conditions for the field depending redirect
+$arrFields['formHybridFieldDependentRedirectConditions'] = $arrFields['formHybridDefaultValues'];
+$arrFields['formHybridFieldDependentRedirectConditions']['label'] =
+	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectConditions'];
+unset($arrFields['formHybridFieldDependentRedirectConditions']['label']['eval']['columnFields']['label']);
+unset($arrFields['formHybridFieldDependentRedirectConditions']['label']['eval']['columnFields']['hidden']);
+$arrFields['formHybridFieldDependentRedirectJumpTo'] = $dc['fields']['jumpTo'];
+$arrFields['formHybridFieldDependentRedirectJumpTo']['label'] =
+	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectJumpTo'];
+$arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['mandatory'] = true;
+$arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['tl_class'] = 'w50';
 
 if (in_array('avisota-core', \ModuleLoader::getActive()))
 {

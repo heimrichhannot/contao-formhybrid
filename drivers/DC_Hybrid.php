@@ -3,6 +3,7 @@ namespace HeimrichHannot\FormHybrid;
 
 use Contao\Widget;
 use HeimrichHannot\HastePlus\Environment;
+use HeimrichHannot\StatusMessages\StatusMessage;
 
 class DC_Hybrid extends \DataContainer
 {
@@ -58,14 +59,12 @@ class DC_Hybrid extends \DataContainer
 
 	protected $isFilterForm = false;
 
-	protected $blnIsComplete;
-
 	public function __construct($strTable, $objModule = null, $intId = 0)
 	{
 		$this->import('Database');
 		$this->strTable = $strTable;
 		$this->objModule = $objModule;
-		$this->intId = ($this->intId ? $this->intId : $intId);
+		$this->intId = $this->intId ?: $intId;
 		$this->loadDC();
 
 		$this->initialize();
@@ -88,10 +87,52 @@ class DC_Hybrid extends \DataContainer
 		if ($this->intId && is_numeric($this->intId)) {
 			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
 				$this->objActiveRecord = $objModel;
+
+				// redirect on specific field value
+				if ($this->formHybridAddFieldDependentRedirect)
+				{
+					$arrConditions = deserialize($this->formHybridFieldDependentRedirectConditions, true);
+					$blnRedirect = true;
+
+					if (!empty($arrConditions)) {
+						foreach ($arrConditions as $arrCondition)
+						{
+							if ($this->objActiveRecord->{$arrCondition['field']} != $this->replaceInsertTags($arrCondition['value']))
+								$blnRedirect = false;
+						}
+
+					}
+
+					if ($blnRedirect)
+					{
+						global $objPage;
+
+						if (($objPageJumpTo = \PageModel::findByPk($this->formHybridFieldDependentRedirectJumpTo)) !== null
+							|| $objPageJumpTo = $objPage)
+						{
+							$strRedirect = \Controller::generateFrontendUrl($objPageJumpTo->row());
+
+							if ($this->formHybridFieldDependentRedirectKeepParams)
+							{
+								$arrParamsToKeep = explode(',', $this->formHybridFieldDependentRedirectKeepParams);
+								if (!empty($arrParamsToKeep))
+								{
+									foreach (Environment::getUriParameters(Environment::getUrl()) as $strParam => $strValue)
+									{
+										if (in_array($strParam, $arrParamsToKeep))
+											$strRedirect = Environment::addParameterToUri($strRedirect, $strParam, $strValue);
+									}
+								}
+							}
+
+							StatusMessage::resetAll();
+							\Controller::redirect($strRedirect);
+						}
+					}
+				}
 			} else {
 				$this->Template->invalid = true;
-				$_SESSION[FORMHYBRID_MESSAGE_ERROR]
-					= $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'];
+				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id);
 			}
 		} else {
 			$this->objActiveRecord = class_exists($strModelClass)
@@ -173,8 +214,6 @@ class DC_Hybrid extends \DataContainer
 			// save for save_callbacks
 			$this->save();
 
-			$this->blnIsComplete = true;
-
 			$this->objActiveRecord->refresh();
 
 			// create new version
@@ -189,18 +228,6 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 		$this->Template->submission = $this->objActiveRecord;
-
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS])) {
-			$this->Template->messageType = 'success';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_SUCCESS];
-			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
-		}
-
-		if (isset($_SESSION[FORMHYBRID_MESSAGE_ERROR])) {
-			$this->Template->messageType = 'danger';
-			$this->Template->message = $_SESSION[FORMHYBRID_MESSAGE_ERROR];
-			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
-		}
 
 		$this->compile();
 
@@ -462,9 +489,6 @@ class DC_Hybrid extends \DataContainer
 
 		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName
 			. ' formhybrid';
-		if ($this->isComplete) {
-			$this->Template->class .= ' complete';
-		}
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
@@ -774,8 +798,9 @@ class DC_Hybrid extends \DataContainer
 	{
 	}
 
-	public function isComplete()
+	public function getTable()
 	{
-		return $this->blnIsComplete;
+		return $this->strTable;
 	}
+
 }

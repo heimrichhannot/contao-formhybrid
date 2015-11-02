@@ -3,6 +3,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 use HeimrichHannot\HastePlus\Environment;
+use HeimrichHannot\StatusMessages\StatusMessage;
 
 abstract class Form extends DC_Hybrid
 {
@@ -270,7 +271,7 @@ abstract class Form extends DC_Hybrid
 			$arrSubmissionData
 		);
 
-		$_SESSION[FORMHYBRID_MESSAGE_SUCCESS] = $this->formHybridSuccessMessage;
+		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id);
 	}
 
 	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
