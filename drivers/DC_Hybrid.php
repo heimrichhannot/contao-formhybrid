@@ -89,47 +89,7 @@ class DC_Hybrid extends \DataContainer
 				$this->objActiveRecord = $objModel;
 
 				// redirect on specific field value
-				if ($this->formHybridAddFieldDependentRedirect)
-				{
-					$arrConditions = deserialize($this->formHybridFieldDependentRedirectConditions, true);
-					$blnRedirect = true;
-
-					if (!empty($arrConditions)) {
-						foreach ($arrConditions as $arrCondition)
-						{
-							if ($this->objActiveRecord->{$arrCondition['field']} != $this->replaceInsertTags($arrCondition['value']))
-								$blnRedirect = false;
-						}
-
-					}
-
-					if ($blnRedirect)
-					{
-						global $objPage;
-
-						if (($objPageJumpTo = \PageModel::findByPk($this->formHybridFieldDependentRedirectJumpTo)) !== null
-							|| $objPageJumpTo = $objPage)
-						{
-							$strRedirect = \Controller::generateFrontendUrl($objPageJumpTo->row());
-
-							if ($this->formHybridFieldDependentRedirectKeepParams)
-							{
-								$arrParamsToKeep = explode(',', $this->formHybridFieldDependentRedirectKeepParams);
-								if (!empty($arrParamsToKeep))
-								{
-									foreach (Environment::getUriParameters(Environment::getUrl()) as $strParam => $strValue)
-									{
-										if (in_array($strParam, $arrParamsToKeep))
-											$strRedirect = Environment::addParameterToUri($strRedirect, $strParam, $strValue);
-									}
-								}
-							}
-
-							StatusMessage::resetAll();
-							\Controller::redirect($strRedirect);
-						}
-					}
-				}
+				static::doFieldDependentRedirect($this, $this->objActiveRecord);
 			} else {
 				$this->Template->invalid = true;
 				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id);
@@ -159,6 +119,51 @@ class DC_Hybrid extends \DataContainer
 				\Controller::redirect(
 					Environment::addParameterToUri($strUrl, 'id', $this->objActiveRecord->id)
 				);
+			}
+		}
+	}
+
+	public static function doFieldDependentRedirect($objModule, $objModel)
+	{
+		if ($objModule->formHybridAddFieldDependentRedirect)
+		{
+			$arrConditions = deserialize($objModule->formHybridFieldDependentRedirectConditions, true);
+			$blnRedirect = true;
+
+			if (!empty($arrConditions)) {
+				foreach ($arrConditions as $arrCondition)
+				{
+					if ($objModel->{$arrCondition['field']} != $objModule->replaceInsertTags($arrCondition['value']))
+						$blnRedirect = false;
+				}
+
+			}
+
+			if ($blnRedirect)
+			{
+				global $objPage;
+
+				if (($objPageJumpTo = \PageModel::findByPk($objModule->formHybridFieldDependentRedirectJumpTo)) !== null
+					|| $objPageJumpTo = $objPage)
+				{
+					$strRedirect = \Controller::generateFrontendUrl($objPageJumpTo->row());
+
+					if ($objModule->formHybridFieldDependentRedirectKeepParams)
+					{
+						$arrParamsToKeep = explode(',', $objModule->formHybridFieldDependentRedirectKeepParams);
+						if (!empty($arrParamsToKeep))
+						{
+							foreach (Environment::getUriParameters(Environment::getUrl()) as $strParam => $strValue)
+							{
+								if (in_array($strParam, $arrParamsToKeep))
+									$strRedirect = Environment::addParameterToUri($strRedirect, $strParam, $strValue);
+							}
+						}
+					}
+
+					StatusMessage::resetAll();
+					\Controller::redirect($strRedirect);
+				}
 			}
 		}
 	}
