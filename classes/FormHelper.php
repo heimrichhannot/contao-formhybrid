@@ -356,15 +356,15 @@ class FormHelper extends \System
 
 		if ($rgxp == 'date')
 		{
-			$value = \Date::parse($objPage->dateFormat, $value);
+			$value = \Date::parse(\Config::get('dateFormat'), $value);
 		}
 		elseif ($rgxp == 'time')
 		{
-			$value = \Date::parse($objPage->timeFormat, $value);
+			$value = \Date::parse(\Config::get('timeFormat'), $value);
 		}
 		elseif ($rgxp == 'datim')
 		{
-			$value = \Date::parse($objPage->datimFormat, $value);
+			$value = \Date::parse(\Config::get('datimFormat'), $value);
 		}
 		elseif (is_array($value))
 		{

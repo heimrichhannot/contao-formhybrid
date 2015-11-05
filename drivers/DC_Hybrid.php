@@ -135,12 +135,11 @@ class DC_Hybrid extends \DataContainer
 				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id);
 			}
 		} else {
-			$this->objActiveRecord = class_exists($strModelClass)
-			&& !(
-			new \ReflectionClass(
-				$strModelClass
-			)
-			)->isAbstract() ? new $strModelClass : new Submission();
+			if (class_exists($strModelClass))
+			{
+				$objReflection = new \ReflectionClass($strModelClass);
+			}
+			$this->objActiveRecord = class_exists($strModelClass) && !$objReflection->isAbstract() ? new $strModelClass : new Submission();
 			$this->setDefaults();
 			$this->setSubmission();
 
@@ -284,7 +283,8 @@ class DC_Hybrid extends \DataContainer
 
 			if (!$blnAjax) {
 				$objSubTemplate = $this->generateSubpalette('sub_' . $strParent);
-				$this->arrFields[$strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
+				if ($this->arrFields[$strParent])
+					$this->arrFields[$strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 	FormhybridPlugins = {
 		init : function(action){
-			this.scrollToMessages(action);
+			//this.scrollToMessages(action);
 		},
 		scrollToMessages : function(action){
 			// do not scroll if ajax request
