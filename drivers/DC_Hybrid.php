@@ -210,6 +210,9 @@ class DC_Hybrid extends \DataContainer
 			return \Controller::replaceInsertTags($objTemplate->parse(), false);
 		}
 
+		if ($this->isSubmitted && $this->doNotSubmit)
+			$this->runOnValidationError();
+
 		if ($this->isSubmitted && !$this->doNotSubmit)
 		{
 			// run field callbacks, must be before save(), same as contao
@@ -807,5 +810,7 @@ class DC_Hybrid extends \DataContainer
 	{
 		return $this->strTable;
 	}
+
+	public function runOnValidationError() {}
 
 }
