@@ -41,6 +41,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $arrRequired = array();
 
+	protected $arrInvalidFields = array();
+
 	protected $overwriteRequired = false;
 
 	protected $arrSubmission = array();
@@ -211,7 +213,7 @@ class DC_Hybrid extends \DataContainer
 		}
 
 		if ($this->isSubmitted && $this->doNotSubmit)
-			$this->runOnValidationError();
+			$this->runOnValidationError($this->arrInvalidFields);
 
 		if ($this->isSubmitted && !$this->doNotSubmit)
 		{
@@ -432,6 +434,7 @@ class DC_Hybrid extends \DataContainer
 
 			if ($objWidget->hasErrors()) {
 				$this->doNotSubmit = true;
+				$this->arrInvalidFields[] = $strName;
 			} elseif ($objWidget->submitInput()) {
 				$this->objActiveRecord->{$strName} = FormHelper::transformSpecialValues(
 					$objWidget->value, $arrData, $objWidget
@@ -811,6 +814,6 @@ class DC_Hybrid extends \DataContainer
 		return $this->strTable;
 	}
 
-	public function runOnValidationError() {}
+	public function runOnValidationError($arrInvalidFields) {}
 
 }
