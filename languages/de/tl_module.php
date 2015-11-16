@@ -51,3 +51,4 @@ $arrLang['formHybridTemplate'] = array('Formular-Template', 'Hier können Sie da
 $arrLang['formHybridCustomSubTemplates'] = array('Eigene Formular-Template für Subpaletten', 'Verwenden Sie eigene Templates für Subpaletten, dann erstellen Sie ein hängen Sie dem Formular-Template _sub_[SUBPALETTE_KEY] an.');
 
 $arrLang['formHybridIsComplete'] = array('Komplett', 'Diese Option wird automatisch vom Modul gesetzt, wenn das Formular mindestens einmal ');
+$arrLang['formHybridAction'] = array('Form action / Zielseite', 'Wählen Sie eine Zielseite aus.');

@@ -162,6 +162,16 @@ $arrFields = array
 		'eval'      => array('tl_class' => 'w50 clr'),
 		'sql'       => "char(1) NOT NULL default ''",
 	),
+	'formHybridAction' => array
+	(
+		'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridAction'],
+		'exclude'                 => true,
+		'inputType'               => 'pageTree',
+		'foreignKey'              => 'tl_page.title',
+		'eval'                    => array('fieldType'=>'radio', 'tl_class' => 'clr'),
+		'sql'                     => "int(10) unsigned NOT NULL default '0'",
+		'relation'                => array('type'=>'hasOne', 'load'=>'eager')
+	),
 	'formHybridCssClass'           => array
 	(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],

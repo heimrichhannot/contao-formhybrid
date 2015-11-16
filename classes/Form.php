@@ -43,6 +43,12 @@ abstract class Form extends DC_Hybrid
 			$this->arrData     = $objModule->row();
 			$this->strTable    = $objModule->formHybridDataContainer;
 			$this->strPalette  = $objModule->formHybridPalette;
+
+			if($objModule->formHybridAction && ($objActionPage = \PageModel::findByPk($objModule->formHybridAction)) !== null)
+			{
+				$this->strAction = \Controller::generateFrontendUrl($objActionPage->row());
+			}
+
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
 			$this->skipScrollingToSuccessMessage = $objModule->formHybridSkipScrollingToSuccessMessage;
 			$this->isComplete = $objModule->formHybridIsComplete;
