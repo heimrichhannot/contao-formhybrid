@@ -91,7 +91,7 @@ class FormHelper extends \System
 	}
 
 
-	public static function transformSpecialValues($varValue, $arrData)
+	public static function transformSpecialValues($varValue, $arrData, $objWidget = null)
 	{
 		// Convert date formats into timestamps
 		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {

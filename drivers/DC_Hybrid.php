@@ -440,12 +440,39 @@ class DC_Hybrid extends \DataContainer
 					$objWidget->value, $arrData, $objWidget
 				);
 			} // support file uploads
-			elseif ($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName])
-				&& \Validator::isUuid(
-					$_SESSION['FILES'][$strName]['uuid']
-				)
-			) {
-				$this->objActiveRecord->{$strName} = $_SESSION['FILES'][$strName]['uuid'];
+			elseif ($objWidget instanceof \uploadable) {
+				$strMethod = strtolower($this->strMethod);
+				$this->objActiveRecord->{$strName} = serialize(json_decode(\Input::$strMethod($strName)));
+
+				// delete the files scheduled for deletion
+				$objWidget->deleteScheduledFiles(json_decode(\Input::$strMethod('deleted_' . $strName)));
+
+//				if ($objWidget->getUploader()->fieldType == 'checkbox')
+//				{
+//					if (isset($_SESSION['uploadFiles'][$strName]) && !empty($_SESSION['uploadFiles'][$strName]))
+//					{
+//						$arrResult = array();
+//						foreach ($_SESSION['uploadFiles'][$strName] as $strUuid)
+//						{
+//							if (\Validator::isUuid($strUuid))
+//								$arrResult[] = $strUuid;
+//						}
+//
+//						$this->objActiveRecord->{$strName} = serialize($arrResult);
+//
+//						unset($_SESSION['uploadFiles'][$strName]);
+//					}
+//				}
+//				else
+//				{
+//					if (isset($_SESSION['uploadFiles'][$strName]) && \Validator::isUuid(
+//						$_SESSION['uploadFiles'][$strName]
+//					))
+//					{
+//						$this->objActiveRecord->{$strName} = $_SESSION['uploadFiles'][$strName];
+//						unset($_SESSION['uploadFiles'][$strName]);
+//					}
+//				}
 			}
 		}
 
