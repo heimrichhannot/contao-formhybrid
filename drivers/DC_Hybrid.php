@@ -287,6 +287,10 @@ class DC_Hybrid extends \DataContainer
 
 		// add subpalette fields
 		foreach ($arrSubFields as $strParent => $arrFields) {
+	
+			// check if subpalette has fields		
+  			if(empty($arrFields)) continue;
+		
 			foreach ($arrFields as $strName) {
 				$this->addSubField($strName, $strParent);
 			}
