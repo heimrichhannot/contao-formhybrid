@@ -11,6 +11,8 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use HeimrichHannot\HastePlus\Files;
+
 class FormHelper extends \System
 {
 	/**
@@ -389,13 +391,24 @@ class FormHelper extends \System
 		{
 			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
 		}
+		elseif ($arrData['inputType'] == 'fileTree')
+		{
+			if ($arrData['eval']['multiple'] && is_array($value))
+			{
+				$value = array_map(function($val) {
+					$strPath = Files::getPathFromUuid($val);
+					return $strPath ?: $val;
+				}, $value);
+			}
+			else
+			{
+				$strPath = Files::getPathFromUuid($value);
+				$value = $strPath ?: $value;
+			}
+		}
 		elseif (\Validator::isBinaryUuid($value))
 		{
 			$value = \String::binToUuid($value);
-		}
-		else
-		{
-			$value = $value;
 		}
 
 		// Convert special characters (see #1890)
