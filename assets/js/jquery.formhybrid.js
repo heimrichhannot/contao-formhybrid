@@ -122,7 +122,15 @@
 					'REQUEST_TOKEN': Formhybrid.request_token
 				},
 				success: function (data, textStatus, jqXHR) {
-					$el.closest('.' + field).after(data);
+
+					// bootstrapped forms
+					if($el.closest('form').find('.' + field).length > 0)
+					{
+						// always try to attach subpalette after wrapper element from parent widget
+						$el.closest('form').find('.' + field).eq(0).after(data);
+					} else{
+						$el.closest('#ctrl_' + field).after(data);
+					}
 				}
 			});
 		}

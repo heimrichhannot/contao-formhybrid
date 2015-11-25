@@ -288,15 +288,23 @@ class DC_Hybrid extends \DataContainer
 		// add subpalette fields
 		foreach ($arrSubFields as $strParent => $arrFields) {
 	
-			// check if subpalette has fields		
+			// check if subpalette has fields
   			if(empty($arrFields)) continue;
 		
-			foreach ($arrFields as $strName) {
+			foreach ($arrFields as $strName)
+			{
 				$this->addSubField($strName, $strParent);
 			}
 
 			if (!$blnAjax) {
 				$objSubTemplate = $this->generateSubpalette('sub_' . $strParent);
+
+				// parent field is mandatory for subpalette
+				if($this->isSubpaletteActive($strParent) && !$this->arrFields[$strParent])
+				{
+					$this->addField($strParent);
+				}
+
 				if ($this->arrFields[$strParent])
 					$this->arrFields[$strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
 			}
