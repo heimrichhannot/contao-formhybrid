@@ -448,19 +448,21 @@ abstract class Form extends DC_Hybrid
 	 */
 	public function __get($strKey)
 	{
-		switch ($strKey) {
-			case 'table':
-				return $this->strTable;
-			case 'palette':
-				return $this->strPalette;
+		// parent getter must be dominant, otherwise intId will taken from arrData
+		// tl_calendar_events::adjustTime callback make usage of $dc->id instead of $dc->activeRecord->id
+		if(($strParent = parent::__get($strKey)) != '')
+		{
+			return $strParent;
+		}
+
+		switch ($strKey)
+		{
 			default:
-				if (isset($this->arrData[$strKey])) {
+				if (isset($this->arrData[$strKey]))
+				{
 					return $this->arrData[$strKey];
 				}
 		}
-
-
-		return parent::__get($strKey);
 	}
 
 	/**

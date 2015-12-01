@@ -1,7 +1,6 @@
 <?php
 namespace HeimrichHannot\FormHybrid;
 
-use Contao\Widget;
 use HeimrichHannot\HastePlus\Environment;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
