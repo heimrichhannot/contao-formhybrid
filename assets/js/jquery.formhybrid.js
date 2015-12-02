@@ -99,7 +99,8 @@
 						'id': id,
 						'field': field,
 						'state': 0,
-						'REQUEST_TOKEN': Formhybrid.request_token
+						'REQUEST_TOKEN': Formhybrid.request_token,
+						'FORM_SUBMIT': $form.find('input[name=FORM_SUBMIT]')
 					},
 					success: function () {
 						$item.remove();
@@ -119,7 +120,8 @@
 					'field': field,
 					'load': 1,
 					'state': 1,
-					'REQUEST_TOKEN': Formhybrid.request_token
+					'REQUEST_TOKEN': Formhybrid.request_token,
+					'FORM_SUBMIT': $form.find('input[name=FORM_SUBMIT]')
 				},
 				success: function (data, textStatus, jqXHR) {
 

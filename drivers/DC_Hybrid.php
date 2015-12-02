@@ -70,8 +70,8 @@ class DC_Hybrid extends \DataContainer
 
 		$this->initialize();
 
-		// Ajax request
-		if ($_POST && \Environment::get('isAjaxRequest')) {
+		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted)
+		if ($_POST && \Environment::get('isAjaxRequest') && $this->isSubmitted) {
 			$this->objAjax = new FormAjax(\Input::post('action'));
 			$this->objAjax->executePostActions($this);
 		}
