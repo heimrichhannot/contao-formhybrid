@@ -108,6 +108,18 @@ class DC_Hybrid extends \DataContainer
 			if ($this->initiallySaveModel && !$this->intId) {
 				$this->objActiveRecord->tstamp = 0;
 				$this->objActiveRecord->save();
+
+				// run onsubmit_callback, required for example by HeimrichHannot\FormHybrid\TagsHelper::saveTagsFromDefaults()
+				if (is_array($this->dca['config']['onsubmit_callback'])) {
+					foreach ($this->dca['config']['onsubmit_callback'] as $callback) {
+						$this->import($callback[0]);
+						$this->$callback[0]->$callback[1]($this);
+
+						// reload model from database, maybe something has changed in callback
+						$this->objActiveRecord->refresh();
+					}
+				}
+
 				$strUrl = Environment::getUrl();
 
 				if (in_array('frontendedit', \ModuleLoader::getActive()))
@@ -699,17 +711,34 @@ class DC_Hybrid extends \DataContainer
 
 				if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
 
-					if ($varDefault['hidden']) {
+					if ($varDefault['hidden'])
+					{
 						$this->dca['fields'][$strField]['inputType'] = 'hidden';
 					}
 
-					if (strlen($varDefault['label']) > 0) {
+					if (strlen($varDefault['label']) > 0)
+					{
 						$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
 					}
 
 					switch ($arrData['inputType']) {
 						case 'submit':
 							$this->hasSubmit = true;
+							break;
+						case 'tag':
+							if(!in_array('tags', \ModuleLoader::getActive())) break;
+
+							if($varDefault['value'] != '')
+							{
+								$this->dca['config']['onsubmit_callback'][] = array('HeimrichHannot\FormHybrid\TagsHelper', 'saveTagsFromDefaults');
+
+								// reset field inputType, otherwise we can not determine within callback if the field is a tag field
+								if($varDefault['hidden'])
+								{
+									$this->dca['fields'][$strField]['inputType'] = 'tag';
+								}
+							}
+
 							break;
 						default:
 							$this->arrDefaults[$strField] = \Controller::replaceInsertTags($varDefault['value']);
