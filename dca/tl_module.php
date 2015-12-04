@@ -9,6 +9,7 @@ $dc['palettes']['__selector__'][]                      = 'formHybridAddDefaultVa
 $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddEditableRequired';
+$dc['palettes']['__selector__'][]                      = 'formHybridAddDisplayedSubPaletteFields';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
@@ -18,6 +19,7 @@ $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
 	'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
 
 $dc['subpalettes']['formHybridAddEditableRequired'] = 'formHybridEditableRequired';
+$dc['subpalettes']['formHybridAddDisplayedSubPaletteFields'] = 'formHybridDisplayedSubPaletteFields';
 
 $dc['subpalettes']['formHybridAddFieldDependentRedirect'] = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
 
@@ -84,6 +86,23 @@ $arrFields = array
 		'inputType'        => 'checkboxWizard',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
 		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'exclude'          => true,
+		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
+		'sql'              => "blob NULL",
+	),
+	'formHybridAddDisplayedSubPaletteFields'            => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddDisplayedSubPaletteFields'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridDisplayedSubPaletteFields'               => array
+	(
+		'inputType'        => 'checkboxWizard',
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridDisplayedSubPaletteFields'],
+		'options_callback' => array('tl_form_hybrid_module', 'getSubPaletteFields'),
 		'exclude'          => true,
 		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
 		'sql'              => "blob NULL",
@@ -602,8 +621,7 @@ class tl_form_hybrid_module extends \Backend
 			$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
 
 			// ignore subpalettes not in palette
-			$arrSubPalettes = HeimrichHannot\FormHybrid\FormHelper::getFilteredSubPalettes(
-				$arrSubPalettes, $arrFields, $dc);
+			$arrSubPalettes = HeimrichHannot\FormHybrid\FormHelper::getFilteredSubPalettes($arrSubPalettes, $arrFields, $dc);
 
 			foreach ($arrSubPalettes as $strSubPalette) {
 				$arrFields = array_merge(
@@ -649,6 +667,29 @@ class tl_form_hybrid_module extends \Backend
 		asort($arrOptions);
 
 		return $arrOptions;
+	}
+
+	public function getSubPaletteFields(\DataContainer $dc)
+	{
+		$strTable = $dc->activeRecord->formHybridDataContainer;
+		$arrSubPalettes = array();
+		$arrSubPaletteFields = array();
+		$arrFields = array();
+
+		\Controller::loadDataContainer($strTable);
+
+		$arrSubPalettes = $GLOBALS['TL_DCA'][$strTable]['subpalettes'];
+		if (empty($arrSubPalettes)) return;
+
+		foreach ($arrSubPalettes as $strName => $strPalette)
+		{
+			$arrSubPaletteFields = \HeimrichHannot\FormHybrid\FormHelper::getPaletteFields($strTable, $arrSubPalettes[$strName]);
+			if (empty($arrSubPaletteFields)) return;
+
+			$arrFields = array_merge($arrFields, $arrSubPaletteFields);
+		}
+
+		return $arrFields;
 	}
 
 	public function getFormHybridStartTemplates()

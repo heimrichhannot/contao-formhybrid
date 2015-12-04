@@ -259,6 +259,9 @@ class DC_Hybrid extends \DataContainer
 		$arrFields = $this->arrEditable;
 		$arrSubFields = array();
 
+		$blnDisplaySubPaletteFields = $this->formHybridAddDisplayedSubPaletteFields;
+		$arrDisplayedSubPaletteFields = deserialize($this->formHybridDisplayedSubPaletteFields, true);
+
 		// subpalettes
 		$arrSubpalettes = $this->dca['subpalettes'];
 		$blnAjax = false;
@@ -266,14 +269,26 @@ class DC_Hybrid extends \DataContainer
 		if (is_array($arrSubpalettes)) {
 			$toggleSubpalette = str_replace('sub_', '', $ajaxId);
 
-			foreach ($this->dca['subpalettes'] as $strName => $strPalette)
+			foreach ($arrSubpalettes as $strName => $strPalette)
 			{
 				$arrSubpaletteFields = FormHelper::getPaletteFields(
-					$this->strTable, $this->dca['subpalettes'][$strName]
+					$this->strTable, $arrSubpalettes[$strName]
 				);
 
 				// determine active subpalette fields
-				$arrActiveSubpaletteFields = FormHelper::getFilteredSubPalettes($this->dca['subpalettes'], $this->arrEditable, $this);
+				$arrActiveSubpaletteFields = array_intersect($arrFields, $arrSubpaletteFields);
+
+				// prevent removing of subpalette's fields which should always be displayed
+				if ($blnDisplaySubPaletteFields && !empty($arrDisplayedSubPaletteFields))
+				{
+					foreach ($arrDisplayedSubPaletteFields as $strDisplayedSubPaletteField)
+					{
+						if ($key = array_search($strDisplayedSubPaletteField, $arrActiveSubpaletteFields))
+						{
+							unset($arrActiveSubpaletteFields[$key]);
+						}
+					}
+				}
 
 				// remove subpalette's fields if selector is part of the editable fields
 				$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
