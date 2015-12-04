@@ -273,7 +273,7 @@ class DC_Hybrid extends \DataContainer
 				);
 
 				// determine active subpalette fields
-				$arrActiveSubpaletteFields = array_intersect($this->arrEditable, $arrSubpaletteFields);
+				$arrActiveSubpaletteFields = FormHelper::getFilteredSubPalettes($this->dca['subpalettes'], $this->arrEditable, $this);
 
 				// remove subpalette's fields if selector is part of the editable fields
 				$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);

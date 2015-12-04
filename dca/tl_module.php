@@ -602,7 +602,8 @@ class tl_form_hybrid_module extends \Backend
 			$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
 
 			// ignore subpalettes not in palette
-			$arrSubPalettes = array_intersect($arrSubPalettes, $arrFields);
+			$arrSubPalettes = HeimrichHannot\FormHybrid\FormHelper::getFilteredSubPalettes(
+				$arrSubPalettes, $arrFields, $dc);
 
 			foreach ($arrSubPalettes as $strSubPalette) {
 				$arrFields = array_merge(

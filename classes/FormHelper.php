@@ -422,4 +422,60 @@ class FormHelper extends \System
 		return $return;
 	}
 
+	/**
+	 * Gets the available subpalettes and subpalettes with options from the palette
+	 *
+	 * @param array $arrSubPalettes
+	 * @param array $arrFieldsInPalette
+	 * @param \DataContainer $dc
+	 * @return array
+	 */
+	public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, \DataContainer $dc=null)
+	{
+		$arrFilteredSubPalettes = array();
+
+		foreach ($arrFieldsInPalette as $strField)
+		{
+			if (in_array($strField, $arrSubPalettes))
+			{
+				$arrFilteredSubPalettes[] = $strField;
+				continue;
+			}
+
+			$arrField = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'][$strField];
+
+			if (is_array($arrField['options']) && !empty($arrField['options']))
+			{
+				foreach ($arrField['options'] as $strOption)
+				{
+					$strSubPaletteName = $strField . '_' . $strOption;
+					if (in_array($strSubPaletteName, $arrSubPalettes))
+					{
+						$arrFilteredSubPalettes[] = $strSubPaletteName;
+					}
+				}
+				continue;
+			}
+
+			if (is_array($arrField['options_callback']) && !empty($arrField['options_callback']) && is_callable($arrField['options_callback']))
+			{
+				$strClass = $arrField['options_callback'][0];
+				$strMethod = $arrField['options_callback'][1];
+				$objInstance = \Controller::importStatic($strClass);
+				$arrOptions = $objInstance->$strMethod($dc);
+
+				foreach ($arrOptions as $strOption)
+				{
+					$strSubPaletteName = $strField . '_' . $strOption;
+					if (in_array($strSubPaletteName, $arrSubPalettes))
+					{
+						$arrFilteredSubPalettes[] = $strSubPaletteName;
+					}
+				}
+				continue;
+			}
+		}
+		return $arrFilteredSubPalettes;
+	}
+
 }
