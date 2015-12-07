@@ -123,8 +123,8 @@
 					'REQUEST_TOKEN': Formhybrid.request_token,
 					'FORM_SUBMIT': $form.find('input[name=FORM_SUBMIT]').val()
 				},
-				success: function (data, textStatus, jqXHR) {
-
+				success: function (data, textStatus, jqXHR)
+				{
 					// bootstrapped forms
 					if($el.closest('form').find('.' + field).length > 0)
 					{
@@ -133,6 +133,10 @@
 					} else{
 						$el.closest('#ctrl_' + field).after(data);
 					}
+
+					// bootstrapper calls
+					if (typeof Bootstrapper.initDateTimePicker == 'function')
+						Bootstrapper.initDateTimePicker();
 				}
 			});
 		}
