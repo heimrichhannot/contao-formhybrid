@@ -610,6 +610,13 @@ class tl_form_hybrid_module extends \Backend
 		if (!$dc->activeRecord->formHybridDataContainer) {
 			return array();
 		}
+		
+		\Controller::loadDataContainer($dc->activeRecord->formHybridDataContainer);
+		
+		if(!is_array($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]))
+		{
+			return array();
+		}
 
 		$arrFields = HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
 			$dc->activeRecord->formHybridDataContainer,
