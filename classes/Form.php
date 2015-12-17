@@ -44,9 +44,9 @@ abstract class Form extends DC_Hybrid
 			$this->strTable    = $objModule->formHybridDataContainer;
 			$this->strPalette  = $objModule->formHybridPalette;
 
-			if($objModule->formHybridAction && ($objActionPage = \PageModel::findByPk($objModule->formHybridAction)) !== null)
+			if($objModule->formHybridAction && ($objActionPage = \PageModel::findWithDetails($objModule->formHybridAction)) !== null)
 			{
-				$this->strAction = \Controller::generateFrontendUrl($objActionPage->row());
+				$this->strAction = \Controller::generateFrontendUrl($objActionPage->row(), null, null, true);
 			}
 
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
