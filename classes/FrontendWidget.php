@@ -22,9 +22,15 @@ abstract class FrontendWidget extends \Widget
 		if ($strMethod == FORMHYBRID_METHOD_GET)
 		{
 			$varValue = $objWidget->validator(static::getGet($objWidget, $objWidget->strName));
+
+			// close tags without a closing tag
+			$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
+			$varValue = $objTidyResult->value;
 		}
 		else
 		{
+			// \Widget->validate retrieves submission data form post -> xss related stuff needs to be removed beforehands
+			$_POST[$objWidget->name] = FormHelper::xssClean($_POST[$objWidget->name], true);
 			// Captcha needs no value, just simple validation
 			if($objWidget instanceof \FormCaptcha)
 			{

@@ -15,6 +15,22 @@ use HeimrichHannot\HastePlus\Files;
 
 class FormHelper extends \System
 {
+	public static function xssClean($varValue, $tidy = false)
+	{
+		$varValue = preg_replace('/(&#[A-Za-z0-9]+)/i', '$1;', $varValue);
+
+		$varValue = \Input::xssClean($varValue, true);
+
+		// close tags without a closing tag
+		if($tidy)
+		{
+			$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
+			$varValue = $objTidyResult->value;
+		}
+
+		return $varValue;
+	}
+
 	/**
 	 * Find and return a $_GET variable
 	 *
