@@ -24,9 +24,54 @@ class FormHelper extends \System
 		// close tags without a closing tag
 		if($tidy)
 		{
-			$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
-			$varValue = $objTidyResult->value;
+			if (is_array($varValue))
+			{
+				foreach ($varValue as $key => $value)
+				{
+					$varValue[$key] = tidy_parse_string($value, array('show-body-only'=>true));
+				}
+			}
+			else
+			{
+				$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
+				$varValue = $objTidyResult->value;
+			}
 		}
+
+		return $varValue;
+	}
+
+	public static function escapeAllEntities($strDca, $strField, $varValue)
+	{
+		\Controller::loadDataContainer($strDca);
+
+		// TODO array
+		if (is_array($varValue))
+			return $varValue;
+
+		$arrPreservedTags = isset($GLOBALS['TL_DCA'][$strDca]['fields'][$strField]['eval']['allowedTags']) ?
+				$GLOBALS['TL_DCA'][$strDca]['fields'][$strField]['eval']['allowedTags'] : array();
+
+		// prepare for replacing
+		$varValue = html_entity_decode($varValue);
+
+		foreach ($arrPreservedTags as $strTag)
+		{
+			$varValue = preg_replace(
+					'/<(\/?' . $strTag . '[^>]*)>/i',
+					'|%lt%$1%gt%|',
+					$varValue
+			);
+		}
+
+		$varValue = htmlentities($varValue, ENT_COMPAT, 'UTF-8');
+		$varValue = FormHelper::xssClean($varValue, true);
+
+		$varValue = str_replace(
+				array('|%lt%', '%gt%|', '&amp;', '&quot;'),
+				array('<', '>', '&', '"'),
+				$varValue
+		);
 
 		return $varValue;
 	}
@@ -37,7 +82,7 @@ class FormHelper extends \System
 	 * @param string $strKey The variable name
 	 * @param boolean $decodeEntities If true, html entities will be decoded
 	 *
-	 * @return mixed The variable value
+	 * @return mixed The variable value2
 	 */
 	public static function getGet($strKey, $decodeEntities = false)
 	{
