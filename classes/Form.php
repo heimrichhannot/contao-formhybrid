@@ -507,6 +507,49 @@ abstract class Form extends DC_Hybrid
 			{
 				$arrData = $arrDca['fields'][$strField];
 
+				// check if options are available and find current value in list
+				// if not found: do not set the value, otherwise potential sql injection vulnerability
+				// TODO: try to check against options_callbacks as well!!!
+				if(is_array($arrData['options']))
+				{
+					$blnIsAssociative = ($arrData['eval']['isAssociative'] || array_is_assoc($arrData['options']));
+					$blnFound = false;
+
+					foreach ($arrData['options'] as $k=>$v)
+					{
+						if (!is_array($v))
+						{
+							$checkValue = $blnIsAssociative ? $k : $v;
+
+							if($checkValue == $varValue)
+							{
+								$blnFound = true;
+								break;
+							}
+
+							continue;
+						}
+
+						$blnIsAssoc = array_is_assoc($v);
+
+						foreach ($v as $kk=>$vv)
+						{
+							$checkValue = $blnIsAssoc ? $kk : $vv;
+
+							if($checkValue == $varValue)
+							{
+								$blnFound = true;
+								break;
+							}
+						}
+					}
+
+					if(!$blnFound)
+					{
+						continue;
+					}
+				}
+
 				// unset options_callback, as long as we have no valid backend user
 				unset($arrData['options_callback'], $arrData['options_callback']);
 
