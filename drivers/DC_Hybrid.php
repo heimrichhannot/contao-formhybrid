@@ -174,6 +174,8 @@ class DC_Hybrid extends \DataContainer
 						}
 					}
 
+					$strRedirect = Environment::addParameterToUri($strRedirect, 'token', \RequestToken::get());
+
 					StatusMessage::resetAll();
 					\Controller::redirect($strRedirect);
 				}
