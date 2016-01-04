@@ -74,7 +74,7 @@ abstract class Form extends DC_Hybrid
 		}
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
-		$this->strFormId        = $this->strTable . '_' . $this->id;
+		$this->strFormId        = $this->strTable . '_' . $objModule->id;
 		$this->strFormName      = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);

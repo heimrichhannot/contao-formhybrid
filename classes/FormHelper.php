@@ -28,12 +28,12 @@ class FormHelper extends \System
 			{
 				foreach ($varValue as $key => $value)
 				{
-					$varValue[$key] = tidy_parse_string($value, array('show-body-only'=>true));
+					$varValue[$key] = tidy_parse_string($value, array('show-body-only'=>true), 'utf8');
 				}
 			}
 			else
 			{
-				$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
+				$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true), 'utf8');
 				$varValue = $objTidyResult->value;
 			}
 		}

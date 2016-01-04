@@ -24,8 +24,18 @@ abstract class FrontendWidget extends \Widget
 			$varValue = $objWidget->validator(static::getGet($objWidget, $objWidget->strName));
 
 			// close tags without a closing tag
-			$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true));
-			$varValue = $objTidyResult->value;
+			if (is_array($varValue))
+			{
+				foreach ($varValue as $key => $value)
+				{
+					$varValue[$key] = tidy_parse_string($value, array('show-body-only'=>true), 'utf8');
+				}
+			}
+			else
+			{
+				$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true), 'utf8');
+				$varValue = $objTidyResult->value;
+			}
 		}
 		else
 		{
