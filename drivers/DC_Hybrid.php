@@ -360,8 +360,14 @@ class DC_Hybrid extends \DataContainer
 			return false;
 		}
 
-		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName])) {
+		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName]))
+		{
 			$this->arrFields[$strName] = $objField;
+
+			if($objField->type == 'submit')
+			{
+				$this->hasSubmit = true;
+			}
 		}
 
 		return true;
