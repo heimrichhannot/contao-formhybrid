@@ -1,10 +1,11 @@
 <?php
 /**
  * Contao Open Source CMS
- * 
+ *
  * Copyright (c) 2015 Heimrich & Hannot GmbH
+ *
  * @package anwaltverein
- * @author Rico Kaltofen <r.kaltofen@heimrich-hannot.de>
+ * @author  Rico Kaltofen <r.kaltofen@heimrich-hannot.de>
  * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
  */
 
@@ -22,19 +23,14 @@ class FormHelper extends \System
 		$varValue = \Input::xssClean($varValue, true);
 
 		// close tags without a closing tag
-		if($tidy)
-		{
-			if (is_array($varValue))
-			{
-				foreach ($varValue as $key => $value)
-				{
-					$varValue[$key] = tidy_parse_string($value, array('show-body-only'=>true), 'utf8');
+		if ($tidy) {
+			if (is_array($varValue)) {
+				foreach ($varValue as $key => $value) {
+					$varValue[$key] = tidy_parse_string($value, array('show-body-only' => true), 'utf8');
 				}
-			}
-			else
-			{
-				$objTidyResult = tidy_parse_string($varValue, array('show-body-only'=>true), 'utf8');
-				$varValue = $objTidyResult->value;
+			} else {
+				$objTidyResult = tidy_parse_string($varValue, array('show-body-only' => true), 'utf8');
+				$varValue      = $objTidyResult->value;
 			}
 		}
 
@@ -45,32 +41,40 @@ class FormHelper extends \System
 	{
 		\Controller::loadDataContainer($strDca);
 
-		// TODO array
 		if (is_array($varValue))
-			return $varValue;
+		{
+			$arrValues = array();
 
-		$arrPreservedTags = isset($GLOBALS['TL_DCA'][$strDca]['fields'][$strField]['eval']['allowedTags']) ?
-				$GLOBALS['TL_DCA'][$strDca]['fields'][$strField]['eval']['allowedTags'] : array();
+			foreach($varValue as $i => $strValue)
+			{
+				$arrValues[$i] = static::escapeAllEntities($strDca, $strField, $strValue);
+			}
+
+			return $arrValues;
+		}
+
+		$arrData = $GLOBALS['TL_DCA'][$strDca]['fields'][$strField];
+
+		$arrPreservedTags = isset($arrData['eval']['allowedTags']) ? $arrData['eval']['allowedTags'] : \Config::get('allowedTags');
 
 		// prepare for replacing
 		$varValue = html_entity_decode($varValue);
 
-		foreach ($arrPreservedTags as $strTag)
-		{
+		foreach ($arrPreservedTags as $strTag) {
 			$varValue = preg_replace(
-					'/<(\/?' . $strTag . '[^>]*)>/i',
-					'|%lt%$1%gt%|',
-					$varValue
+				'/<(\/?' . $strTag . '[^>]*)>/i',
+				'|%lt%$1%gt%|',
+				$varValue
 			);
 		}
 
 		$varValue = htmlentities($varValue, ENT_COMPAT, 'UTF-8');
-		$varValue = FormHelper::xssClean($varValue, true);
+		$varValue = FormHelper::xssClean($varValue, $arrData['eval']['allowHtml']);
 
 		$varValue = str_replace(
-				array('|%lt%', '%gt%|', '&amp;', '&quot;'),
-				array('<', '>', '&', '"'),
-				$varValue
+			array('|%lt%', '%gt%|', '&amp;', '&quot;'),
+			array('<', '>', '&', '"'),
+			$varValue
 		);
 
 		return $varValue;
@@ -79,7 +83,7 @@ class FormHelper extends \System
 	/**
 	 * Find and return a $_GET variable
 	 *
-	 * @param string $strKey The variable name
+	 * @param string  $strKey         The variable name
 	 * @param boolean $decodeEntities If true, html entities will be decoded
 	 *
 	 * @return mixed The variable value2
@@ -91,14 +95,11 @@ class FormHelper extends \System
 		// Support arrays (thanks to Andreas Schempp)
 		$arrParts = explode('[', str_replace(']', '', $strKey));
 
-		if (!empty($arrParts))
-		{
+		if (!empty($arrParts)) {
 			$varValue = \Input::$strMethod(array_shift($arrParts), $decodeEntities);
 
-			foreach($arrParts as $part)
-			{
-				if (!is_array($varValue))
-				{
+			foreach ($arrParts as $part) {
+				if (!is_array($varValue)) {
 					break;
 				}
 
@@ -114,10 +115,10 @@ class FormHelper extends \System
 	/**
 	 * Find and return a $_POST variable
 	 *
-	 * @param string $strKey The variable name
+	 * @param string  $strKey         The variable name
 	 * @param boolean $decodeEntities If true, html entities will be decoded
-	 * @param boolean $allowHtml If true, html will be allowed
-	 * @param boolean $preserveTags If true, html tags will be preserved
+	 * @param boolean $allowHtml      If true, html will be allowed
+	 * @param boolean $preserveTags   If true, html tags will be preserved
 	 *
 	 * @return mixed The variable value
 	 */
@@ -125,22 +126,18 @@ class FormHelper extends \System
 	{
 		$strMethod = $allowHtml ? 'postHtml' : 'post';
 
-		if ($preserveTags)
-		{
+		if ($preserveTags) {
 			$strMethod = 'postRaw';
 		}
 
 		// Support arrays (thanks to Andreas Schempp)
 		$arrParts = explode('[', str_replace(']', '', $strKey));
 
-		if (!empty($arrParts))
-		{
+		if (!empty($arrParts)) {
 			$varValue = \Input::$strMethod(array_shift($arrParts), $decodeEntities);
 
-			foreach($arrParts as $part)
-			{
-				if (!is_array($varValue))
-				{
+			foreach ($arrParts as $part) {
+				if (!is_array($varValue)) {
 					break;
 				}
 
@@ -171,6 +168,7 @@ class FormHelper extends \System
 
 	/**
 	 * Return the locale string
+	 *
 	 * @return string
 	 */
 	public static function getLocaleString()
@@ -193,19 +191,18 @@ class FormHelper extends \System
 	}
 
 
-
 	public static function getAssocMultiColumnWizardList(array $arrValues, $strKey, $strValue = '')
 	{
 		$arrReturn = array();
 
-		foreach($arrValues as $arrValue)
-		{
-			if(!isset($arrValue[$strKey]) && !isset($arrValue[$strValue])) continue;
+		foreach ($arrValues as $arrValue) {
+			if (!isset($arrValue[$strKey]) && !isset($arrValue[$strValue])) {
+				continue;
+			}
 
 			$varValue = $arrValue[$strValue];
 
-			if(empty($strValue))
-			{
+			if (empty($strValue)) {
 				$varValue = $arrValue;
 				unset($varValue[$strKey]);
 
@@ -221,34 +218,28 @@ class FormHelper extends \System
 	{
 		\Controller::loadDataContainer($strTable);
 
-		$boxes = trimsplit(';', $strPalette);
+		$boxes   = trimsplit(';', $strPalette);
 		$legends = array();
 
-		if (!empty($boxes))
-		{
-			foreach ($boxes as $k=>$v)
-			{
-				$eCount = 1;
+		if (!empty($boxes)) {
+			foreach ($boxes as $k => $v) {
+				$eCount    = 1;
 				$boxes[$k] = trimsplit(',', $v);
 
-				foreach ($boxes[$k] as $kk=>$vv)
-				{
-					if (preg_match('/^\[.*\]$/', $vv))
-					{
+				foreach ($boxes[$k] as $kk => $vv) {
+					if (preg_match('/^\[.*\]$/', $vv)) {
 						++$eCount;
 						continue;
 					}
 
-					if (preg_match('/^\{.*\}$/', $vv))
-					{
+					if (preg_match('/^\{.*\}$/', $vv)) {
 						$legends[$k] = substr($vv, 1, -1);
 						unset($boxes[$k][$kk]);
 					}
 				}
 
 				// Unset a box if it does not contain any fields
-				if (count($boxes[$k]) < $eCount)
-				{
+				if (count($boxes[$k]) < $eCount) {
 					unset($boxes[$k]);
 				}
 			}
@@ -256,10 +247,17 @@ class FormHelper extends \System
 
 		$arrFields = array();
 
-		if(!is_array($boxes)) return $arrFields;
+		if (!is_array($boxes)) {
+			return $arrFields;
+		}
 
 		// flatten
-		array_walk_recursive($boxes, function($a) use (&$arrFields) { $arrFields[] = $a; });
+		array_walk_recursive(
+			$boxes,
+			function ($a) use (&$arrFields) {
+				$arrFields[] = $a;
+			}
+		);
 
 		// remove empty values
 		return array_filter($arrFields);
@@ -268,17 +266,16 @@ class FormHelper extends \System
 	public static function replaceFormDataTags($strBuffer, $arrMailData)
 	{
 		// Preserve insert tags
-		if (\Config::get('disableInsertTags'))
-		{
+		if (\Config::get('disableInsertTags')) {
 			return \String::restoreBasicEntities($strBuffer);
 		}
 
 		$tags = preg_split('/\{\{(([^\{\}]*|(?R))*)\}\}/', $strBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		$strBuffer = '';
-		$runEval = false;
+		$runEval   = false;
 
-		for ($_rit=0, $_cnt=count($tags); $_rit<$_cnt; $_rit+=3) {
+		for ($_rit = 0, $_cnt = count($tags); $_rit < $_cnt; $_rit += 3) {
 			$strBuffer .= $tags[$_rit];
 			$strTag = $tags[$_rit + 1];
 
@@ -287,60 +284,56 @@ class FormHelper extends \System
 				continue;
 			}
 
-			$flags = explode('|', $strTag);
-			$tag = array_shift($flags);
+			$flags    = explode('|', $strTag);
+			$tag      = array_shift($flags);
 			$elements = explode('::', $tag);
 
 			// Run the replacement again if there are more tags and not if/elseif condition
-			if (strpos($strTag, '{{') !== false)
-			{
+			if (strpos($strTag, '{{') !== false) {
 				$strTag = static::replaceFormDataTags($strTag, $arrMailData);
 			}
 
 			// Replace the tag
 			switch (strtolower($elements[0])) {
-				case (strrpos($elements[0], 'if', -strlen($elements[0])) !== FALSE):
-					$strTag = preg_replace('/if (.*)/i', '<?php if ($1): ?>', $strTag);
+				case (strrpos($elements[0], 'if', -strlen($elements[0])) !== false):
+					$strTag  = preg_replace('/if (.*)/i', '<?php if ($1): ?>', $strTag);
 					$runEval = true;
-				break;
-				case (strrpos($elements[0], 'elseif', -strlen($elements[0])) !== FALSE):
-					$strTag = preg_replace('/elseif (.*)/i', '<?php elseif ($1): ?>', $strTag);
+					break;
+				case (strrpos($elements[0], 'elseif', -strlen($elements[0])) !== false):
+					$strTag  = preg_replace('/elseif (.*)/i', '<?php elseif ($1): ?>', $strTag);
 					$runEval = true;
-				break;
+					break;
 				case 'else':
 					$strTag = '<?php else: ?>';
-				break;
+					break;
 				case 'endif':
 					$strTag = '<?php endif; ?>';
-				break;
+					break;
 				// form
 				case 'form':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output']))
-					{
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output'])) {
 						$strTag = '';
 						continue;
 					}
 
 					$strTag = $arrMailData[$elements[1]]['output'];
-				break;
+					break;
 				case 'form_value':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['value']))
-					{
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['value'])) {
 						$strTag = '';
 						continue;
 					}
 
 					$strTag = $arrMailData[$elements[1]]['value'];
-				break;
+					break;
 				case 'form_submission':
-					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission']))
-					{
+					if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission'])) {
 						$strTag = '';
 						continue;
 					}
 
 					$strTag = rtrim($arrMailData[$elements[1]]['submission'], "\n");
-				break;
+					break;
 				// restore inserttag for \Controller::replaceInsertTags()
 				default:
 					$strTag = '{{' . $tag . '}}';
@@ -349,8 +342,7 @@ class FormHelper extends \System
 			$strBuffer .= $strTag;
 		}
 
-		if($runEval)
-		{
+		if ($runEval) {
 			$strBuffer = static::evalConditionTags($strBuffer);
 		}
 
@@ -360,8 +352,7 @@ class FormHelper extends \System
 
 	public static function evalConditionTags($strBuffer)
 	{
-		if (!strlen($strBuffer))
-		{
+		if (!strlen($strBuffer)) {
 			return;
 		}
 
@@ -369,13 +360,12 @@ class FormHelper extends \System
 
 		// Eval the code
 		ob_start();
-		$blnEval = eval("?>" . $strReturn);
+		$blnEval   = eval("?>" . $strReturn);
 		$strReturn = ob_get_contents();
 		ob_end_clean();
 
 		// Throw an exception if there is an eval() error
-		if ($blnEval === false)
-		{
+		if ($blnEval === false) {
 			throw new \Exception("Error eval() in Formhelper::evalConditionTags ($strReturn)");
 		}
 
@@ -389,26 +379,22 @@ class FormHelper extends \System
 		global $objPage;
 		
 		$value = deserialize($value);
-		$rgxp = $arrData['eval']['rgxp'];
-		$opts = $arrData['options'];
-		$rfrc = $arrData['reference'];
+		$rgxp  = $arrData['eval']['rgxp'];
+		$opts  = $arrData['options'];
+		$rfrc  = $arrData['reference'];
 
 		$rgxp = $arrData['eval']['rgxp'];
 
 		// Call the options_callback to get the formated value
-		if ((is_array($arrData['options_callback']) || is_callable($arrData['options_callback'])) && !$arrData['reference'])
-		{
-			if (is_array($arrData['options_callback']))
-			{
-				$strClass = $arrData['options_callback'][0];
+		if ((is_array($arrData['options_callback']) || is_callable($arrData['options_callback'])) && !$arrData['reference']) {
+			if (is_array($arrData['options_callback'])) {
+				$strClass  = $arrData['options_callback'][0];
 				$strMethod = $arrData['options_callback'][1];
 
 				$objInstance = \Controller::importStatic($strClass);
 
 				$options_callback = $objInstance->$strMethod($dc);
-			}
-			elseif (is_callable($arrData['options_callback']))
-			{
+			} elseif (is_callable($arrData['options_callback'])) {
 				$options_callback = $arrData['options_callback']($dc);
 			}
 
@@ -417,58 +403,49 @@ class FormHelper extends \System
 			$value = array_intersect_key($options_callback, array_flip($arrOptions));
 		}
 
-		if ($rgxp == 'date')
-		{
+		if ($rgxp == 'date') {
 			$value = \Date::parse(\Config::get('dateFormat'), $value);
-		}
-		elseif ($rgxp == 'time')
-		{
+		} elseif ($rgxp == 'time') {
 			$value = \Date::parse(\Config::get('timeFormat'), $value);
-		}
-		elseif ($rgxp == 'datim')
-		{
+		} elseif ($rgxp == 'datim') {
 			$value = \Date::parse(\Config::get('datimFormat'), $value);
-		}
-		elseif (is_array($value))
-		{
+		} elseif (is_array($value)) {
 			$value = static::flattenArray($value);
 
 			$value = array_filter($value); // remove empty elements
 
-			$value = implode(', ', array_map(function($value) use ($rfrc) {
-				if (is_array($rfrc))
-				{
-					return isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-				}
-				else
-					return $value;
-			}, $value));
-		}
-		elseif (is_array($opts) && array_is_assoc($opts))
-		{
+			$value = implode(
+				', ',
+				array_map(
+					function ($value) use ($rfrc) {
+						if (is_array($rfrc)) {
+							return isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
+						} else {
+							return $value;
+						}
+					},
+					$value
+				)
+			);
+		} elseif (is_array($opts) && array_is_assoc($opts)) {
 			$value = isset($opts[$value]) ? $opts[$value] : $value;
-		}
-		elseif (is_array($rfrc))
-		{
+		} elseif (is_array($rfrc)) {
 			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-		}
-		elseif ($arrData['inputType'] == 'fileTree')
-		{
-			if ($arrData['eval']['multiple'] && is_array($value))
-			{
-				$value = array_map(function($val) {
-					$strPath = Files::getPathFromUuid($val);
-					return $strPath ?: $val;
-				}, $value);
-			}
-			else
-			{
+		} elseif ($arrData['inputType'] == 'fileTree') {
+			if ($arrData['eval']['multiple'] && is_array($value)) {
+				$value = array_map(
+					function ($val) {
+						$strPath = Files::getPathFromUuid($val);
+
+						return $strPath ?: $val;
+					},
+					$value
+				);
+			} else {
 				$strPath = Files::getPathFromUuid($value);
-				$value = $strPath ?: $value;
+				$value   = $strPath ?: $value;
 			}
-		}
-		elseif (\Validator::isBinaryUuid($value))
-		{
+		} elseif (\Validator::isBinaryUuid($value)) {
 			$value = \String::binToUuid($value);
 		}
 
@@ -479,63 +456,63 @@ class FormHelper extends \System
 	public static function flattenArray(array $array)
 	{
 		$return = array();
-		array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+		array_walk_recursive(
+			$array,
+			function ($a) use (&$return) {
+				$return[] = $a;
+			}
+		);
+
 		return $return;
 	}
 
 	/**
 	 * Gets the available subpalettes and subpalettes with options from the palette
 	 *
-	 * @param array $arrSubPalettes
-	 * @param array $arrFieldsInPalette
+	 * @param array          $arrSubPalettes
+	 * @param array          $arrFieldsInPalette
 	 * @param \DataContainer $dc
+	 *
 	 * @return array
 	 */
-	public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, \DataContainer $dc=null)
+	public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, \DataContainer $dc = null)
 	{
 		$arrFilteredSubPalettes = array();
 
-		foreach ($arrFieldsInPalette as $strField)
-		{
-			if (in_array($strField, $arrSubPalettes))
-			{
+		foreach ($arrFieldsInPalette as $strField) {
+			if (in_array($strField, $arrSubPalettes)) {
 				$arrFilteredSubPalettes[] = $strField;
 				continue;
 			}
 
 			$arrField = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'][$strField];
 
-			if (is_array($arrField['options']) && !empty($arrField['options']))
-			{
-				foreach ($arrField['options'] as $strOption)
-				{
+			if (is_array($arrField['options']) && !empty($arrField['options'])) {
+				foreach ($arrField['options'] as $strOption) {
 					$strSubPaletteName = $strField . '_' . $strOption;
-					if (in_array($strSubPaletteName, $arrSubPalettes))
-					{
+					if (in_array($strSubPaletteName, $arrSubPalettes)) {
 						$arrFilteredSubPalettes[] = $strSubPaletteName;
 					}
 				}
 				continue;
 			}
 
-			if (is_array($arrField['options_callback']) && !empty($arrField['options_callback']) && is_callable($arrField['options_callback']))
-			{
-				$strClass = $arrField['options_callback'][0];
-				$strMethod = $arrField['options_callback'][1];
+			if (is_array($arrField['options_callback']) && !empty($arrField['options_callback']) && is_callable($arrField['options_callback'])) {
+				$strClass    = $arrField['options_callback'][0];
+				$strMethod   = $arrField['options_callback'][1];
 				$objInstance = \Controller::importStatic($strClass);
-				$arrOptions = $objInstance->$strMethod($dc);
+				$arrOptions  = $objInstance->$strMethod($dc);
 
-				foreach ($arrOptions as $strOption)
-				{
+				foreach ($arrOptions as $strOption) {
 					$strSubPaletteName = $strField . '_' . $strOption;
-					if (in_array($strSubPaletteName, $arrSubPalettes))
-					{
+					if (in_array($strSubPaletteName, $arrSubPalettes)) {
 						$arrFilteredSubPalettes[] = $strSubPaletteName;
 					}
 				}
 				continue;
 			}
 		}
+
 		return $arrFilteredSubPalettes;
 	}
 

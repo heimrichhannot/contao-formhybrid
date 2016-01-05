@@ -463,9 +463,9 @@ class DC_Hybrid extends \DataContainer
 			$this->hasUpload = true;
 		}
 
-		// always xss clean the user input (also if filter, non-model submission, ...) -> done another time in
-		// FrontendWidget::validateGetAndPost()
-		$objWidget->value = FormHelper::xssClean($objWidget->value, true);
+		// always xss clean the user input (also if filter, non-model submission, ...) -> done another time
+		// FrontendWidget::validateGetAndPost() in
+		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
 		if ($this->isSubmitted && !$this->skipValidation) {
 			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
