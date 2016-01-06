@@ -55,12 +55,15 @@ class FormHelper extends \System
 
 		$arrData = $GLOBALS['TL_DCA'][$strDca]['fields'][$strField];
 
-		$arrPreservedTags = isset($arrData['eval']['allowedTags']) ? $arrData['eval']['allowedTags'] : \Config::get('allowedTags');
+		$strPreservedTags = isset($arrData['eval']['allowedTags']) ? $arrData['eval']['allowedTags'] : \Config::get('allowedTags');
+
+		// transform to array
+		$strPreservedTags = str_replace(array('<', '>'), array('', ','), rtrim($strPreservedTags, '>'));
 
 		// prepare for replacing
 		$varValue = html_entity_decode($varValue);
 
-		foreach ($arrPreservedTags as $strTag) {
+		foreach (explode(',', $strPreservedTags) as $strTag) {
 			$varValue = preg_replace(
 				'/<(\/?' . $strTag . '[^>]*)>/i',
 				'|%lt%$1%gt%|',
