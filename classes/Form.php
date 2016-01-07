@@ -277,7 +277,7 @@ abstract class Form extends DC_Hybrid
 			$arrSubmissionData
 		);
 
-		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id);
+		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id, 'alert alert-success');
 	}
 
 	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
