@@ -488,13 +488,13 @@ abstract class Form extends DC_Hybrid
 		return isset($this->arrData[$strKey]);
 	}
 
-	public function getSubmission($blnFormatted = true)
+	public function getSubmission($blnFormatted = true, $blnSkipDefaults = false)
 	{
 		$arrSubmission = $this->arrSubmission;
 
 		if(!$this->isSubmitted())
 		{
-			$arrSubmission = $this->getDefaults();
+			$arrSubmission = $blnSkipDefaults ? array() : $this->getDefaults();
 		}
 
 		if($this->isFilterForm && is_array($arrSubmission))
