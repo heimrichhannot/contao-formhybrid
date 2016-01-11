@@ -488,6 +488,14 @@ abstract class Form extends DC_Hybrid
 		return isset($this->arrData[$strKey]);
 	}
 
+	/**
+	 * Return the Submission of the form, if nothing was submitted, return null
+	 *
+	 * @param bool $blnFormatted set false, if the real value should be set
+	 * @param bool $blnSkipDefaults skip default values, helpful if nothing was submitted
+	 *
+	 * @return \FilesModel|Submission|\Model|null
+	 */
 	public function getSubmission($blnFormatted = true, $blnSkipDefaults = false)
 	{
 		$arrSubmission = $this->arrSubmission;
@@ -500,6 +508,11 @@ abstract class Form extends DC_Hybrid
 		if($this->isFilterForm && is_array($arrSubmission))
 		{
 			$arrDca = $this->getDca();
+
+			if(!empty($arrSubmission))
+			{
+				return null;
+			}
 
 			$objSubmission = new Submission();
 
