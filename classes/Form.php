@@ -509,7 +509,7 @@ abstract class Form extends DC_Hybrid
 		{
 			$arrDca = $this->getDca();
 
-			if(!empty($arrSubmission))
+			if(empty($arrSubmission))
 			{
 				return null;
 			}
