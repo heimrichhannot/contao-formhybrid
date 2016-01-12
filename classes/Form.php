@@ -277,7 +277,7 @@ abstract class Form extends DC_Hybrid
 			$arrSubmissionData
 		);
 
-		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id);
+		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id, 'alert alert-success');
 	}
 
 	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
@@ -488,18 +488,31 @@ abstract class Form extends DC_Hybrid
 		return isset($this->arrData[$strKey]);
 	}
 
-	public function getSubmission($blnFormatted = true)
+	/**
+	 * Return the Submission of the form, if nothing was submitted, return null
+	 *
+	 * @param bool $blnFormatted set false, if the real value should be set
+	 * @param bool $blnSkipDefaults skip default values, helpful if nothing was submitted
+	 *
+	 * @return \FilesModel|Submission|\Model|null
+	 */
+	public function getSubmission($blnFormatted = true, $blnSkipDefaults = false)
 	{
 		$arrSubmission = $this->arrSubmission;
 
 		if(!$this->isSubmitted())
 		{
-			$arrSubmission = $this->getDefaults();
+			$arrSubmission = $blnSkipDefaults ? array() : $this->getDefaults();
 		}
 
 		if($this->isFilterForm && is_array($arrSubmission))
 		{
 			$arrDca = $this->getDca();
+
+			if(empty($arrSubmission))
+			{
+				return null;
+			}
 
 			$objSubmission = new Submission();
 

@@ -93,7 +93,7 @@ class DC_Hybrid extends \DataContainer
 				static::doFieldDependentRedirect($this, $this->objActiveRecord);
 			} else {
 				$this->Template->invalid = true;
-				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id);
+				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
 			}
 		} else {
 			if (class_exists($strModelClass))
@@ -250,6 +250,12 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 		$this->Template->submission = $this->objActiveRecord;
+
+		if(!StatusMessage::isEmpty($this->objModule->id))
+		{
+			$this->Template->message = StatusMessage::generate($this->objModule->id);
+			StatusMessage::reset($this->objModule->id);
+		}
 
 		$this->compile();
 
@@ -846,6 +852,9 @@ class DC_Hybrid extends \DataContainer
 		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
 		$this->modifyDC();
+		
+		// store modified dca, otherwise for example widgets wont contain modified callbacks
+		$GLOBALS['TL_DCA'][$this->strTable] = $this->dca;
 
 		return true;
 	}
