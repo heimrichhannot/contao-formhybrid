@@ -18,7 +18,7 @@ class FormHelper extends \System
 {
 	public static function xssClean($varValue, $tidy = false)
 	{
-		$varValue = preg_replace('/(&#[A-Za-z0-9]+)/i', '$1;', $varValue);
+		$varValue = preg_replace('/(&#[A-Za-z0-9]+);?/i', '$1;', $varValue);
 
 		$varValue = \Input::xssClean($varValue, true);
 
@@ -26,15 +26,24 @@ class FormHelper extends \System
 		if ($tidy) {
 			if (is_array($varValue)) {
 				foreach ($varValue as $key => $value) {
-					$varValue[$key] = tidy_parse_string($value, array('show-body-only' => true), 'utf8');
+					$varValue[$key] = static::doTidyClean($value);
 				}
 			} else {
-				$objTidyResult = tidy_parse_string($varValue, array('show-body-only' => true), 'utf8');
-				$varValue      = $objTidyResult->value;
+				$varValue = static::doTidyClean($varValue);
 			}
 		}
 
 		return $varValue;
+	}
+
+	private static function doTidyClean($varValue)
+	{
+		$varValue = '<pre>' . $varValue . '</pre>';
+		$objTidyResult = tidy_parse_string($varValue, array('show-body-only' => true), 'utf8');
+		$varValue      = $objTidyResult->value;
+		$varValue = str_replace("\n", '', $varValue);
+		$varValue = substr($varValue, strlen('<pre>'), strlen($varValue));
+		return substr($varValue, 0, strlen($varValue)-strlen('</pre>'));
 	}
 
 	public static function escapeAllEntities($strDca, $strField, $varValue)
