@@ -38,6 +38,9 @@ class FormHelper extends \System
 
 	private static function doTidyClean($varValue)
 	{
+		if (!$varValue)
+			return $varValue;
+
 		$blnHasSurroundingP = substr($varValue, 0, 3) == '<p>';
 
 		libxml_use_internal_errors(true);
