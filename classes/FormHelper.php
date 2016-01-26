@@ -63,6 +63,9 @@ class FormHelper extends \System
 	{
 		\Controller::loadDataContainer($strDca);
 
+		if (\Validator::isUuid($varValue))
+			return $varValue;
+
 		if (is_array($varValue))
 		{
 			$arrValues = array();
