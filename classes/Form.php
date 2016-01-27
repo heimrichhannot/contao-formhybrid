@@ -135,7 +135,8 @@ abstract class Form extends DC_Hybrid
 					$this->createConfirmationEmail($arrSubmissionData);
 			}
 
-			$this->createSuccessMessage($arrSubmissionData);
+			if (!$this->isFilterForm)
+				$this->createSuccessMessage($arrSubmissionData);
 
 			$this->afterSubmitCallback($this);
 
