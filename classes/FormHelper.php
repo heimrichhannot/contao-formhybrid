@@ -405,13 +405,9 @@ class FormHelper extends \System
 
 	public static function getFormatedValueByDca($value, $arrData, $dc)
 	{
-		global $objPage;
-		
 		$value = deserialize($value);
-		$rgxp  = $arrData['eval']['rgxp'];
 		$opts  = $arrData['options'];
 		$rfrc  = $arrData['reference'];
-
 		$rgxp = $arrData['eval']['rgxp'];
 
 		// Call the options_callback to get the formated value
@@ -429,7 +425,8 @@ class FormHelper extends \System
 
 			$arrOptions = !is_array($value) ? array($value) : $value;
 
-			$value = array_intersect_key($options_callback, array_flip($arrOptions));
+			if ($value !== null)
+				$value = array_intersect_key($options_callback, array_flip($arrOptions));
 		}
 
 		if ($rgxp == 'date') {
