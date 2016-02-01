@@ -45,7 +45,8 @@ class FormHelper extends \System
 
 		libxml_use_internal_errors(true);
 		$objDoc = new \DOMDocument();
-		$objDoc->loadHTML($varValue, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+		$objDoc->encoding = 'utf-8';
+		$objDoc->loadHTML(utf8_decode($varValue), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 		$varValue = $objDoc->saveHTML();
 		libxml_use_internal_errors(false);
 
