@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\HastePlus\Environment;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
@@ -47,6 +48,10 @@ abstract class Form extends DC_Hybrid
 			if($objModule->formHybridAction && ($objActionPage = \PageModel::findWithDetails($objModule->formHybridAction)) !== null)
 			{
 				$this->strAction = \Controller::generateFrontendUrl($objActionPage->row(), null, null, true);
+			}
+			else
+			{
+				$this->strAction = Url::removeQueryString(array('file'), \Environment::get('uri'));
 			}
 
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
