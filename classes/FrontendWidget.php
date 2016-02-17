@@ -19,8 +19,6 @@ abstract class FrontendWidget extends \Widget
 	 */
 	public static function validateGetAndPost($objWidget, $strMethod)
 	{
-
-
 		if ($strMethod == FORMHYBRID_METHOD_GET)
 		{
 			$varValue = $objWidget->validator(static::getGet($objWidget, $objWidget->strName));
@@ -30,6 +28,7 @@ abstract class FrontendWidget extends \Widget
 		{
 			// \Widget->validate retrieves submission data form post -> xss related stuff needs to be removed beforehands
 			$_POST[$objWidget->name] = FormHelper::xssClean($_POST[$objWidget->name], $objWidget->allowHtml);
+
 			// Captcha needs no value, just simple validation
 			if($objWidget instanceof \FormCaptcha)
 			{

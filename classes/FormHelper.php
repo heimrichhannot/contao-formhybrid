@@ -180,7 +180,7 @@ class FormHelper extends \System
 	}
 
 
-	public static function transformSpecialValues($varValue, $arrData, $objWidget = null)
+	public static function transformSpecialValues($varValue, $arrData, $strTable = null, $intId = 0)
 	{
 		// Convert date formats into timestamps
 		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
@@ -190,6 +190,11 @@ class FormHelper extends \System
 
 		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
 			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
+		}
+
+		if ($arrData['inputType'] == 'tag' && in_array('tags_plus', \ModuleLoader::getActive()))
+		{
+			$varValue = \HeimrichHannot\TagsPlus\TagsPlus::loadTags($strTable, $intId);
 		}
 
 		return $varValue;

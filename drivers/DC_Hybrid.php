@@ -409,10 +409,10 @@ class DC_Hybrid extends \DataContainer
 
 		if ($this->isSubmitted) {
 			$varValue = \Input::$strInputMethod($strName);
-			$varValue = FormHelper::transformSpecialValues($varValue, $arrData);
+			$varValue = FormHelper::transformSpecialValues($varValue, $arrData, $this->strTable, $this->intId);
 		} else {
 			// contains the load_callback!
-			$varValue = $this->getDefaultFieldValue($strName);
+			$varValue = $this->getDefaultFieldValue($strName, $arrData);
 		}
 
 
@@ -491,9 +491,18 @@ class DC_Hybrid extends \DataContainer
 			if ($objWidget->hasErrors()) {
 				$this->doNotSubmit = true;
 				$this->arrInvalidFields[] = $strName;
-			} elseif ($objWidget->submitInput()) {
+			} elseif ($arrData['inputType'] == 'tag' && in_array('tags_plus', \ModuleLoader::getActive()))
+			{
+				$varValue = deserialize($objWidget->value);
+
+				if (!is_array($varValue))
+					$varValue = array($varValue);
+
+				\HeimrichHannot\TagsPlus\TagsPlus::saveTags($this->strTable, $this->intId, array_map('urldecode', $varValue));
+			}
+			elseif ($objWidget->submitInput()) {
 				$this->objActiveRecord->{$strName} = FormHelper::transformSpecialValues(
-					$objWidget->value, $arrData, $objWidget
+					$objWidget->value, $arrData, $this->strTable, $this->intId
 				);
 			} // support file uploads
 			elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload') {
@@ -544,11 +553,11 @@ class DC_Hybrid extends \DataContainer
 		return $arrResult;
 	}
 
-	protected function getDefaultFieldValue($strName)
+	protected function getDefaultFieldValue($strName, $arrData)
 	{
 		// priority 2 -> set value from model entity ($this->setDefaults() triggered before)
 		if (isset($this->objActiveRecord->{$strName})) {
-			$varValue = $this->objActiveRecord->{$strName};
+			$varValue = FormHelper::transformSpecialValues($this->objActiveRecord->{$strName}, $arrData, $this->strTable, $this->intId);
 		}
 
 		// priority 1 -> load_callback
@@ -852,7 +861,7 @@ class DC_Hybrid extends \DataContainer
 		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
 		$this->modifyDC($this->dca);
-		
+
 		// store modified dca, otherwise for example widgets wont contain modified callbacks
 		$GLOBALS['TL_DCA'][$this->strTable] = $this->dca;
 
