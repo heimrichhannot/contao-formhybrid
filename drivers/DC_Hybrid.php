@@ -851,7 +851,7 @@ class DC_Hybrid extends \DataContainer
 
 		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
-		$this->modifyDC();
+		$this->modifyDC($this->dca);
 		
 		// store modified dca, otherwise for example widgets wont contain modified callbacks
 		$GLOBALS['TL_DCA'][$this->strTable] = $this->dca;
@@ -884,7 +884,7 @@ class DC_Hybrid extends \DataContainer
 		return $this->strPalette;
 	}
 
-	protected function modifyDC()
+	public function modifyDC(&$arrDca = null)
 	{
 	}
 
