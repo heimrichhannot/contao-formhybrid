@@ -302,8 +302,12 @@ class DC_Hybrid extends \DataContainer
 				$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
 
 				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette or active in user form submission
-				if ($toggleSubpalette == $strName || $this->isSubpaletteActive($strName)) {
-					$arrSubFields[$strName] = $arrActiveSubpaletteFields;
+				$arrTypePaletteActive = $this->isTypePaletteActive($strName);
+				if ($toggleSubpalette == $strName || $this->isSubpaletteActive($strName) || $arrTypePaletteActive[0]) {
+					if ($arrTypePaletteActive[0])
+						$arrSubFields[$arrTypePaletteActive[1]] = $arrActiveSubpaletteFields;
+					else
+						$arrSubFields[$strName] = $arrActiveSubpaletteFields;
 
 					if ($ajaxId !== null)
 					{
@@ -321,7 +325,7 @@ class DC_Hybrid extends \DataContainer
 
 		// add subpalette fields
 		foreach ($arrSubFields as $strParent => $arrFields) {
-	
+
 			// check if subpalette has fields
   			if(empty($arrFields)) continue;
 		
@@ -334,16 +338,16 @@ class DC_Hybrid extends \DataContainer
 				$objSubTemplate = $this->generateSubpalette('sub_' . $strParent);
 
 				// parent field is mandatory for subpalette
-				if($this->isSubpaletteActive($strParent) && !$this->arrFields[$strParent])
+				$arrTypePaletteActive = $this->isTypePaletteActive($strParent);
+				if(($arrTypePaletteActive[0] || $this->isSubpaletteActive($strParent)) && !$this->arrFields[$strParent])
 				{
-					$this->addField($strParent);
+					$this->addField($arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent);
 				}
 
-				if ($this->arrFields[$strParent])
-					$this->arrFields[$strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
+				if ($this->arrFields[$arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent])
+					$this->arrFields[$arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
 			}
 		}
-
 
 		// add submit button if not configured in dca
 		if (!$this->hasSubmit && !$blnAjax) {
@@ -358,6 +362,27 @@ class DC_Hybrid extends \DataContainer
 		$inputMethod = strtolower($this->strMethod);
 
 		return $this->isSubmitted && \Input::$inputMethod($strName) == 1 || !$this->isSubmitted && $this->objActiveRecord->{$strName};
+	}
+
+	protected function isTypePaletteActive($strName)
+	{
+		$inputMethod = strtolower($this->strMethod);
+		$arrType = explode('_', $strName);
+
+		// TODO: Currently only selectors of the form "field_value" are supported
+		if (count($arrType) != 2)
+			return array(false, null);
+
+		if ($this->isSubmitted)
+		{
+			$strField = \Input::$inputMethod($arrType[0]);
+		}
+		else
+		{
+			$strField = $this->objActiveRecord->{$arrType[0]};
+		}
+
+		return array($strField == $arrType[1], $arrType[0]);
 	}
 
 	protected function addField($strName)
@@ -498,12 +523,14 @@ class DC_Hybrid extends \DataContainer
 				if (!is_array($varValue))
 					$varValue = array($varValue);
 
-				\HeimrichHannot\TagsPlus\TagsPlus::saveTags($this->strTable, $this->intId, array_map('urldecode', $varValue));
+				if ($this->intId)
+					\HeimrichHannot\TagsPlus\TagsPlus::saveTags($this->strTable, $this->intId, array_map('urldecode', $varValue));
 			}
 			elseif ($objWidget->submitInput()) {
-				$this->objActiveRecord->{$strName} = FormHelper::transformSpecialValues(
+				// save non escaped to database
+				$this->objActiveRecord->{$strName} = html_entity_decode(FormHelper::transformSpecialValues(
 					$objWidget->value, $arrData, $this->strTable, $this->intId
-				);
+				));
 			} // support file uploads
 			elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload') {
 				$strMethod = strtolower($this->strMethod);
