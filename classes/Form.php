@@ -540,7 +540,7 @@ abstract class Form extends DC_Hybrid
 						{
 							$checkValue = $blnIsAssociative ? $k : $v;
 
-							if($checkValue == $varValue)
+							if(urldecode($checkValue) == urldecode($varValue))
 							{
 								$blnFound = true;
 								break;
@@ -555,7 +555,7 @@ abstract class Form extends DC_Hybrid
 						{
 							$checkValue = $blnIsAssoc ? $kk : $vv;
 
-							if($checkValue == $varValue)
+							if(urldecode($checkValue) == urldecode($varValue))
 							{
 								$blnFound = true;
 								break;
