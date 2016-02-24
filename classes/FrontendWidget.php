@@ -17,7 +17,7 @@ abstract class FrontendWidget extends \Widget
 	/**
 	 * Validate the user input and set the value
 	 */
-	public static function validateGetAndPost($objWidget, $strMethod)
+	public static function validateGetAndPost($objWidget, $strMethod, $strFormId, $arrData)
 	{
 		if ($strMethod == FORMHYBRID_METHOD_GET)
 		{
@@ -42,12 +42,22 @@ abstract class FrontendWidget extends \Widget
 			}
 		}
 
+		$objWidget->varValue = $varValue;
+
+		// HOOK: validate form field callback
+		if (isset($GLOBALS['TL_HOOKS']['formHybridValidateFormField']) && is_array($GLOBALS['TL_HOOKS']['formHybridValidateFormField']))
+		{
+			foreach ($GLOBALS['TL_HOOKS']['formHybridValidateFormField'] as $callback)
+			{
+				$objClass = \Controller::importStatic($callback[0]);
+				$objClass->{$callback[1]}($objWidget, $strFormId, $arrData);
+			}
+		}
+
 		if ($objWidget->hasErrors())
 		{
 			$objWidget->class = 'error';
 		}
-
-		$objWidget->varValue = $varValue;
 	}
 
 
