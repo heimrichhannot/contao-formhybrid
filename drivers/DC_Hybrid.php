@@ -499,7 +499,7 @@ class DC_Hybrid extends \DataContainer
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
 		if ($this->isSubmitted && !$this->skipValidation) {
-			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->strTable, $this->objModule->id, $arrData);
+			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
 
 			// Make sure unique fields are unique
 			if ($arrData['eval']['unique'] && $varValue != ''
@@ -528,9 +528,20 @@ class DC_Hybrid extends \DataContainer
 			}
 			elseif ($objWidget->submitInput()) {
 				// save non escaped to database
-				$this->objActiveRecord->{$strName} = html_entity_decode(FormHelper::transformSpecialValues(
-					$objWidget->value, $arrData, $this->strTable, $this->intId
-				));
+				if (is_array($objWidget->value))
+				{
+					$this->objActiveRecord->{$strName} = array_map(function($varVal) use ($arrData) {
+						return html_entity_decode(FormHelper::transformSpecialValues(
+							$varVal, $arrData, $this->strTable, $this->intId
+						));
+					}, $objWidget->value);
+				}
+				else
+				{
+					$this->objActiveRecord->{$strName} = html_entity_decode(FormHelper::transformSpecialValues(
+						$objWidget->value, $arrData, $this->strTable, $this->intId
+					));
+				}
 			} // support file uploads
 			elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload') {
 				$strMethod = strtolower($this->strMethod);
