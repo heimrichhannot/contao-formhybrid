@@ -499,7 +499,7 @@ class DC_Hybrid extends \DataContainer
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
 		if ($this->isSubmitted && !$this->skipValidation) {
-			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod);
+			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->strTable, $this->objModule->id, $arrData);
 
 			// Make sure unique fields are unique
 			if ($arrData['eval']['unique'] && $varValue != ''
