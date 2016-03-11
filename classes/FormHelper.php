@@ -441,6 +441,12 @@ class FormHelper extends \System
 		} elseif ($rgxp == 'datim') {
 			$value = \Date::parse(\Config::get('datimFormat'), $value);
 		} elseif (is_array($value)) {
+			if (!$rfrc)
+			{
+				$value = array_map(function($value) use ($opts) {
+					return isset($opts[$value]) ? $opts[$value] : $value;
+				}, $value);
+			}
 			$value = static::flattenArray($value);
 
 			$value = array_filter($value); // remove empty elements

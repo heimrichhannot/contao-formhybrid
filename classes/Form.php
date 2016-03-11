@@ -532,7 +532,7 @@ abstract class Form extends DC_Hybrid
 				if(is_array($arrData['options']))
 				{
 					$blnIsAssociative = ($arrData['eval']['isAssociative'] || array_is_assoc($arrData['options']));
-					$blnFound = false;
+					$intFounds = 0;
 
 					foreach ($arrData['options'] as $k=>$v)
 					{
@@ -540,9 +540,16 @@ abstract class Form extends DC_Hybrid
 						{
 							$checkValue = $blnIsAssociative ? $k : $v;
 
-							if(urldecode($checkValue) == urldecode($varValue))
+							if (is_array($varValue))
 							{
-								$blnFound = true;
+								if(in_array(urldecode($checkValue), array_map('urldecode', $varValue)))
+								{
+									$intFounds++;
+								}
+							}
+							elseif(urldecode($checkValue) == urldecode($varValue))
+							{
+								$intFounds++;
 								break;
 							}
 
@@ -557,13 +564,13 @@ abstract class Form extends DC_Hybrid
 
 							if(urldecode($checkValue) == urldecode($varValue))
 							{
-								$blnFound = true;
+								$intFounds++;
 								break;
 							}
 						}
 					}
 
-					if(!$blnFound)
+					if(is_array($varValue) && $intFounds < count($varValue) || !is_array($varValue) && $intFounds < 1)
 					{
 						continue;
 					}
