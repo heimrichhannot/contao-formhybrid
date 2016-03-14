@@ -428,7 +428,7 @@ class DC_Hybrid extends \DataContainer
 		}
 
 		// GET fallback
-		if ($this->strMethod == FORMHYBRID_METHOD_GET && \Input::get($strName)) {
+		if ($this->strMethod == FORMHYBRID_METHOD_GET && isset($_GET[$strName])) {
 			$this->isSubmitted = true;
 		}
 
