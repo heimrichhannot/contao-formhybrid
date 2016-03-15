@@ -81,7 +81,8 @@ class DC_Hybrid extends \DataContainer
 	{
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
-		if (!$this->isFilterForm) {
+		if (!$this->isFilterForm)
+		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 
@@ -328,10 +329,10 @@ class DC_Hybrid extends \DataContainer
 
 			// check if subpalette has fields
   			if(empty($arrFields)) continue;
-		
+
 			foreach ($arrFields as $strName)
 			{
-				$this->addSubField($strName, $strParent);
+				$this->addSubField($strName, $strParent, $blnAjax);
 			}
 
 			if (!$blnAjax) {
@@ -404,20 +405,20 @@ class DC_Hybrid extends \DataContainer
 		return true;
 	}
 
-	protected function addSubField($strName, $strParent)
+	protected function addSubField($strName, $strParent, $skipValidation=false)
 	{
 		if (!in_array($strName, array_keys($this->dca['fields']))) {
 			return false;
 		}
 
-		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName])) {
+		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName], $skipValidation)) {
 			$this->arrSubFields[$strParent][$strName] = $objField;
 		}
 
 		return true;
 	}
 
-	protected function generateField($strName, $arrData)
+	protected function generateField($strName, $arrData, $skipValidation = false)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 		$strInputMethod = $this->strInputMethod;
@@ -432,14 +433,16 @@ class DC_Hybrid extends \DataContainer
 			$this->isSubmitted = true;
 		}
 
-		if ($this->isSubmitted) {
-			$varValue = \Input::$strInputMethod($strName);
-			$varValue = FormHelper::transformSpecialValues($varValue, $arrData, $this->strTable, $this->intId);
-		} else {
-			// contains the load_callback!
-			$varValue = $this->getDefaultFieldValue($strName, $arrData);
-		}
+		$arrWidgetErrors = array();
 
+		// contains the load_callback!
+		$varDefault = $this->getDefaultFieldValue($strName, $arrData);
+		$varValue = $varDefault;
+
+		if ($this->isSubmitted && !$skipValidation) {
+			$varValue = \Input::$strInputMethod($strName);
+			$varValue = FormHelper::transformSpecialValues($varValue, $arrData, $this->strTable, $this->intId, $varDefault, $arrWidgetErrors);
+		}
 
 		// overwrite required fields
 		if ($this->overwriteRequired) {
@@ -498,8 +501,16 @@ class DC_Hybrid extends \DataContainer
 		// FrontendWidget::validateGetAndPost() in
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
-		if ($this->isSubmitted && !$this->skipValidation) {
+		if ($this->isSubmitted && !($this->skipValidation || $skipValidation)) {
 			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->strTable, $this->objModule->id, $arrData);
+
+			if(is_array($arrWidgetErrors))
+			{
+				foreach($arrWidgetErrors as $strError)
+				{
+					$objWidget->addError($strError);
+				}
+			}
 
 			// Make sure unique fields are unique
 			if ($arrData['eval']['unique'] && $varValue != ''
@@ -531,9 +542,21 @@ class DC_Hybrid extends \DataContainer
 				if (is_array($objWidget->value))
 				{
 					$this->objActiveRecord->{$strName} = array_map(function($varVal) use ($arrData) {
-						return html_entity_decode(FormHelper::transformSpecialValues(
-							$varVal, $arrData, $this->strTable, $this->intId
-						));
+						$varVal = FormHelper::transformSpecialValues($varVal, $arrData, $this->strTable, $this->intId);
+
+						if(is_array($varVal))
+						{
+							foreach($varVal as $key => $val)
+							{
+								$varVal[$key] = html_entity_decode($val);
+							}
+						}
+						else
+						{
+							$varVal = html_entity_decode($varVal);
+						}
+
+						return $varVal;
 					}, $objWidget->value);
 				}
 				else
@@ -620,7 +643,7 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
 		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName
-			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '');
+			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '');
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
@@ -953,6 +976,16 @@ class DC_Hybrid extends \DataContainer
 	public function getTable()
 	{
 		return $this->strTable;
+	}
+
+	public function getFormId()
+	{
+		return $this->strTable . '_' . $this->objModule->id;
+	}
+
+	public function getFormName()
+	{
+		return 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 	}
 
 	public function runOnValidationError($arrInvalidFields) {}

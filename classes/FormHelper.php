@@ -180,12 +180,20 @@ class FormHelper extends \System
 	}
 
 
-	public static function transformSpecialValues($varValue, $arrData, $strTable = null, $intId = 0)
+	public static function transformSpecialValues($varValue, $arrData, $strTable = null, $intId = 0, $varDefault=null, &$arrWidgetErrors=array())
 	{
 		// Convert date formats into timestamps
 		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
-			$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
-			$varValue = $objDate->tstamp;
+			try
+			{
+				$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
+				$varValue = $objDate->tstamp;
+			}
+			catch (\OutOfBoundsException $e)
+			{
+				$arrWidgetErrors[] = sprintf($GLOBALS['TL_LANG']['ERR']['invalidDate'], $varValue);
+				return $varDefault;
+			}
 		}
 
 		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
@@ -441,12 +449,6 @@ class FormHelper extends \System
 		} elseif ($rgxp == 'datim') {
 			$value = \Date::parse(\Config::get('datimFormat'), $value);
 		} elseif (is_array($value)) {
-			if (!$rfrc)
-			{
-				$value = array_map(function($value) use ($opts) {
-					return isset($opts[$value]) ? $opts[$value] : $value;
-				}, $value);
-			}
 			$value = static::flattenArray($value);
 
 			$value = array_filter($value); // remove empty elements

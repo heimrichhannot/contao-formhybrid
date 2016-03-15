@@ -24,6 +24,9 @@ $arrLang['formHybridAsync'] = array('Formular asynchron absenden', 'Wählen Sie 
 
 $arrLang['formHybridSuccessMessage'] = array('Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Erfolgsmeldung an.');
 $arrLang['formHybridSkipScrollingToSuccessMessage'] = array('Nicht zur Erfolsmeldung scrollen', 'Wählen Sie diese Option, damit nicht automatisch zur Erfolgsmeldung gescrollt wird.');
+$arrLang['formHybridSendSubmissionAsNotification'] = array('E-Mail über Benachrichtigungscenter versenden', 'Beim erfolgreichen absenden des Formulars wird eine E-Mail über den Benachrichtungscenter ausgelößt.');
+$arrLang['formHybridSubmissionNotification'] = array('Nachricht auswählen', 'Wählen Sie eine Nachricht aus dem Benachrichtigungscenter aus.');
+
 $arrLang['formHybridSendSubmissionViaEmail'] = array('Per E-Mail versenden', 'Die Formulardaten an eine E-Mail-Adresse versenden.');
 $arrLang['formHybridSubmissionMailSender'] = array('Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>');
 $arrLang['formHybridSubmissionMailRecipient'] = array('Empfänger-Adresse', 'Mehrere E-Mail-Adressen können mit Komma getrennt werden.');
@@ -34,7 +37,9 @@ $arrLang['formHybridSubmissionMailText'] = array('Text der E-Mail', 'Bitte geben
 $arrLang['formHybridSubmissionMailTemplate'] = array('E-Mail-Template', 'Hier können Sie das E-Mail-Template überschreiben.');
 $arrLang['formHybridSubmissionMailAttachment'] = array('E-Mail Anhänge', 'Versenden Sie Dateien aus der Dateiverwaltung als Anhang.');
 
+$arrLang['formHybridSendConfirmationAsNotification'] = array('Bestätigungs-E-Mail über Benachrichtigungscenter versenden', 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars über den Benachrichtungscenter ausgelößt.');
 $arrLang['formHybridSendConfirmationViaEmail'] = array('Bestätigung per E-Mail versenden', 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars versendet.');
+$arrLang['formHybridConfirmationNotification'] = array('Nachricht auswählen', 'Wählen Sie eine Nachricht aus dem Benachrichtigungscenter aus.');
 $arrLang['formHybridConfirmationMailSender'] = array('Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>');
 $arrLang['formHybridConfirmationMailRecipientField'] = array('Formularfeld mit E-Mail-Adresse des Empfängers', 'Wählen Sie hier das Formularfeld, in dem der Absender seine E-Mail-Adresse angibt oder ein Formularfeld, das die Empfänger-Adresse als Wert enthält.');
 $arrLang['formHybridConfirmationAvisotaMessage'] = array('Benachrichtigung', 'Wählen Sie hier eine Avisota-Nachricht aus.');

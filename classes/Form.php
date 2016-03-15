@@ -5,6 +5,7 @@ namespace HeimrichHannot\FormHybrid;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\HastePlus\Environment;
 use HeimrichHannot\StatusMessages\StatusMessage;
+use MatthiasMullie\Minify\Exception;
 
 abstract class Form extends DC_Hybrid
 {
@@ -31,6 +32,8 @@ abstract class Form extends DC_Hybrid
 	private $useModelData = false;
 
 	private $resetAfterSubmission = true;
+
+	protected $strLogFile = 'formhybrid.log';
 
 
 	public function __construct(\ModuleModel $objModule = null, $intId = 0)
@@ -79,11 +82,16 @@ abstract class Form extends DC_Hybrid
 		}
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
-		$this->strFormId        = $this->strTable . '_' . $objModule->id;
-		$this->strFormName      = 'formhybrid_' . str_replace('tl_', '', $this->strTable);
+		$this->strFormId        = $this->getFormId();
+		$this->strFormName      = $this->getFormName();
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
+
+		// prevent from caching form, chrome is greedy
+		header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+		header("Pragma: no-cache"); // HTTP 1.0.
+		header("Expires: 0"); // Proxies.
 
 		parent::__construct($this->strTable, $objModule);
 	}
@@ -118,6 +126,19 @@ abstract class Form extends DC_Hybrid
 
 			$arrSubmissionData = $this->prepareSubmissionData();
 
+			if($this->formHybridSendSubmissionAsNotification)
+			{
+				if(($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->formHybridSubmissionNotification)) !== null)
+				{
+					$arrToken = FormSubmissionHelper::tokenizeData($arrSubmissionData);
+
+					if($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken))
+					{
+						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
+					}
+				}
+			}
+
 			if ($this->formHybridSendSubmissionViaEmail) {
 				if ($this->formHybridSubmissionAvisotaMessage)
 					$this->createSubmissionAvisotaEmail(
@@ -127,6 +148,20 @@ abstract class Form extends DC_Hybrid
 					);
 				else
 					$this->createSubmissionEmail($arrSubmissionData);
+			}
+
+
+			if($this->formHybridSendConfirmationAsNotification)
+			{
+				if(($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->formHybridConfirmationNotification)) !== null)
+				{
+					$arrToken = FormSubmissionHelper::tokenizeData($arrSubmissionData);
+
+					if($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken))
+					{
+						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
+					}
+				}
 			}
 
 			if ($this->formHybridSendConfirmationViaEmail) {
@@ -228,7 +263,14 @@ abstract class Form extends DC_Hybrid
 		if ($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
 			if (is_array($arrRecipient)) {
 				$arrRecipient = array_filter(array_unique($arrRecipient));
-				$objEmail->sendTo($this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false));
+				$to = $this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false);
+
+				try
+				{
+					$objEmail->sendTo($to);
+				} catch(Exception $e){
+					log_message('Error sending submission email for entity ' . $this->strTable .':' . $this->intId . ' to : ' . $to . ' (' . $e . ')', $this->strLogFile);
+				}
 			}
 		}
 	}
@@ -284,6 +326,11 @@ abstract class Form extends DC_Hybrid
 		);
 
 		StatusMessage::addSuccess($this->formHybridSuccessMessage, $this->objModule->id, 'alert alert-success');
+	}
+
+	protected function sendSubmissionNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+	{
+		return true;
 	}
 
 	protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
@@ -352,7 +399,13 @@ abstract class Form extends DC_Hybrid
 		if ($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
 			if (is_array($arrRecipient)) {
 				$arrRecipient = array_filter(array_unique($arrRecipient));
-				$objEmail->sendTo($arrRecipient);
+
+				try
+				{
+					$objEmail->sendTo($arrRecipient);
+				} catch(Exception $e){
+					log_message('Error sending submission email for entity ' . $this->strTable .':' . $this->intId . ' to : ' . implode(',', $arrRecipient) . ' (' . $e . ')', $this->strLogFile);
+				}
 			}
 		}
 	}
@@ -391,6 +444,11 @@ abstract class Form extends DC_Hybrid
 			$strSalutationGroupId,
 			AvisotaHelper::RECIPIENT_MODE_USE_SUBMISSION_DATA
 		);
+	}
+
+	protected function sendConfirmationNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+	{
+		return true;
 	}
 
 	protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)
@@ -433,8 +491,11 @@ abstract class Form extends DC_Hybrid
 			($objTargetPage = \PageModel::findByPk($this->jumpTo)) !== null)
 		{
 			// unset messages
-			unset($_SESSION[FORMHYBRID_MESSAGE_SUCCESS]);
-			unset($_SESSION[FORMHYBRID_MESSAGE_ERROR]);
+			if(!StatusMessage::isEmpty($this->objModule->id))
+			{
+				\HeimrichHannot\StatusMessages\StatusMessage::reset($this->objModule->id);
+			}
+
 			\Controller::redirect(\Controller::generateFrontendUrl($objTargetPage->row()));
 		}
 		else
