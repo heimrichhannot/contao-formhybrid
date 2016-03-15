@@ -40,3 +40,26 @@ $GLOBALS['TL_HOOKS']['parseWidget'][] = array('HeimrichHannot\\FormHybrid\\Hooks
  */
 
 $GLOBALS['TL_FFL']['multiColumnWizard'] = '\\HeimrichHannot\\FormHybrid\\FormMultiColumnWizard';
+
+/**
+ * Notification Center Tokens
+ */
+if (in_array('notification_center_plus', \ModuleLoader::getActive()))
+{
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission_all';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_submission_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_value_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_plain_*';
+
+
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_submission_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_value_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_plain_*';
+
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission_all';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_submission_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_value_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_plain_*';
+}

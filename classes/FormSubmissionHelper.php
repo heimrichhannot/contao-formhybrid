@@ -15,6 +15,50 @@ namespace HeimrichHannot\FormHybrid;
 class FormSubmissionHelper extends FormHelper
 {
 
+	public static function tokenizeData(array $arrSubmissionData = array())
+	{
+		$arrTokens = array();
+
+		foreach($arrSubmissionData as $strName => $arrData)
+		{
+			if(!is_array($arrData))
+			{
+				continue;
+			}
+
+			foreach($arrData as $strType => $varValue)
+			{
+				switch($strType)
+				{
+					case 'output':
+						$arrTokens['form_' . $strName] = $varValue;
+						$arrTokens['form_plain_' . $strName] = \HeimrichHannot\Haste\Util\StringUtil::convertToText(\String::decodeEntities($varValue), true);
+					break;
+					case 'value':
+						$arrTokens['form_value_' . $strName] = $varValue;
+					break;
+					case 'submission':
+						$arrTokens['form_submission_' . $strName] = rtrim($varValue, "\n");
+					break;
+				}
+			}
+		}
+
+		// token: ##formsubmission_all##
+		if(isset($arrSubmissionData['submission_all']))
+		{
+			$arrTokens['formsubmission_all'] = $arrSubmissionData['submission_all'];
+		}
+
+		// token: ##formsubmission##
+		if(isset($arrSubmissionData['submission']))
+		{
+			$arrTokens['formsubmission'] = $arrSubmissionData['submission'];
+		}
+
+		return $arrTokens;
+	}
+
 	public static function prepareData(\Model $objSubmission, array $arrDca, $dc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
 	{
 		$arrSubmissionData = array();

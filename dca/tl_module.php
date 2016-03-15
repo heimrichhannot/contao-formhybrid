@@ -7,7 +7,9 @@ $dc = &$GLOBALS['TL_DCA']['tl_module'];
  */
 $dc['palettes']['__selector__'][]                      = 'formHybridAddDefaultValues';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionViaEmail';
+$dc['palettes']['__selector__'][]                      = 'formHybridSendSubmissionAsNotification';
 $dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationViaEmail';
+$dc['palettes']['__selector__'][]                      = 'formHybridSendConfirmationAsNotification';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddEditableRequired';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddDisplayedSubPaletteFields';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
@@ -15,8 +17,12 @@ $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValue
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
 	'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 
+$dc['subpalettes']['formHybridSendSubmissionAsNotification'] = 'formHybridSubmissionNotification';
+
 $dc['subpalettes']['formHybridSendConfirmationViaEmail'] =
 	'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
+
+$dc['subpalettes']['formHybridSendConfirmationAsNotification'] = 'formHybridConfirmationNotification';
 
 $dc['subpalettes']['formHybridAddEditableRequired'] = 'formHybridEditableRequired';
 $dc['subpalettes']['formHybridAddDisplayedSubPaletteFields'] = 'formHybridDisplayedSubPaletteFields';
@@ -244,6 +250,24 @@ $arrFields = array
 		'eval'      => array('tl_class' => 'w50 clr'),
 		'sql'       => "char(1) NOT NULL default ''",
 	),
+	'formHybridSendSubmissionAsNotification' => array
+	(
+		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionAsNotification'],
+		'exclude'     => true,
+		'inputType'   => 'checkbox',
+		'eval'        => array('submitOnChange' => true, 'tl_class' => 'clr', 'helpwizard' => true),
+		'sql'         => "char(1) NOT NULL default ''",
+	),
+	'formHybridSubmissionNotification' => array
+	(
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionNotification'],
+		'exclude'          => true,
+		'search'           => true,
+		'inputType'        => 'select',
+		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
+		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
+		'sql'              => "varchar(255) NOT NULL default ''",
+	),
 	'formHybridSendSubmissionViaEmail'         => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'],
 		'exclude'     => true,
@@ -319,6 +343,24 @@ $arrFields = array
 		'inputType' => 'fileTree',
 		'eval'      => array('multiple' => true, 'fieldType' => 'checkbox', 'files' => true),
 		'sql'       => "blob NULL",
+	),
+	'formHybridSendConfirmationAsNotification' => array
+	(
+		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationAsNotification'],
+		'exclude'     => true,
+		'inputType'   => 'checkbox',
+		'eval'        => array('submitOnChange' => true, 'tl_class' => 'clr', 'helpwizard' => true),
+		'sql'         => "char(1) NOT NULL default ''",
+	),
+	'formHybridConfirmationNotification' => array
+	(
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationNotification'],
+		'exclude'          => true,
+		'search'           => true,
+		'inputType'        => 'select',
+		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
+		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
+		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridSendConfirmationViaEmail'       => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'],
@@ -697,6 +739,30 @@ class tl_form_hybrid_module extends \Backend
 		}
 
 		return $arrFields;
+	}
+
+	public function getNoficiationMessages(\DataContainer $dc)
+	{
+		$arrOptions = array();
+
+		$objMessages = NotificationCenter\Model\Message::findAll();
+
+		if($objMessages === null)
+		{
+			return $arrOptions;
+		}
+
+		while($objMessages->next())
+		{
+			if(($objNotification = $objMessages->getRelated('pid')) === null)
+			{
+				continue;
+			}
+
+			$arrOptions[$objNotification->title][$objMessages->id] = $objMessages->title;
+		}
+
+		return $arrOptions;
 	}
 
 	public function getFormHybridStartTemplates()
