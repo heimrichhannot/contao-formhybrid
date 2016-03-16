@@ -28,17 +28,33 @@ class FormSubmissionHelper extends FormHelper
 
 			foreach($arrData as $strType => $varValue)
 			{
+				$value = $varValue;
+
+				// replace files model uuid with path
+				if($varValue && !is_array($varValue) && \Validator::isUuid($varValue))
+				{
+					// always convert binary to string, otherwise json_encode in NotificationCenter\Model\QueuedMessage::setToken will fail
+					$varValue = \Validator::isBinaryUuid($varValue) ? \String::binToUuid($varValue) : $varValue;
+
+					$objFile = \FilesModel::findByUuid($varValue);
+
+					if($objFile !== null)
+					{
+						$value = $objFile->path;
+					}
+				}
+
 				switch($strType)
 				{
 					case 'output':
-						$arrTokens['form_' . $strName] = $varValue;
-						$arrTokens['form_plain_' . $strName] = \HeimrichHannot\Haste\Util\StringUtil::convertToText(\String::decodeEntities($varValue), true);
+						$arrTokens['form_' . $strName] = $value;
+						$arrTokens['form_plain_' . $strName] = \HeimrichHannot\Haste\Util\StringUtil::convertToText(\String::decodeEntities($value), true);
 					break;
 					case 'value':
 						$arrTokens['form_value_' . $strName] = $varValue;
 					break;
 					case 'submission':
-						$arrTokens['form_submission_' . $strName] = rtrim($varValue, "\n");
+						$arrTokens['form_submission_' . $strName] = rtrim($value, "\n");
 					break;
 				}
 			}
