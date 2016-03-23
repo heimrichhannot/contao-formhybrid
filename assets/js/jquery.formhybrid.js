@@ -86,7 +86,7 @@
             });
         },
         toggleSubpaletteOnLoad: function () {
-            $('.formhybrid:not(.submitted) [onclick^="FormhybridAjaxRequest.toggleSubpalette"]').each(function () {
+            $('.formhybrid:not(.submitted):not(.has-model) [onclick^="FormhybridAjaxRequest.toggleSubpalette"]').each(function () {
                 $(this).triggerHandler('click');
             });
         },

@@ -643,7 +643,8 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
 		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName
-			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '');
+			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '') .
+			($this->intId ? ' has-model' : '');
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
