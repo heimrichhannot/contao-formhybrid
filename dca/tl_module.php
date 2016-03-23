@@ -686,36 +686,10 @@ class tl_form_hybrid_module extends \Backend
 		return $arrFields;
 	}
 
-	public function getFields($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
+	// no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
+	public static function getFields($objDc)
 	{
-		// get dc for multicolumnwizard...
-		if (!$dc) {
-			$dc               = new stdClass();
-			$dc->activeRecord = \ModuleModel::findByPk(\Input::get('id'));
-		}
-
-		if (!$dc->activeRecord->formHybridDataContainer) {
-			return array();
-		}
-
-		\System::loadLanguageFile($dc->activeRecord->formHybridDataContainer);
-		\Controller::loadDataContainer($dc->activeRecord->formHybridDataContainer);
-
-		$arrOptions = array();
-
-		foreach ($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['fields'] as $strField => $arrData) {
-			if (is_array($arrData['label'])) {
-				$strLabel = $arrData['label'][0] ?: $strField;
-			} else {
-				$strLabel = $arrData['label'] ?: $strField;
-			}
-
-			$arrOptions[$strField] = $strLabel ?: $strField;
-		}
-
-		asort($arrOptions);
-
-		return $arrOptions;
+		return \HeimrichHannot\Haste\Dca\General::getFields($objDc->activeRecord->formHybridDataContainer, false);
 	}
 
 	public function getSubPaletteFields(\DataContainer $dc)
