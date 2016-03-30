@@ -12,10 +12,22 @@
 namespace HeimrichHannot\FormHybrid;
 
 
-use HeimrichHannot\HastePlus\Files;
+use HeimrichHannot\Haste\Util\Files;
 
 class FormHelper extends \System
 {
+	public static function getFieldOptions($arrData)
+	{
+		$arrOptions = array();
+
+		if(is_array($arrData['options']))
+		{
+			$arrOptions = $arrData['options'];
+		}
+
+		return $arrOptions;
+	}
+
 	public static function xssClean($varValue, $tidy = false)
 	{
 		$varValue = preg_replace('/(&#[A-Za-z0-9]+);?/i', '$1;', $varValue);

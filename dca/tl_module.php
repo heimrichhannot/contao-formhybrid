@@ -157,13 +157,6 @@ $arrFields = array
 					'exclude'   => true,
 					'inputType' => 'text',
 					'eval'      => array('style' => 'width: 350px', 'allowHtml' => true),
-				),
-				'hidden' => array
-				(
-					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['hidden'],
-					'exclude'   => true,
-					'inputType' => 'checkbox',
-					'eval'      => array('style' => 'width: 50px'),
 				)
 			),
 			'tl_class'     => 'clr long',
