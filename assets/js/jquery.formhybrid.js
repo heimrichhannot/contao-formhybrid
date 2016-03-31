@@ -24,7 +24,6 @@
 	FormhybridAjaxRequest = {
 		registerEvents: function () {
 			this.asyncSubmit();
-			this.toggleSubpaletteOnLoad();
 		},
 		asyncSubmit: function () {
 			$('.formhybrid').on('submit', 'form[data-async]', function (e) {
@@ -84,11 +83,6 @@
 					}
 				});
 			});
-		},
-		toggleSubpaletteOnLoad: function () {
-			//$('.formhybrid:not(.submitted):not(.has-model) [onclick^="FormhybridAjaxRequest.toggleSubpalette"]').each(function () {
-			//    $(this).triggerHandler('click');
-			//});
 		},
 		toggleSubpalette: function (el, id, field) {
 			el.blur();
