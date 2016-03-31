@@ -46,7 +46,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected $arrSubmission = array();
 
-	protected $hasSubmit = false;
+	protected $strSubmit = '';
 
 	protected $async = false;
 
@@ -361,8 +361,8 @@ class DC_Hybrid extends \DataContainer
 			}
 		}
 
-		// add submit button if not configured in dca
-		if (!$this->hasSubmit && !$blnAjax)
+		// add submit button
+		if (!$blnAjax)
 		{
 			$this->generateSubmitField();
 		}
@@ -476,7 +476,7 @@ class DC_Hybrid extends \DataContainer
 
 			if($objField->type == 'submit')
 			{
-				$this->hasSubmit = true;
+				$this->strSubmit = $strName;
 			}
 		}
 
@@ -908,9 +908,6 @@ class DC_Hybrid extends \DataContainer
 					}
 
 					switch ($arrData['inputType']) {
-						case 'submit':
-							$this->hasSubmit = true;
-							break;
 						case 'tag':
 							if(!in_array('tags', \ModuleLoader::getActive())) break;
 
@@ -971,11 +968,29 @@ class DC_Hybrid extends \DataContainer
 
 	protected function generateSubmitField()
 	{
+		$strLabel = &$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['default'];
+		$strClass = 'btn btn-primary';
+
+		if($this->strSubmit != '' && isset($this->arrFields[$this->strSubmit]))
+		{
+			return false;
+		}
+
+		if($this->objModule->formHybridCustomSubmit)
+		{
+			if($this->objModule->formHybridSubmitLabel != '')
+			{
+				$strLabel = $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels'][$this->objModule->formHybridSubmitLabel];
+			}
+
+			$strClass = $this->objModule->formHybridSubmitClass;
+		}
+		
 		$arrData = array
 		(
 			'inputType' => 'submit',
-			'label'     => &$GLOBALS['TL_LANG']['formhybrid']['submit'],
-			'eval'      => array('class' => 'btn btn-primary'),
+			'label'     => is_array($strLabel) ? $strLabel : array($strLabel),
+			'eval'      => array('class' => $strClass),
 		);
 
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);

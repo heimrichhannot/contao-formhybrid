@@ -30,11 +30,10 @@ class FormSubmissionHelper extends FormHelper
 			{
 				$value = $varValue;
 
-				// replace files model uuid with path
-				if($varValue && !is_array($varValue) && \Validator::isUuid($varValue))
+				if(!is_array($varValue) && \Validator::isBinaryUuid($varValue))
 				{
-					// always convert binary to string, otherwise json_encode in NotificationCenter\Model\QueuedMessage::setToken will fail
-					$varValue = \Validator::isBinaryUuid($varValue) ? \String::binToUuid($varValue) : $varValue;
+					$varValue = \String::binToUuid($varValue);
+					$value = $varValue;
 
 					$objFile = \FilesModel::findByUuid($varValue);
 

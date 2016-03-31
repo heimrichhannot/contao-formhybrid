@@ -21,6 +21,10 @@ $arrLang['formHybridDefaultValues']['label'] = array('Label', 'Geben Sie eine al
 
 $arrLang['formHybridAsync'] = array('Formular asynchron absenden', 'Wählen Sie diese Option, wenn Sie das Formular asynchron versenden wollen.');
 
+$arrLang['formHybridCustomSubmit'] = array('Absendefeld anpassen', 'Den Absendefeld des Formulars anpassen.');
+$arrLang['formHybridSubmitLabel'] = array('Absendefeld Bezeichnung', 'Wählen Sie den Text, der auf den Absendefeld stehen soll.');
+$arrLang['formHybridSubmitClass'] = array('Absendefeld CSS-Klasse', 'Vergeben Sie eine individuelle CSS-Klasse für das Absendefeld.');
+
 $arrLang['formHybridSuccessMessage'] = array('Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Erfolgsmeldung an.');
 $arrLang['formHybridSkipScrollingToSuccessMessage'] = array('Nicht zur Erfolsmeldung scrollen', 'Wählen Sie diese Option, damit nicht automatisch zur Erfolgsmeldung gescrollt wird.');
 $arrLang['formHybridSendSubmissionAsNotification'] = array('E-Mail über Benachrichtigungscenter versenden', 'Beim erfolgreichen absenden des Formulars wird eine E-Mail über den Benachrichtungscenter ausgelößt.');
