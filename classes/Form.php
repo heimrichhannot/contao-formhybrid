@@ -587,58 +587,10 @@ abstract class Form extends DC_Hybrid
 			{
 				$arrData = $arrDca['fields'][$strField];
 
-				// check if options are available and find current value in list
-				// if not found: do not set the value, otherwise potential sql injection vulnerability
-				// TODO: try to check against options_callbacks as well!!!
-				if(is_array($arrData['options']))
+				if(!Validator::isValidOption($varValue, $arrData))
 				{
-					$blnIsAssociative = ($arrData['eval']['isAssociative'] || array_is_assoc($arrData['options']));
-					$intFounds = 0;
-
-					foreach ($arrData['options'] as $k=>$v)
-					{
-						if (!is_array($v))
-						{
-							$checkValue = $blnIsAssociative ? $k : $v;
-
-							if (is_array($varValue))
-							{
-								if(in_array(urldecode($checkValue), array_map('urldecode', $varValue)))
-								{
-									$intFounds++;
-								}
-							}
-							elseif(urldecode($checkValue) == urldecode($varValue))
-							{
-								$intFounds++;
-								break;
-							}
-
-							continue;
-						}
-
-						$blnIsAssoc = array_is_assoc($v);
-
-						foreach ($v as $kk=>$vv)
-						{
-							$checkValue = $blnIsAssoc ? $kk : $vv;
-
-							if(urldecode($checkValue) == urldecode($varValue))
-							{
-								$intFounds++;
-								break;
-							}
-						}
-					}
-
-					if(is_array($varValue) && $intFounds < count($varValue) || !is_array($varValue) && $intFounds < 1)
-					{
-						continue;
-					}
+					continue;
 				}
-
-				// unset options_callback, as long as we have no valid backend user
-				unset($arrData['options_callback'], $arrData['options_callback']);
 
 				if($blnFormatted)
 				{

@@ -18,7 +18,6 @@ $arrLang['formHybridDefaultValues'] = array('Standardwerte', 'Definieren Sie hie
 $arrLang['formHybridDefaultValues']['field'] = array('Feld', 'Wählen Sie hier das gewünschte Feld aus. ACHTUNG: Bitte wählen Sie nur Felder aus, die sich auch tatsächlich im Formular befinden.');
 $arrLang['formHybridDefaultValues']['value'] = array('Wert', 'Geben Sie hier den gewünschten Standardwert ein. Arrays bitte serialisiert eingeben.');
 $arrLang['formHybridDefaultValues']['label'] = array('Label', 'Geben Sie eine alternative Bezeichnung/Label an?');
-$arrLang['formHybridDefaultValues']['hidden'] = array('Feld verstecken', 'Soll das Feld versteckt werden?');
 
 $arrLang['formHybridAsync'] = array('Formular asynchron absenden', 'Wählen Sie diese Option, wenn Sie das Formular asynchron versenden wollen.');
 

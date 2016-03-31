@@ -70,8 +70,8 @@ class DC_Hybrid extends \DataContainer
 
 		$this->initialize();
 
-		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted)
-		if ($_POST && \Environment::get('isAjaxRequest') && $this->isSubmitted) {
+		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted) if post
+		if ($_POST && \Environment::get('isAjaxRequest') && ($this->isSubmitted || $this->strMethod == FORMHYBRID_METHOD_GET)) {
 			$this->objAjax = new FormAjax(\Input::post('action'));
 			$this->objAjax->executePostActions($this);
 		}
@@ -267,124 +267,202 @@ class DC_Hybrid extends \DataContainer
 	{
 		$arrFields = $this->arrEditable;
 		$arrSubFields = array();
-
-		$blnDisplaySubPaletteFields = $this->formHybridAddDisplayedSubPaletteFields;
-		$arrDisplayedSubPaletteFields = deserialize($this->formHybridDisplayedSubPaletteFields, true);
-
-		// subpalettes
-		$arrSubpalettes = $this->dca['subpalettes'];
 		$blnAjax = false;
 
-		if (is_array($arrSubpalettes)) {
+		// subpalettes
+		$arrSelectors = $this->dca['palettes']['__selector__'];
+
+		if (is_array($arrSelectors))
+		{
 			$toggleSubpalette = str_replace('sub_', '', $ajaxId);
 
-			foreach ($arrSubpalettes as $strName => $strPalette)
+			foreach ($arrSelectors as $strName)
 			{
-				$arrSubpaletteFields = FormHelper::getPaletteFields(
-					$this->strTable, $arrSubpalettes[$strName]
-				);
+				list($blnActive, $strSubPalette, $arrFields) = $this->retrieveSubpaletteWithState($strName, $arrFields);
+
+				if (strlen($this->dca['subpalettes'][$strSubPalette]) < 1)
+				{
+					continue;
+				}
+
+				// get all subpalette fields from palette name
+				$arrSubpaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubPalette]);
 
 				// determine active subpalette fields
 				$arrActiveSubpaletteFields = array_intersect($arrFields, $arrSubpaletteFields);
 
-				// prevent removing of subpalette's fields which should always be displayed
-				if ($blnDisplaySubPaletteFields && !empty($arrDisplayedSubPaletteFields))
+				// if subpalette is requested, set state to active, clear parent fields and break
+				if($toggleSubpalette == $strName)
 				{
-					foreach ($arrDisplayedSubPaletteFields as $strDisplayedSubPaletteField)
-					{
-						if ($key = array_search($strDisplayedSubPaletteField, $arrActiveSubpaletteFields))
-						{
-							unset($arrActiveSubpaletteFields[$key]);
-						}
-					}
+					$blnAjax = true;
+					$arrFields = array(); // clear fields array
+					$arrSubFields[$strName] = $arrActiveSubpaletteFields;
+					break; // this function can only return one subpalette at once
 				}
 
-				// remove subpalette's fields if selector is part of the editable fields
-				$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
-
-				// if current subplatte is requested by FormhybridAjaxRequest.toggleSubpalettes() return the palette or active in user form submission
-				$arrTypePaletteActive = $this->isTypePaletteActive($strName);
-				if ($toggleSubpalette == $strName || $this->isSubpaletteActive($strName) || $arrTypePaletteActive[0]) {
-					if ($arrTypePaletteActive[0])
-						$arrSubFields[$arrTypePaletteActive[1]] = $arrActiveSubpaletteFields;
-					else
-						$arrSubFields[$strName] = $arrActiveSubpaletteFields;
-
-					if ($ajaxId !== null)
+				// active by default
+				if($blnActive)
+				{
+					// selector field is visible
+					if(in_array($strName, $this->arrEditable))
 					{
-						$blnAjax = true;
-						break;
+						$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
+						$arrSubFields[$strName] = $arrActiveSubpaletteFields;
 					}
+					// for example selector is triggered by default value
+					else
+					{
+						// do nothing, fields should remain in $arrFields
+					}
+				}
+				// inactive
+				else
+				{
+					$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
 				}
 			}
 		}
 
 		// add palette fields
-		foreach ($arrFields as $strName) {
+		foreach ($arrFields as $strName)
+		{
 			$this->addField($strName);
 		}
 
 		// add subpalette fields
-		foreach ($arrSubFields as $strParent => $arrFields) {
-
+		foreach ($arrSubFields as $strParent => $arrFields)
+		{
 			// check if subpalette has fields
-  			if(empty($arrFields)) continue;
+  			if(empty($arrFields))
+			{
+				continue;
+			}
 
 			foreach ($arrFields as $strName)
 			{
 				$this->addSubField($strName, $strParent, $blnAjax);
 			}
 
-			if (!$blnAjax) {
+			if (!$blnAjax)
+			{
 				$objSubTemplate = $this->generateSubpalette('sub_' . $strParent);
 
-				// parent field is mandatory for subpalette
-				$arrTypePaletteActive = $this->isTypePaletteActive($strParent);
-				if(($arrTypePaletteActive[0] || $this->isSubpaletteActive($strParent)) && !$this->arrFields[$strParent])
+				// parent field must exist
+				if(!$this->arrFields[$strParent])
 				{
-					$this->addField($arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent);
+					$this->addField($strParent);
 				}
 
-				if ($this->arrFields[$arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent])
-					$this->arrFields[$arrTypePaletteActive[0] ? $arrTypePaletteActive[1] : $strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
+				// append subfields to parent field
+				if ($this->arrFields[$strParent])
+				{
+					$this->arrFields[$strParent]->sub = \Controller::replaceInsertTags($objSubTemplate->parse(), false);
+				}
 			}
 		}
 
 		// add submit button if not configured in dca
-		if (!$this->hasSubmit && !$blnAjax) {
+		if (!$this->hasSubmit && !$blnAjax)
+		{
 			$this->generateSubmitField();
 		}
 
 		return $blnAjax;
 	}
 
-	protected function isSubpaletteActive($strName)
+
+	/**
+	 * Return the value, considering default and submitted values
+	 * @param $strName
+	 *
+	 * @return mixed
+	 */
+	protected function getFieldValue($strName)
 	{
 		$inputMethod = strtolower($this->strMethod);
 
-		return $this->isSubmitted && \Input::$inputMethod($strName) == 1 || !$this->isSubmitted && $this->objActiveRecord->{$strName};
+		$varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
+
+		if($this->isSubmitted)
+		{
+			$varValue = \Input::$inputMethod($strName);
+		}
+
+		return $varValue;
 	}
 
-	protected function isTypePaletteActive($strName)
+	/**
+	 * Retrieve the subpalette by the field selector
+	 * @param   String  $strSelector
+	 * @param	Array  $arrFields
+	 *
+	 * @return array Return the state, subpalette name, the filtered fields array and autosubmit state
+	 */
+	protected function retrieveSubpaletteWithState($strSelector, array $arrFields)
 	{
-		$inputMethod = strtolower($this->strMethod);
-		$arrType = explode('_', $strName);
+		$blnActive = null;
+		$blnAutoSubmit = false;
+		$strSubpalette = null;
 
-		// TODO: Currently only selectors of the form "field_value" are supported
-		if (count($arrType) != 2)
-			return array(false, null);
+		$varValue = $this->getFieldValue($strSelector);
 
-		if ($this->isSubmitted)
+		// skip arrays, they cant be array keys
+		if(is_array($varValue))
 		{
-			$strField = \Input::$inputMethod($arrType[0]);
+			return array($blnActive, $strSubpalette, $arrFields, $blnAutoSubmit);
 		}
+
+		// checkbox: addImage for example
+		if ($this->dca['fields'][$strSelector]['inputType'] == 'checkbox' && !$this->dca['fields'][$strSelector]['eval']['multiple'])
+		{
+			if(strlen($this->dca['subpalettes'][$strSelector]))
+			{
+				$blnActive = ($varValue == true);
+				$strSubpalette = $strSelector;
+			}
+		}
+		// radio: source in tl_news (source_default, source_external)
 		else
 		{
-			$strField = $this->objActiveRecord->{$arrType[0]};
+			// type selector
+			if(isset($this->dca['subpalettes'][$varValue]) && strlen($this->dca['subpalettes'][$varValue]) > 0)
+			{
+				$blnAutoSubmit = true;
+				$blnActive = true;
+				$strSubpalette = $varValue;
+			}
+			// concatinated type selector (e.g. source -> source_external)
+			else if(strlen($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
+			{
+				$blnActive = true;
+				$strSubpalette = $strSelector .'_'. $varValue;
+
+				// filter out non selected type subpalette fields
+				foreach(array_keys($this->dca['subpalettes']) as $strKey)
+				{
+					// skip current active type selector subpalette
+					if($strKey == $strSelector .'_'. $varValue)
+					{
+						continue;
+					}
+
+					if(\HeimrichHannot\Haste\Util\StringUtil::startsWith($strKey, $strSelector .'_'))
+					{
+						$arrSiblingSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strKey]);
+
+						if(is_array($arrSiblingSubPaletteFields))
+						{
+							$arrFields = array_diff($arrFields, $arrSiblingSubPaletteFields);
+						}
+					}
+				}
+			}
 		}
 
-		return array($strField == $arrType[1], $arrType[0]);
+		return array($blnActive, $strSubpalette, $arrFields, $blnAutoSubmit);
 	}
+
+
 
 	protected function addField($strName)
 	{
@@ -467,20 +545,29 @@ class DC_Hybrid extends \DataContainer
 			$this->strTable, $this
 		);
 
-		if (isset($this->dca['subpalettes'][$strName]) && $arrData['eval']['submitOnChange']) {
-			$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName
-				. "')";
-			unset($arrWidget['submitOnChange']);
-		}
+		list($blnActive, $strSubPalette, $arrFields, $blnAutoSubmit) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 
 		// support submitOnChange as form submission
-		if ($arrData['eval']['submitOnChange']) {
-			if (isset($this->dca['subpalettes'][$strName])) {
-				$arrWidget['onclick'] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '"
-					. $strName . "')";
-				unset($arrWidget['submitOnChange']);
-			} else {
+		if ($arrData['eval']['submitOnChange'] && isset($this->dca['subpalettes'][$strSubPalette]))
+		{
+			if($blnAutoSubmit)
+			{
 				$arrWidget['onchange'] = "this.form.submit();";
+			}
+			else
+			{
+				$strEvent = 'onclick';
+
+				switch($arrData['inputType'])
+				{
+					case 'select':
+						$strEvent = 'onchange';
+					break;
+				}
+
+				$arrWidget[$strEvent] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '"
+						. $strName . "')";
+				unset($arrWidget['submitOnChange']);
 			}
 		}
 
@@ -643,7 +730,8 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
 		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName
-			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '');
+			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '') .
+			($this->intId ? ' has-model' : '');
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
@@ -814,11 +902,6 @@ class DC_Hybrid extends \DataContainer
 
 				if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
 
-					if ($varDefault['hidden'])
-					{
-						$this->dca['fields'][$strField]['inputType'] = 'hidden';
-					}
-
 					if (strlen($varDefault['label']) > 0)
 					{
 						$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
@@ -834,23 +917,11 @@ class DC_Hybrid extends \DataContainer
 							if($varDefault['value'] != '')
 							{
 								$this->dca['config']['onsubmit_callback'][] = array('HeimrichHannot\FormHybrid\TagsHelper', 'saveTagsFromDefaults');
-
-								// reset field inputType, otherwise we can not determine within callback if the field is a tag field
-								if($varDefault['hidden'])
-								{
-									$this->dca['fields'][$strField]['inputType'] = 'tag';
-								}
 							}
 
 							break;
 						default:
 							$this->arrDefaults[$strField] = \Controller::replaceInsertTags($varDefault['value']);
-					}
-
-					// do not render hidden fields yet, just set them as value in $this->objActiveRecord
-					// otherwise they will get overwritten by request and checkboxes will not be checked
-					if (!$varDefault['hidden']) {
-						$this->arrEditable[] = $strField;
 					}
 				}
 			}

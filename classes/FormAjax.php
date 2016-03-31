@@ -75,15 +75,31 @@ class FormAjax extends \Controller
 				}
 			exit; break;
 			case 'toggleSubpalette':
+				$strField = \Input::post('field');
+				$varValue = \Input::post($strField);
 
-				if (!is_array($dca['palettes']['__selector__']) || !in_array($this->Input->post('field'), $dca['palettes']['__selector__']))
+				if (!is_array($dca['palettes']['__selector__']) || !in_array($strField, $dca['palettes']['__selector__']))
 				{
-					$this->log('Field "' . $this->Input->post('field') . '" is not an allowed selector field (possible SQL injection attempt)', __METHOD__, TL_ERROR);
+					$this->log('Field "' . $strField . '" is not an allowed selector field (possible SQL injection attempt)', __METHOD__, TL_ERROR);
 					header('HTTP/1.1 400 Bad Request');
 					die('Bad Request');
 				}
 
-				$dc->activeRecord->{\Input::post('field')} = (intval(\Input::post('state') == 1) ? 1 : '');
+				$arrData = $dca['fields'][$strField];
+
+				if(!Validator::isValidOption($varValue, $arrData))
+				{
+					$this->log('Field "' . $strField . '" value is not an allowed option (possible SQL injection attempt)', __METHOD__, TL_ERROR);
+					header('HTTP/1.1 400 Bad Request');
+					die('Bad Request');
+				}
+
+				if(empty(FormHelper::getFieldOptions($arrData)))
+				{
+					$varValue = (intval($varValue) ? 1 : '');
+				}
+
+				$dc->activeRecord->{$strField} = $varValue;
 
 				if (\Input::post('load'))
 				{
