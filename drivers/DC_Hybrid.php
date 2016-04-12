@@ -510,6 +510,8 @@ class DC_Hybrid extends \DataContainer
 		if ($this->strMethod == FORMHYBRID_METHOD_GET && isset($_GET[$strName])) {
 			$this->isSubmitted = true;
 		}
+		else
+			$this->isSubmitted = false;
 
 		$arrWidgetErrors = array();
 
@@ -598,6 +600,9 @@ class DC_Hybrid extends \DataContainer
 					$objWidget->addError($strError);
 				}
 			}
+
+			if ($objWidget->value && $this->strMethod == FORMHYBRID_METHOD_GET)
+				$objWidget->class = 'filtered';
 
 			// Make sure unique fields are unique
 			if ($arrData['eval']['unique'] && $varValue != ''
