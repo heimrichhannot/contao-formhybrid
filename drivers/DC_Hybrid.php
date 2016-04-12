@@ -510,8 +510,6 @@ class DC_Hybrid extends \DataContainer
 		if ($this->strMethod == FORMHYBRID_METHOD_GET && isset($_GET[$strName])) {
 			$this->isSubmitted = true;
 		}
-		else
-			$this->isSubmitted = false;
 
 		$arrWidgetErrors = array();
 
