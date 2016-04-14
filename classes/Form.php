@@ -587,7 +587,7 @@ abstract class Form extends DC_Hybrid
 			{
 				$arrData = $arrDca['fields'][$strField];
 
-				if(!Validator::isValidOption($varValue, $arrData))
+				if(is_array($arrData['options']) && !Validator::isValidOption($varValue, $arrData))
 				{
 					continue;
 				}
