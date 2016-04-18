@@ -74,17 +74,22 @@ class FormSubmissionHelper extends FormHelper
 		return $arrTokens;
 	}
 
-	public static function prepareData(\Model $objSubmission, array $arrDca, $dc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
+	public static function prepareData(\Model $objSubmission, array $arrDca, $objDc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
 	{
 		$arrSubmissionData = array();
+		$arrRow = $objSubmission->row();
 
-		foreach ($objSubmission->row() as $strName => $varValue)
+		if (empty($arrFields))
+			$arrFields = $arrRow;
+
+		foreach ($arrFields as $strName)
 		{
+			$varValue = $arrRow[$strName];
 			if(empty($varValue)) continue;
 
 			$arrData = $arrDca['fields'][$strName];
 
-			$arrFieldData = static::prepareDataField($strName, $varValue, $arrData, $dc);
+			$arrFieldData = static::prepareDataField($strName, $varValue, $arrData, $objDc);
 
 			$arrSubmissionData[$strName] = $arrFieldData;
 			$strSubmission = $arrFieldData['submission'];
@@ -103,7 +108,7 @@ class FormSubmissionHelper extends FormHelper
 
 					foreach ($arrSet as $strSetName => $strSetValue) {
 						$arrSetData   = $arrData['eval']['columnFields'][$strSetName];
-						$arrFieldData = static::prepareDataField($strSetName, $strSetValue, $arrSetData, $dc);
+						$arrFieldData = static::prepareDataField($strSetName, $strSetValue, $arrSetData, $objDc);
 						// intend new line
 						$strSubmission .= "\t" . $arrFieldData['submission'];
 					}
@@ -124,14 +129,14 @@ class FormSubmissionHelper extends FormHelper
 		return $arrSubmissionData;
 	}
 
-	public static function prepareDataField($strName, $varValue, $arrData, $dc)
+	public static function prepareDataField($strName, $varValue, $arrData, $objDc)
 	{
 		$strLabel = isset($arrData['label'][0]) ? $arrData['label'][0] : $strName;
 
-		$strOutput = static::getFormatedValueByDca($varValue, $arrData, $dc);
+		$strOutput = static::getFormatedValueByDca($varValue, $arrData, $objDc);
 
 		$varValue = deserialize($varValue);
-		
+
 		$strSubmission = $strLabel . ": " . $strOutput . "\n";
 
 		return array('value' => $varValue, 'output' => $strOutput, 'submission' => $strSubmission);

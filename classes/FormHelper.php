@@ -427,15 +427,14 @@ class FormHelper extends \System
 		return $strReturn;
 	}
 
-
-	public static function getFormatedValueByDca($value, $arrData, $dc)
+	public static function getFormatedValueByDca($varValue, $arrData, $objDc)
 	{
-		$value = deserialize($value);
+		$varValue = deserialize($varValue);
 		$opts  = $arrData['options'];
 		$rfrc  = $arrData['reference'];
 		$rgxp = $arrData['eval']['rgxp'];
 
-		// Call the options_callback to get the formated value
+		// Call the options_callback to get the formatted value
 		if ((is_array($arrData['options_callback']) || is_callable($arrData['options_callback'])) && !$arrData['reference']) {
 			if (is_array($arrData['options_callback'])) {
 				$strClass  = $arrData['options_callback'][0];
@@ -443,75 +442,75 @@ class FormHelper extends \System
 
 				$objInstance = \Controller::importStatic($strClass);
 
-				$options_callback = $objInstance->$strMethod($dc);
+				$options_callback = $objInstance->$strMethod($objDc);
 			} elseif (is_callable($arrData['options_callback'])) {
-				$options_callback = $arrData['options_callback']($dc);
+				$options_callback = $arrData['options_callback']($objDc);
 			}
 
-			$arrOptions = !is_array($value) ? array($value) : $value;
+			$arrOptions = !is_array($varValue) ? array($varValue) : $varValue;
 
-			if ($value !== null)
-				$value = array_intersect_key($options_callback, array_flip($arrOptions));
+			if ($varValue !== null)
+				$varValue = array_intersect_key($options_callback, array_flip($arrOptions));
 		}
 
 		if ($rgxp == 'date') {
-			$value = \Date::parse(\Config::get('dateFormat'), $value);
+			$varValue = \Date::parse(\Config::get('dateFormat'), $varValue);
 		} elseif ($rgxp == 'time') {
-			$value = \Date::parse(\Config::get('timeFormat'), $value);
+			$varValue = \Date::parse(\Config::get('timeFormat'), $varValue);
 		} elseif ($rgxp == 'datim') {
-			$value = \Date::parse(\Config::get('datimFormat'), $value);
-		} elseif (is_array($value)) {
-			$value = static::flattenArray($value);
+			$varValue = \Date::parse(\Config::get('datimFormat'), $varValue);
+		} elseif (is_array($varValue)) {
+			$varValue = static::flattenArray($varValue);
 
-			$value = array_filter($value); // remove empty elements
+			$varValue = array_filter($varValue); // remove empty elements
 
-			$value = implode(
-				', ',
-				array_map(
-					function ($value) use ($rfrc) {
-						if (is_array($rfrc)) {
-							return isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-						} else {
-							return $value;
-						}
-					},
-					$value
-				)
+			$varValue = implode(
+					', ',
+					array_map(
+							function ($varValue) use ($rfrc) {
+								if (is_array($rfrc)) {
+									return isset($rfrc[$varValue]) ? ((is_array($rfrc[$varValue])) ? $rfrc[$varValue][0] : $rfrc[$varValue]) : $varValue;
+								} else {
+									return $varValue;
+								}
+							},
+							$varValue
+					)
 			);
 		} elseif (is_array($opts) && array_is_assoc($opts)) {
-			$value = isset($opts[$value]) ? $opts[$value] : $value;
+			$varValue = isset($opts[$varValue]) ? $opts[$varValue] : $varValue;
 		} elseif (is_array($rfrc)) {
-			$value = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
+			$varValue = isset($rfrc[$varValue]) ? ((is_array($rfrc[$varValue])) ? $rfrc[$varValue][0] : $rfrc[$varValue]) : $varValue;
 		} elseif ($arrData['inputType'] == 'fileTree') {
-			if ($arrData['eval']['multiple'] && is_array($value)) {
-				$value = array_map(
-					function ($val) {
-						$strPath = Files::getPathFromUuid($val);
+			if ($arrData['eval']['multiple'] && is_array($varValue)) {
+				$varValue = array_map(
+						function ($val) {
+							$strPath = Files::getPathFromUuid($val);
 
-						return $strPath ?: $val;
-					},
-					$value
+							return $strPath ?: $val;
+						},
+						$varValue
 				);
 			} else {
-				$strPath = Files::getPathFromUuid($value);
-				$value   = $strPath ?: $value;
+				$strPath = Files::getPathFromUuid($varValue);
+				$varValue   = $strPath ?: $varValue;
 			}
-		} elseif (\Validator::isBinaryUuid($value)) {
-			$value = \String::binToUuid($value);
+		} elseif (\Validator::isBinaryUuid($varValue)) {
+			$varValue = \StringUtil::binToUuid($varValue);
 		}
 
 		// Convert special characters (see #1890)
-		return specialchars($value);
+		return specialchars($varValue);
 	}
 
 	public static function flattenArray(array $array)
 	{
 		$return = array();
 		array_walk_recursive(
-			$array,
-			function ($a) use (&$return) {
-				$return[] = $a;
-			}
+				$array,
+				function ($a) use (&$return) {
+					$return[] = $a;
+				}
 		);
 
 		return $return;
