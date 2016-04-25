@@ -103,7 +103,8 @@ class FormAjax extends \Controller
 
 				if (\Input::post('load'))
 				{
-					echo $dc->edit(false, \Input::post('id'));
+					$strBuffer = $dc->edit(false, \Input::post('id'));
+					echo $strBuffer;
 				}
 
 			exit; break;

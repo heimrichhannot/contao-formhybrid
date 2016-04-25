@@ -280,7 +280,7 @@ class DC_Hybrid extends \DataContainer
 			{
 				list($blnActive, $strSubPalette, $arrFields) = $this->retrieveSubpaletteWithState($strName, $arrFields);
 
-				if (strlen($this->dca['subpalettes'][$strSubPalette]) < 1)
+				if (!isset($this->dca['subpalettes'][$strSubPalette]))
 				{
 					continue;
 				}
@@ -425,14 +425,14 @@ class DC_Hybrid extends \DataContainer
 		else
 		{
 			// type selector
-			if(isset($this->dca['subpalettes'][$varValue]) && strlen($this->dca['subpalettes'][$varValue]) > 0)
+			if(isset($this->dca['subpalettes'][$varValue]))
 			{
 				$blnAutoSubmit = true;
 				$blnActive = true;
 				$strSubpalette = $varValue;
 			}
 			// concatinated type selector (e.g. source -> source_external)
-			else if(strlen($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
+			else if(isset($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
 			{
 				$blnActive = true;
 				$strSubpalette = $strSelector .'_'. $varValue;
@@ -446,6 +446,7 @@ class DC_Hybrid extends \DataContainer
 						continue;
 					}
 
+					// remove fields from same selector, but not active
 					if(\HeimrichHannot\Haste\Util\StringUtil::startsWith($strKey, $strSelector .'_'))
 					{
 						$arrSiblingSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strKey]);
