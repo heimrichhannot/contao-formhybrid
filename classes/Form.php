@@ -2,7 +2,6 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use MatthiasMullie\Minify\Exception;
@@ -36,7 +35,7 @@ abstract class Form extends DC_Hybrid
 	protected $strLogFile = 'formhybrid.log';
 
 
-	public function __construct($objModule = null, $intId = 0)
+	public function __construct(\ModuleModel $objModule = null, $intId = 0)
 	{
 		global $objPage;
 
@@ -44,7 +43,7 @@ abstract class Form extends DC_Hybrid
 
 		if ($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette) {
 			$this->objModule   = $objModule;
-			$this->arrData     = $objModule instanceof \Model ? $objModule->row() : Arrays::objectToArray($objModule);
+			$this->arrData     = $objModule->row();
 			$this->strTable    = $objModule->formHybridDataContainer;
 			$this->strPalette  = $objModule->formHybridPalette;
 
