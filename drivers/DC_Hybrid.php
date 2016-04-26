@@ -1,7 +1,7 @@
 <?php
 namespace HeimrichHannot\FormHybrid;
 
-use HeimrichHannot\HastePlus\Environment;
+use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
 class DC_Hybrid extends \DataContainer
@@ -121,18 +121,16 @@ class DC_Hybrid extends \DataContainer
 					}
 				}
 
-				$strUrl = Environment::getUrl();
+				$strUrl = Url::getUrl();
 
 				if (in_array('frontendedit', \ModuleLoader::getActive()))
 				{
 					// create -> edit
-					$strUrl = Environment::removeParameterFromUri($strUrl, 'act');
-					$strUrl = Environment::addParameterToUri($strUrl, 'act', FRONTENDEDIT_ACT_EDIT);
+					$strUrl = Url::removeQueryString(array('act'), $strUrl);
+					$strUrl = Url::addQueryString('act=' . FRONTENDEDIT_ACT_EDIT, $strUrl);
 				}
 
-				\Controller::redirect(
-					Environment::addParameterToUri($strUrl, 'id', $this->objActiveRecord->id)
-				);
+				\Controller::redirect(Url::addQueryString('id=' . $this->objActiveRecord->id, $strUrl));
 			}
 		}
 	}
@@ -167,15 +165,15 @@ class DC_Hybrid extends \DataContainer
 						$arrParamsToKeep = explode(',', $objModule->formHybridFieldDependentRedirectKeepParams);
 						if (!empty($arrParamsToKeep))
 						{
-							foreach (Environment::getUriParameters(Environment::getUrl()) as $strParam => $strValue)
+							foreach (Url::getUriParameters(Url::getUrl()) as $strParam => $strValue)
 							{
 								if (in_array($strParam, $arrParamsToKeep))
-									$strRedirect = Environment::addParameterToUri($strRedirect, $strParam, $strValue);
+									$strRedirect = Url::addQueryString($strParam . '=' . $strValue, $strRedirect);
 							}
 						}
 					}
 
-					$strRedirect = Environment::addParameterToUri($strRedirect, 'token', \RequestToken::get());
+					$strRedirect = Url::addQueryString('token=' . \RequestToken::get(), $strRedirect);
 
 					StatusMessage::resetAll();
 					\Controller::redirect($strRedirect);
