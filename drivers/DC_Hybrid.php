@@ -430,7 +430,7 @@ class DC_Hybrid extends \DataContainer
 				$strSubpalette = $varValue;
 			}
 			// concatenated type selector (e.g. source -> source_external)
-			else
+			elseif (is_array($this->dca['subpalettes']))
 			{
 				if(isset($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
 				{
