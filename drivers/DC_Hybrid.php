@@ -429,11 +429,14 @@ class DC_Hybrid extends \DataContainer
 				$blnActive = true;
 				$strSubpalette = $varValue;
 			}
-			// concatinated type selector (e.g. source -> source_external)
-			else if(isset($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
+			// concatenated type selector (e.g. source -> source_external)
+			else
 			{
-				$blnActive = true;
-				$strSubpalette = $strSelector .'_'. $varValue;
+				if(isset($this->dca['subpalettes'][$strSelector .'_'. $varValue]))
+				{
+					$blnActive = true;
+					$strSubpalette = $strSelector .'_'. $varValue;
+				}
 
 				// filter out non selected type subpalette fields
 				foreach(array_keys($this->dca['subpalettes']) as $strKey)
@@ -447,6 +450,11 @@ class DC_Hybrid extends \DataContainer
 					// remove fields from same selector, but not active
 					if(\HeimrichHannot\Haste\Util\StringUtil::startsWith($strKey, $strSelector .'_'))
 					{
+						// if no concatenated type selector has been selected, yet -> return the first in order
+						// to create FormhybridAjaxRequest.toggleSubpalette calls in the following function
+						if (!$strSubpalette)
+							$strSubpalette = $strKey;
+
 						$arrSiblingSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strKey]);
 
 						if(is_array($arrSiblingSubPaletteFields))
