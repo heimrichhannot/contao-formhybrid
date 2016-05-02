@@ -35,14 +35,14 @@ class FormHelper extends \System
 				$objInstance = \Controller::importStatic($strClass);
 
 				try {
-					$arrCallback = $objInstance->$strMethod($objDc);
+					$arrCallback = @$objInstance->$strMethod($objDc);
 				} catch (\Exception $e)
 				{
 					\System::log("$strClass::$strMethod raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
 				}
 			} elseif (is_callable($arrData['options_callback'])) {
 				try {
-					$arrCallback = $arrData['options_callback']($objDc);
+					$arrCallback = @$arrData['options_callback']($objDc);
 				} catch (\Exception $e)
 				{
 					$strCallback = serialize($arrData['options_callback']);
