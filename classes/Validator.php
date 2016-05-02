@@ -24,9 +24,9 @@ class Validator
 	 *
 	 * @return bool
 	 */
-	public static function isValidOption($varValue, &$arrData)
+	public static function isValidOption($varValue, &$arrData, $objDc = null)
 	{
-		$arrOptions = FormHelper::getFieldOptions($arrData);
+		$arrOptions = FormHelper::getFieldOptions($arrData, $objDc);
 
 		if(empty($arrOptions))
 		{

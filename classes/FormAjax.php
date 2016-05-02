@@ -87,14 +87,14 @@ class FormAjax extends \Controller
 
 				$arrData = $dca['fields'][$strField];
 
-				if(!Validator::isValidOption($varValue, $arrData))
+				if(!Validator::isValidOption($varValue, $arrData, $dc))
 				{
 					$this->log('Field "' . $strField . '" value is not an allowed option (possible SQL injection attempt)', __METHOD__, TL_ERROR);
 					header('HTTP/1.1 400 Bad Request');
 					die('Bad Request');
 				}
 
-				if(empty(FormHelper::getFieldOptions($arrData)))
+				if(empty(FormHelper::getFieldOptions($arrData, $dc)))
 				{
 					$varValue = (intval($varValue) ? 1 : '');
 				}

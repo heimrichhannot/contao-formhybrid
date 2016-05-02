@@ -16,13 +16,42 @@ use HeimrichHannot\Haste\Util\Files;
 
 class FormHelper extends \System
 {
-	public static function getFieldOptions($arrData)
+	public static function getFieldOptions($arrData, $objDc = null)
 	{
 		$arrOptions = array();
 
 		if(is_array($arrData['options']))
 		{
 			$arrOptions = $arrData['options'];
+		}
+
+		if ($objDc !== null && empty($arrOptions) &&
+			(is_array($arrData['options_callback']) || is_callable($arrData['options_callback']))) {
+			$arrCallback = array();
+
+			if (is_array($arrData['options_callback'])) {
+				$strClass  = $arrData['options_callback'][0];
+				$strMethod = $arrData['options_callback'][1];
+				$objInstance = \Controller::importStatic($strClass);
+
+				try {
+					$arrCallback = $objInstance->$strMethod($objDc);
+				} catch (\Exception $e)
+				{
+					\System::log("$strClass::$strMethod raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
+				}
+			} elseif (is_callable($arrData['options_callback'])) {
+				try {
+					$arrCallback = $arrData['options_callback']($objDc);
+				} catch (\Exception $e)
+				{
+					$strCallback = serialize($arrData['options_callback']);
+					\System::log("$strCallback raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
+				}
+			}
+
+			if (is_array($arrCallback))
+				$arrOptions = $arrCallback;
 		}
 
 		return $arrOptions;
