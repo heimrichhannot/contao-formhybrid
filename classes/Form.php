@@ -34,6 +34,8 @@ abstract class Form extends DC_Hybrid
 
 	protected $strLogFile = 'formhybrid.log';
 
+	protected $blnSilentMode = false;
+
 
 	public function __construct(\ModuleModel $objModule = null, $intId = 0)
 	{
@@ -174,7 +176,7 @@ abstract class Form extends DC_Hybrid
 					$this->createConfirmationEmail($arrSubmissionData);
 			}
 
-			if (!$this->isFilterForm)
+			if (!$this->isFilterForm && !$this->blnSilentMode)
 				$this->createSuccessMessage($arrSubmissionData);
 
 			$this->afterSubmitCallback($this);

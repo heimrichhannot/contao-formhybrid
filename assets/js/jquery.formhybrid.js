@@ -70,10 +70,10 @@
 							}
 						}
 
-						// sroll to first alert message or first error field
+						// scroll to first alert message or first error field
 						var alert = replace.find('.alert:first, .error:first');
 
-						if (alert.length > 0) {
+						if (alert.length > 0 && !$('.formhybrid:first').hasClass('noscroll')) {
 							var alertOffset = alert.offset();
 
 							$('html,body').animate({
