@@ -547,6 +547,11 @@ class DC_Hybrid extends \DataContainer
 
 		$arrData['eval']['tagTable'] = $this->strTable;
 
+		if ($this->skipValidation)
+		{
+			$arrData['eval']['mandatory'] = false;
+		}
+
 		$arrWidget = \Widget::getAttributesFromDca(
 			$arrData, $strName, is_array($varValue) ? $varValue : \Controller::replaceInsertTags($varValue), $strName,
 			$this->strTable, $this
