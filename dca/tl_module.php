@@ -194,6 +194,14 @@ $arrFields = array
 		'sql'        => "int(10) unsigned NOT NULL default '0'",
 		'relation'   => array('type' => 'hasOne', 'load' => 'eager'),
 	),
+	'formHybridAddHashToAction'              => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddHashToAction'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('tl_class' => 'w50'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
 	'formHybridCssClass'                         => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],

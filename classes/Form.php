@@ -58,6 +58,12 @@ abstract class Form extends DC_Hybrid
 				$this->strAction = Url::removeQueryString(array('file'), \Environment::get('uri'));
 			}
 
+			$this->strFormId        = $this->getFormId();
+			$this->strFormName      = $this->getFormName();
+
+			if ($this->formHybridAddHashToAction)
+				$this->strAction .= '#' . $this->strFormId;
+
 			$this->arrEditable = deserialize($objModule->formHybridEditable, true);
 			$this->skipScrollingToSuccessMessage = $objModule->formHybridSkipScrollingToSuccessMessage;
 			$this->isComplete = $objModule->formHybridIsComplete;
@@ -83,8 +89,6 @@ abstract class Form extends DC_Hybrid
 		}
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
-		$this->strFormId        = $this->getFormId();
-		$this->strFormName      = $this->getFormName();
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);

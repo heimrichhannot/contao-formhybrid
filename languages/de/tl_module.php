@@ -62,3 +62,4 @@ $arrLang['formHybridCustomSubTemplates'] = array('Eigene Formular-Template für 
 
 $arrLang['formHybridIsComplete'] = array('Komplett', 'Diese Option wird automatisch vom Modul gesetzt, wenn das Formular mindestens einmal ');
 $arrLang['formHybridAction'] = array('Form action / Zielseite', 'Wählen Sie eine Zielseite aus.');
+$arrLang['formHybridAddHashToAction'] = array('Hash zur Form-Action hinzufügen', 'Wählen Sie diese Option, um der Form-Action die Form-ID als Hash hinzuzufügen.');
