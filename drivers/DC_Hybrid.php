@@ -557,6 +557,8 @@ class DC_Hybrid extends \DataContainer
 			$this->strTable, $this
 		);
 
+		$this->updateWidget($arrWidget, $arrData);
+
 		list($blnActive, $strSubPalette, $arrFields, $blnAutoSubmit) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 
 		// support submitOnChange as form submission
@@ -697,6 +699,8 @@ class DC_Hybrid extends \DataContainer
 
 		return $objWidget;
 	}
+
+	protected function updateWidget($arrWidget, $arrData) {}
 
 	protected function stripInsertTags($varValue, $arrResult = array())
 	{
