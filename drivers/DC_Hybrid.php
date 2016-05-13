@@ -90,20 +90,17 @@ class DC_Hybrid extends \DataContainer
 
 		if ($this->intId && is_numeric($this->intId)) {
 			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
+				$this->objActiveRecord = $objModel;
+
 				if ($this->saveToBlob)
 				{
-					$this->objActiveRecord = $objModel;
-
 					$arrBlob = deserialize($objModel->formHybridBlob, true);
 
-					if(!empty($arrBlob))
+					foreach ($arrBlob as $strField => $varValue)
 					{
-						foreach ($arrBlob as $strField => $varValue)
-							$this->objActiveRecord->{$strField} = $varValue;
+						$this->objActiveRecord->{$strField} = $varValue;
 					}
 				}
-				else
-					$this->objActiveRecord = $objModel;
 
 				// redirect on specific field value
 				static::doFieldDependentRedirect($this, $this->objActiveRecord);
