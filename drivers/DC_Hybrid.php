@@ -56,6 +56,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $username = FORMHYBRID_USERNAME;
 
+	protected $saveToBlob = false;
+
 	public $objModule; // public, required by callbacks
 
 	protected $isFilterForm = false;
@@ -88,7 +90,20 @@ class DC_Hybrid extends \DataContainer
 
 		if ($this->intId && is_numeric($this->intId)) {
 			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
-				$this->objActiveRecord = $objModel;
+				if ($this->saveToBlob)
+				{
+					$this->objActiveRecord = $objModel;
+
+					$arrBlob = deserialize($objModel->formHybridBlob, true);
+
+					if(!empty($arrBlob))
+					{
+						foreach ($arrBlob as $strField => $varValue)
+							$this->objActiveRecord->{$strField} = $varValue;
+					}
+				}
+				else
+					$this->objActiveRecord = $objModel;
 
 				// redirect on specific field value
 				static::doFieldDependentRedirect($this, $this->objActiveRecord);
@@ -1044,9 +1059,18 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
-		$this->objActiveRecord->tstamp = time();
-		$this->objActiveRecord->save();
-		$this->intId = $this->objActiveRecord->id;
+		if ($this->saveToBlob)
+		{
+			$this->objActiveRecord->formHybridBlob = null;
+			\Database::getInstance()->prepare("UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?")
+				->execute(serialize($this->objActiveRecord->row()), $this->intId);
+		}
+		else
+		{
+			$this->objActiveRecord->tstamp = time();
+			$this->objActiveRecord->save();
+			$this->intId = $this->objActiveRecord->id;
+		}
 	}
 
 	/**

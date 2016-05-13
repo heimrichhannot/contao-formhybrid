@@ -481,8 +481,7 @@ $arrFields = array
 		'inputType' => 'text',
 		'eval'      => array('maxlength' => 255, 'tl_class' => 'w50'),
 		'sql'       => "varchar(255) NOT NULL default ''",
-	),
-
+	)
 );
 
 // conditions for the field depending redirect
