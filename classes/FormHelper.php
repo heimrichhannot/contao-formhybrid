@@ -246,6 +246,11 @@ class FormHelper extends \System
 			$varValue = \HeimrichHannot\TagsPlus\TagsPlus::loadTags($strTable, $intId);
 		}
 
+		if ($arrData['eval']['encrypt'])
+		{
+			$varValue = \Encryption::encrypt($varValue);
+		}
+
 		return $varValue;
 	}
 
