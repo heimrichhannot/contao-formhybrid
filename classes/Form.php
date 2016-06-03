@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use MatthiasMullie\Minify\Exception;
@@ -196,7 +197,7 @@ abstract class Form extends DC_Hybrid
 
 	protected function prepareSubmissionData()
 	{
-		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->dca, $this, $this->arrEditable);
+		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
 	}
 
 	protected function onSubmitCallback(\DataContainer $dc)
@@ -599,7 +600,8 @@ abstract class Form extends DC_Hybrid
 
 				if($blnFormatted)
 				{
-					$objSubmission->{$strField} = FormHelper::getFormatedValueByDca($varValue, $arrData, $this, false);
+					$objSubmission->{$strField} =
+						FormSubmission::prepareSpecialValueForPrint($varValue, $arrData, $this->strTable, $this);
 				}
 				else
 				{

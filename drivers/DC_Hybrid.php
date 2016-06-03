@@ -1,6 +1,7 @@
 <?php
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
@@ -538,7 +539,8 @@ class DC_Hybrid extends \DataContainer
 
 		if ($this->isSubmitted && !$skipValidation) {
 			$varValue = \Input::$strInputMethod($strName);
-			$varValue = FormHelper::transformSpecialValues($varValue, $arrData, $this->strTable, $this->intId, $varDefault, $arrWidgetErrors);
+			$varValue = FormSubmission::prepareSpecialValueForSave($varValue, $arrData, $this->strTable, $this->intId,
+				$varDefault, $arrWidgetErrors);
 		}
 
 		// overwrite required fields
@@ -615,7 +617,7 @@ class DC_Hybrid extends \DataContainer
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
 		if ($this->isSubmitted && !($this->skipValidation || $skipValidation)) {
-			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->strTable, $this->objModule->id, $arrData);
+			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->getFormId(), $arrData);
 
 			if(is_array($arrWidgetErrors))
 			{
@@ -658,7 +660,8 @@ class DC_Hybrid extends \DataContainer
 				if (is_array($objWidget->value))
 				{
 					$this->objActiveRecord->{$strName} = array_map(function($varVal) use ($arrData) {
-						$varVal = FormHelper::transformSpecialValues($varVal, $arrData, $this->strTable, $this->intId);
+						$varVal = FormSubmission::prepareSpecialValueForSave($varVal, $arrData, $this->strTable,
+							$this->intId);
 
 						if(is_array($varVal))
 						{
@@ -677,7 +680,7 @@ class DC_Hybrid extends \DataContainer
 				}
 				else
 				{
-					$this->objActiveRecord->{$strName} = html_entity_decode(FormHelper::transformSpecialValues(
+					$this->objActiveRecord->{$strName} = html_entity_decode(FormSubmission::prepareSpecialValueForSave(
 						$objWidget->value, $arrData, $this->strTable, $this->intId
 					));
 				}
@@ -736,7 +739,8 @@ class DC_Hybrid extends \DataContainer
 	{
 		// priority 2 -> set value from model entity ($this->setDefaults() triggered before)
 		if (isset($this->objActiveRecord->{$strName})) {
-			$varValue = FormHelper::transformSpecialValues($this->objActiveRecord->{$strName}, $arrData, $this->strTable, $this->intId);
+			$varValue = FormSubmission::prepareSpecialValueForSave($this->objActiveRecord->{$strName}, $arrData,
+				$this->strTable, $this->intId);
 		}
 
 		// priority 1 -> load_callback

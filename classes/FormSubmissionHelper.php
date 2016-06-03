@@ -12,6 +12,8 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use HeimrichHannot\Haste\Util\FormSubmission;
+
 class FormSubmissionHelper extends FormHelper
 {
 
@@ -74,7 +76,7 @@ class FormSubmissionHelper extends FormHelper
 		return $arrTokens;
 	}
 
-	public static function prepareData(\Model $objSubmission, array $arrDca, $objDc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
+	public static function prepareData(\Model $objSubmission, $strTable, array $arrDca, $objDc, $arrFields=array(), $arrSkipFields=array('id', 'pid', 'tstamp', 'password'))
 	{
 		$arrSubmissionData = array();
 		$arrRow = $objSubmission->row();
@@ -89,7 +91,7 @@ class FormSubmissionHelper extends FormHelper
 
 			$arrData = $arrDca['fields'][$strName];
 
-			$arrFieldData = static::prepareDataField($strName, $varValue, $arrData, $objDc);
+			$arrFieldData = static::prepareDataField($strName, $varValue, $arrData, $strTable, $objDc);
 
 			$arrSubmissionData[$strName] = $arrFieldData;
 			$strSubmission = $arrFieldData['submission'];
@@ -108,7 +110,7 @@ class FormSubmissionHelper extends FormHelper
 
 					foreach ($arrSet as $strSetName => $strSetValue) {
 						$arrSetData   = $arrData['eval']['columnFields'][$strSetName];
-						$arrFieldData = static::prepareDataField($strSetName, $strSetValue, $arrSetData, $objDc);
+						$arrFieldData = static::prepareDataField($strSetName, $strSetValue, $arrSetData, $strTable, $objDc);
 						// intend new line
 						$strSubmission .= "\t" . $arrFieldData['submission'];
 					}
@@ -129,11 +131,11 @@ class FormSubmissionHelper extends FormHelper
 		return $arrSubmissionData;
 	}
 
-	public static function prepareDataField($strName, $varValue, $arrData, $objDc)
+	public static function prepareDataField($strName, $varValue, $arrData, $strTable, $objDc)
 	{
 		$strLabel = isset($arrData['label'][0]) ? $arrData['label'][0] : $strName;
 
-		$strOutput = static::getFormatedValueByDca($varValue, $arrData, $objDc);
+		$strOutput = FormSubmission::prepareSpecialValueForPrint($varValue, $arrData, $strTable, $objDc);
 
 		$varValue = deserialize($varValue);
 

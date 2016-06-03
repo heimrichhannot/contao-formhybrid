@@ -11,9 +11,6 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-
-use HeimrichHannot\Haste\Util\Files;
-
 class FormHelper extends \System
 {
 	public static function getFieldOptions($arrData, $objDc = null)
@@ -221,39 +218,6 @@ class FormHelper extends \System
 	}
 
 
-	public static function transformSpecialValues($varValue, $arrData, $strTable = null, $intId = 0, $varDefault=null, &$arrWidgetErrors=array())
-	{
-		// Convert date formats into timestamps
-		if ($varValue != '' && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim'))) {
-			try
-			{
-				$objDate  = new \Date($varValue, \Config::get($arrData['eval']['rgxp'] . 'Format'));
-				$varValue = $objDate->tstamp;
-			}
-			catch (\OutOfBoundsException $e)
-			{
-				$arrWidgetErrors[] = sprintf($GLOBALS['TL_LANG']['ERR']['invalidDate'], $varValue);
-				return $varDefault;
-			}
-		}
-
-		if ($arrData['eval']['multiple'] && isset($arrData['eval']['csv'])) {
-			$varValue = implode($arrData['eval']['csv'], deserialize($varValue, true));
-		}
-
-		if ($arrData['inputType'] == 'tag' && in_array('tags_plus', \ModuleLoader::getActive()))
-		{
-			$varValue = \HeimrichHannot\TagsPlus\TagsPlus::loadTags($strTable, $intId);
-		}
-
-		if ($arrData['eval']['encrypt'])
-		{
-			$varValue = \Encryption::encrypt($varValue);
-		}
-
-		return $varValue;
-	}
-
 	/**
 	 * Return the locale string
 	 *
@@ -459,95 +423,6 @@ class FormHelper extends \System
 
 		// Return the evaled code
 		return $strReturn;
-	}
-
-	public static function getFormatedValueByDca($varValue, $arrData, $objDc)
-	{
-		$varValue = deserialize($varValue);
-		$opts  = $arrData['options'];
-		$rfrc  = $arrData['reference'];
-		$rgxp = $arrData['eval']['rgxp'];
-
-		// Call the options_callback to get the formatted value
-		if ((is_array($arrData['options_callback']) || is_callable($arrData['options_callback'])) && !$arrData['reference']) {
-			if (is_array($arrData['options_callback'])) {
-				$strClass  = $arrData['options_callback'][0];
-				$strMethod = $arrData['options_callback'][1];
-
-				$objInstance = \Controller::importStatic($strClass);
-
-				$options_callback = $objInstance->$strMethod($objDc);
-			} elseif (is_callable($arrData['options_callback'])) {
-				$options_callback = $arrData['options_callback']($objDc);
-			}
-
-			$arrOptions = !is_array($varValue) ? array($varValue) : $varValue;
-
-			if ($varValue !== null)
-				$varValue = array_intersect_key($options_callback, array_flip($arrOptions));
-		}
-
-		if ($rgxp == 'date') {
-			$varValue = \Date::parse(\Config::get('dateFormat'), $varValue);
-		} elseif ($rgxp == 'time') {
-			$varValue = \Date::parse(\Config::get('timeFormat'), $varValue);
-		} elseif ($rgxp == 'datim') {
-			$varValue = \Date::parse(\Config::get('datimFormat'), $varValue);
-		} elseif (is_array($varValue)) {
-			$varValue = static::flattenArray($varValue);
-
-			$varValue = array_filter($varValue); // remove empty elements
-
-			$varValue = implode(
-					', ',
-					array_map(
-							function ($varValue) use ($rfrc) {
-								if (is_array($rfrc)) {
-									return isset($rfrc[$varValue]) ? ((is_array($rfrc[$varValue])) ? $rfrc[$varValue][0] : $rfrc[$varValue]) : $varValue;
-								} else {
-									return $varValue;
-								}
-							},
-							$varValue
-					)
-			);
-		} elseif (is_array($opts) && array_is_assoc($opts)) {
-			$varValue = isset($opts[$varValue]) ? $opts[$varValue] : $varValue;
-		} elseif (is_array($rfrc)) {
-			$varValue = isset($rfrc[$varValue]) ? ((is_array($rfrc[$varValue])) ? $rfrc[$varValue][0] : $rfrc[$varValue]) : $varValue;
-		} elseif ($arrData['inputType'] == 'fileTree') {
-			if ($arrData['eval']['multiple'] && is_array($varValue)) {
-				$varValue = array_map(
-						function ($val) {
-							$strPath = Files::getPathFromUuid($val);
-
-							return $strPath ?: $val;
-						},
-						$varValue
-				);
-			} else {
-				$strPath = Files::getPathFromUuid($varValue);
-				$varValue   = $strPath ?: $varValue;
-			}
-		} elseif (\Validator::isBinaryUuid($varValue)) {
-			$varValue = \StringUtil::binToUuid($varValue);
-		}
-
-		// Convert special characters (see #1890)
-		return specialchars($varValue);
-	}
-
-	public static function flattenArray(array $array)
-	{
-		$return = array();
-		array_walk_recursive(
-				$array,
-				function ($a) use (&$return) {
-					$return[] = $a;
-				}
-		);
-
-		return $return;
 	}
 
 	/**
