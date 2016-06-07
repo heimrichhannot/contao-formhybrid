@@ -114,7 +114,7 @@ abstract class Form extends DC_Hybrid
 		{
 			$this->onSubmitCallback($this);
 
-			if (!$this->skipValidation)
+			if (!$this->isSkipValidation())
 			{
 				if (is_array($this->dca['config']['onsubmit_callback'])) {
 					foreach ($this->dca['config']['onsubmit_callback'] as $callback) {

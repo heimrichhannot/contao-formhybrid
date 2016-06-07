@@ -63,6 +63,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $isFilterForm = false;
 
+	protected $skipValidation = false;
+
 	public function __construct($strTable, $objModule = null, $intId = 0)
 	{
 		$this->import('Database');
@@ -237,10 +239,10 @@ class DC_Hybrid extends \DataContainer
 			return \Controller::replaceInsertTags($objTemplate->parse(), false);
 		}
 
-		if ($this->isSubmitted && $this->doNotSubmit)
+		if ($this->isSubmitted && $this->isDoNotSubmit())
 			$this->runOnValidationError($this->arrInvalidFields);
 
-		if ($this->isSubmitted && !$this->doNotSubmit)
+		if ($this->isSubmitted && !$this->isDoNotSubmit())
 		{
 			// run field callbacks, must be before save(), same as contao
 			$this->runCallbacks();
@@ -561,7 +563,8 @@ class DC_Hybrid extends \DataContainer
 
 		$arrData['eval']['tagTable'] = $this->strTable;
 
-		if ($this->skipValidation)
+		// always disable validation for filter form
+		if ($this->isFilterForm)
 		{
 			$arrData['eval']['mandatory'] = false;
 		}
@@ -598,6 +601,12 @@ class DC_Hybrid extends \DataContainer
 				unset($arrWidget['submitOnChange']);
 			}
 		}
+		// the field does trigger a form reload without validation
+		else if($arrWidget['submitOnChange'] && $arrWidget['onchange'])
+		{
+			$arrWidget['onchange'] = "FormhybridAjaxRequest.reload('" . $this->getFormId() . "')";
+			unset($arrWidget['submitOnChange']);
+		}
 
 		$objWidget = new $strClass($arrWidget);
 
@@ -616,7 +625,7 @@ class DC_Hybrid extends \DataContainer
 		// FrontendWidget::validateGetAndPost() in
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
-		if ($this->isSubmitted && !($this->skipValidation || $skipValidation)) {
+		if ($this->isSubmitted && !($this->isSkipValidation() || $skipValidation)) {
 			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->getFormId(), $arrData);
 
 			if(is_array($arrWidgetErrors))
@@ -1117,6 +1126,39 @@ class DC_Hybrid extends \DataContainer
 	{
 		return 'formhybrid_' . str_replace('tl_', '', $this->strTable);
 	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isSkipValidation()
+	{
+		return $this->skipValidation;
+	}
+
+	/**
+	 * @param boolean $skipValidation
+	 */
+	public function setSkipValidation($skipValidation)
+	{
+		$this->skipValidation = $skipValidation;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isDoNotSubmit()
+	{
+		return $this->doNotSubmit;
+	}
+
+	/**
+	 * @param boolean $doNotSubmit
+	 */
+	public function setDoNotSubmit($doNotSubmit)
+	{
+		$this->doNotSubmit = $doNotSubmit;
+	}
+
 
 	public function runOnValidationError($arrInvalidFields) {}
 

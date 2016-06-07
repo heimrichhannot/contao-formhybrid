@@ -71,6 +71,12 @@ class FormAjax extends \Controller
 			case 'asyncFormSubmit':
 				if (\Input::post('load'))
 				{
+					if(\Input::post('skipValidation'))
+					{
+						$dc->setSkipValidation(true);
+						$dc->setDoNotSubmit(true);
+					}
+
 					echo $dc->edit(\Input::post('id'));
 				}
 			exit; break;
