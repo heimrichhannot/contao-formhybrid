@@ -22,8 +22,9 @@
         "codefog/contao-haste": ">=4.0.0",
         "heimrichhannot/contao-haste_plus": ">=1.4.0",
         "heimrichhannot/contao-status_messages": ">=1.0.0",
-        "heimrichhannot/contao-notification_center_plus": ">=1.0.0,<2.0.0-dev"
-    },
+		"heimrichhannot/contao-notification_center_plus": ">=1.0.0,<2.0.0-dev",
+		"heimrichhannot/contao-submissions": ">=1.0.14"
+	},
     "autoload": {
         "classmap": [""]
     },
