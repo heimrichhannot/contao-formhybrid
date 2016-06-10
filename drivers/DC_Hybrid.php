@@ -396,7 +396,7 @@ class DC_Hybrid extends \DataContainer
 
 		$varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
 
-		if($this->isSubmitted)
+		if($this->isSubmitted && in_array($strName, $this->arrEditable))
 		{
 			$varValue = \Input::$inputMethod($strName);
 		}
