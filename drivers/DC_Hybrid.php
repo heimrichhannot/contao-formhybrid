@@ -930,11 +930,11 @@ class DC_Hybrid extends \DataContainer
 
 			// set from default field value
 			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
-				$this->arrDefaults[$strName] = \Controller::replaceInsertTags($varDefault);
+				$this->arrDefaults[$strName] = $varDefault;
 			}
 
 			if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
-				$this->arrDefaults[$strName] = \Controller::replaceInsertTags($varDefault['value']);
+				$this->arrDefaults[$strName] = $varDefault['value'];
 			}
 		}
 
@@ -962,7 +962,7 @@ class DC_Hybrid extends \DataContainer
 
 							break;
 						default:
-							$this->arrDefaults[$strField] = \Controller::replaceInsertTags($varDefault['value']);
+							$this->arrDefaults[$strField] = $varDefault['value'];
 					}
 				}
 			}
@@ -971,7 +971,8 @@ class DC_Hybrid extends \DataContainer
 		// set active record from defaults
 		if (is_array($this->arrDefaults)) {
 			foreach ($this->arrDefaults as $strName => $varValue) {
-				$this->objActiveRecord->{$strName} = $varValue;
+				// don't cache here!
+				$this->objActiveRecord->{$strName} = $this->replaceInsertTags($varValue, false);
 			}
 		}
 	}
