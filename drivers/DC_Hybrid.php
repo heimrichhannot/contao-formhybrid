@@ -930,11 +930,11 @@ class DC_Hybrid extends \DataContainer
 
 			// set from default field value
 			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
-				$this->arrDefaults[$strName] = \Controller::replaceInsertTags($varDefault);
+				$this->arrDefaults[$strName] = FormHelper::replaceInsertTags($varDefault);
 			}
 
 			if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
-				$this->arrDefaults[$strName] = \Controller::replaceInsertTags($varDefault['value']);
+				$this->arrDefaults[$strName] = FormHelper::replaceInsertTags($varDefault['value']);
 			}
 		}
 

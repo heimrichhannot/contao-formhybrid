@@ -13,6 +13,21 @@ namespace HeimrichHannot\FormHybrid;
 
 class FormHelper extends \System
 {
+	public static function replaceInsertTags($varValue)
+	{
+		if(is_array($varValue))
+		{
+			foreach ($varValue as $key => $value)
+			{
+				$varValue[$key] = static::replaceInsertTags($value);
+			}
+
+			return $varValue;
+		}
+
+		return \Controller::replaceInsertTags($varValue);
+	}
+
 	public static function getFieldOptions($arrData, $objDc = null)
 	{
 		$arrOptions = array();
