@@ -26,7 +26,7 @@
             this.asyncSubmit();
         },
         asyncSubmit: function (data) {
-            $('.formhybrid').on('submit', 'form[data-async]', function (e) {
+            $('body').on('submit', '.formhybrid form[data-async]', function (e) {
                 var $form = $(this);
                 e.preventDefault();
                 FormhybridAjaxRequest._asyncFormSubmit($form);
@@ -53,9 +53,21 @@
                 data: $formData,
                 method: $form.attr('method'),
                 success: function (data) {
+                    var replace;
 
-                    var replace,
-                        data = '<div>' + data + '</div>';
+					try {
+						dataJson = $.parseJSON(data);
+
+						if (dataJson.type == 'redirect')
+						{
+							location.href = dataJson.url;
+							return;
+						}
+					} catch(e) {
+						// fail silently
+					}
+
+					data = '<div>' + data + '</div>';
 
                     if ($form.data('replace')) {
                         replace = $(data).find($form.data('replace'));
