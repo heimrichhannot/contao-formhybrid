@@ -145,7 +145,19 @@ class DC_Hybrid extends \DataContainer
 					$strUrl = Url::addQueryString('act=' . FRONTENDEDIT_ACT_EDIT, $strUrl);
 				}
 
-				\Controller::redirect(Url::addQueryString('id=' . $this->objActiveRecord->id, $strUrl));
+				$strUrl = Url::addQueryString('id=' . $this->objActiveRecord->id, $strUrl);
+
+				if (\Environment::get('isAjaxRequest'))
+				{
+					die(json_encode(array(
+						'type' => 'redirect',
+						'url' => $strUrl
+					)));
+				}
+				else
+				{
+					\Controller::redirect($strUrl);
+				}
 			}
 		}
 	}
