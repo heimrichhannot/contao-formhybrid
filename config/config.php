@@ -8,6 +8,13 @@ define('FORMHYBRID_MESSAGE_ERROR', 'FORMHYBRID_ERROR');
 define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
 define('FORMHYBRID_USERNAME', 'Formhybrid');
 
+define('FORMHYBRID_PALETTE_DEFAULT', '
+{formhybrid_config_legend},formHybridDataContainer,formHybridPalette,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues;
+{formhybrid_template_legend},formHybridTemplate,formHybridCustomSubTemplates,formHybridStartTemplate,formHybridStopTemplate,formHybridCustomSubmit;
+{formhybrid_action_legend},formHybridAction,formHybridAddHashToAction,formHybridAsync,formHybridAddFieldDependentRedirect;
+{formhybrid_message_legend},formHybridSuccessMessage,formHybridSkipScrollingToSuccessMessage;
+{formhybrid_notification_legend},formHybridSendSubmissionAsNotification,formHybridSendSubmissionViaEmail,formHybridSendConfirmationAsNotification,formHybridSendConfirmationViaEmail');
+
 /**
  * Content elements
  */
@@ -44,8 +51,7 @@ $GLOBALS['TL_FFL']['multiColumnWizard'] = '\\HeimrichHannot\\FormHybrid\\FormMul
 /**
  * Notification Center Tokens
  */
-if (in_array('notification_center_plus', \ModuleLoader::getActive()))
-{
+if (in_array('notification_center_plus', \ModuleLoader::getActive())) {
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission';
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission_all';
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_submission_*';
