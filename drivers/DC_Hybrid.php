@@ -984,7 +984,7 @@ class DC_Hybrid extends \DataContainer
 		if (is_array($this->arrDefaults)) {
 			foreach ($this->arrDefaults as $strName => $varValue) {
 				// don't cache here!
-				$this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varDefault, false);
+				$this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varValue, false);
 			}
 		}
 	}
