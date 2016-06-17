@@ -717,7 +717,10 @@ class tl_form_hybrid_module extends \Backend
 	// no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	public static function getFields($objDc)
 	{
-		return \HeimrichHannot\Haste\Dca\General::getFields($objDc->activeRecord->formHybridDataContainer, false);
+		if($objDc->activeRecord->formHybridDataContainer)
+		{
+			return \HeimrichHannot\Haste\Dca\General::getFields($objDc->activeRecord->formHybridDataContainer, false);
+		}
 	}
 
 	public function getSubPaletteFields(\DataContainer $dc)
