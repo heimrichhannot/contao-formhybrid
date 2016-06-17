@@ -1,6 +1,6 @@
 {
     "name": "heimrichhannot/contao-formhybrid",
-    "description":"A form helper module for contao. Makes form creation for module developer a bit easier and reusable.",
+    "description":"Contains functionality for handling form submissions in the contao frontend.",
     "keywords":["contao", "form", "module", "developer"],
     "type": "contao-module",
     "homepage":"https://github.com/heimrichhannot/contao-formhybrid",
