@@ -4,6 +4,8 @@ Contains functionality for handling form submissions in the contao frontend.
 
 Usage is simple: Include the default palette (_FORMHYBRID_PALETTE_DEFAULT_) in config.php into your module's tl_module file and remove the fields you don't need for your module.
 
+-> Click [here](docs/formhybrid.png) for a diagram visualizing the interaction between the modules [formhybrid](https://github.com/heimrichhannot/contao-formhybrid), [formhybrid_list](https://github.com/heimrichhannot/contao-formhybrid_list), [frontendedit](https://github.com/heimrichhannot/contao-frontendedit) and [submissions](https://github.com/heimrichhannot/contao-submissions).
+
 ## Features
 
 - form validation
