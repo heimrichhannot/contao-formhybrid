@@ -1,6 +1,15 @@
 # Formhybrid
 
-A form helper module for contao. Makes form creation for module developer a bit easier and reusable.
+Contains functionality for handling form submissions in the contao frontend.
+
+Usage is simple: Include the default palette (_FORMHYBRID_PALETTE_DEFAULT_) in config.php into your module's tl_module file and remove the fields you don't need for your module.
+
+## Features
+
+- form validation
+- transforming of special field's values depending on their dca properties (e.g. date)
+- ajax handling
+- store submissions using submissions module if necessary
 
 ## Tokens
 
