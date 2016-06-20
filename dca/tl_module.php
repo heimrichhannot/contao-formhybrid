@@ -610,6 +610,10 @@ class tl_form_hybrid_module extends \Backend
 		return $arrOptions;
 	}
 
+	public static function getEditable($objDc)
+	{
+		return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->formHybridDataContainer, $objDc->formHybridPalette);
+	}
 
 	public function getDataContainers(\DataContainer $dc)
 	{
@@ -665,54 +669,6 @@ class tl_form_hybrid_module extends \Backend
 		return $return;
 	}
 
-
-	public function getEditable($dc) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
-	{
-		// get dc for multicolumnwizard...
-		if (!$dc) {
-			$objModule = \ModuleModel::findByPk(\Input::get('id'));
-
-			if ($objModule === null) {
-				return array();
-			}
-
-			$dc = new HeimrichHannot\FormHybrid\DC_Hybrid('tl_module', $objModule);
-		}
-
-		if (!$dc->activeRecord->formHybridDataContainer) {
-			return array();
-		}
-		
-		\Controller::loadDataContainer($dc->activeRecord->formHybridDataContainer);
-		
-		if (!is_array($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer])) {
-			return array();
-		}
-
-		$arrFields = HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
-			$dc->activeRecord->formHybridDataContainer,
-			$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['palettes'][$dc->activeRecord->formHybridPalette]
-		);
-		
-		if (is_array($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'])) {
-			$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes']);
-
-			// ignore subpalettes not in palette
-			$arrSubPalettes = HeimrichHannot\FormHybrid\FormHelper::getFilteredSubPalettes($arrSubPalettes, $arrFields, $dc);
-
-			foreach ($arrSubPalettes as $strSubPalette) {
-				$arrFields = array_merge(
-					$arrFields,
-					HeimrichHannot\FormHybrid\FormHelper::getPaletteFields(
-						$dc->activeRecord->formHybridDataContainer,
-						$GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer]['subpalettes'][$strSubPalette]
-					)
-				);
-			}
-		}
-
-		return $arrFields;
-	}
 
 	// no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	public static function getFields($objDc)

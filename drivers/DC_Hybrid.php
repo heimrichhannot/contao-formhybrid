@@ -348,6 +348,28 @@ class DC_Hybrid extends \DataContainer
 			}
 		}
 
+		// check for existing type selector in palettes
+		if (is_array($arrSelectors))
+		{
+			$strTypeSelector = 'default';
+
+			foreach ($arrSelectors as $strSelector)
+			{
+				$varValue = $this->getFieldValue($strSelector);
+				$strPalette = $this->dca['palettes'][$varValue];
+				$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true); // TODO options_callback
+
+				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions))
+				{
+					// remove fields not existing in the current palette
+					$arrFields = array_intersect($arrFields, FormHelper::getEditableFields($this->strTable, $varValue));
+
+					// only one palette can be active at a time
+					break;
+				}
+			}
+		}
+
 		// add palette fields
 		foreach ($arrFields as $strName)
 		{
