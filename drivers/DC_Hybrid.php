@@ -265,7 +265,7 @@ class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord->refresh();
 
 			// create new version
-//			$this->createVersion();
+			//$this->createVersion();
 
 			// process form
 			$this->processForm();

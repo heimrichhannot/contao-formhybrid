@@ -5,6 +5,7 @@ namespace HeimrichHannot\FormHybrid;
 use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
+use HeimrichHannot\Submissions\SubmissionModel;
 use MatthiasMullie\Minify\Exception;
 
 abstract class Form extends DC_Hybrid
@@ -132,11 +133,11 @@ abstract class Form extends DC_Hybrid
 
 			$arrSubmissionData = $this->prepareSubmissionData();
 
-			if($this->formHybridSendSubmissionAsNotification)
+			if($this->formHybridSendSubmissionAsNotification || $this->formHybridSubmissionNotification)
 			{
 				if(($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->formHybridSubmissionNotification)) !== null)
 				{
-					$arrToken = FormSubmissionHelper::tokenizeData($arrSubmissionData);
+					$arrToken = SubmissionModel::tokenizeData($arrSubmissionData);
 
 					if($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken))
 					{
@@ -157,11 +158,11 @@ abstract class Form extends DC_Hybrid
 			}
 
 
-			if($this->formHybridSendConfirmationAsNotification)
+			if($this->formHybridSendConfirmationAsNotification || $this->formHybridConfirmationNotification)
 			{
 				if(($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->formHybridConfirmationNotification)) !== null)
 				{
-					$arrToken = FormSubmissionHelper::tokenizeData($arrSubmissionData);
+					$arrToken = SubmissionModel::tokenizeData($arrSubmissionData);
 
 					if($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken))
 					{
@@ -197,7 +198,7 @@ abstract class Form extends DC_Hybrid
 
 	protected function prepareSubmissionData()
 	{
-		return FormSubmissionHelper::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
+		return SubmissionModel::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
 	}
 
 	protected function onSubmitCallback(\DataContainer $dc)

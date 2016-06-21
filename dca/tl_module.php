@@ -270,7 +270,7 @@ $arrFields = array
 		'search'           => true,
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
-		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
+		'eval'             => array('chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
 		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridSendSubmissionViaEmail'           => array(
@@ -364,7 +364,7 @@ $arrFields = array
 		'search'           => true,
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
-		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
+		'eval'             => array('chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
 		'sql'              => "varchar(255) NOT NULL default ''",
 	),
 	'formHybridSendConfirmationViaEmail'         => array(

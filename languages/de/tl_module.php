@@ -28,7 +28,7 @@ $arrLang['formHybridSubmitClass'] = array('Absendefeld CSS-Klasse', 'Vergeben Si
 $arrLang['formHybridSuccessMessage'] = array('Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Erfolgsmeldung an.');
 $arrLang['formHybridSkipScrollingToSuccessMessage'] = array('Nicht zur Erfolsmeldung scrollen', 'Wählen Sie diese Option, damit nicht automatisch zur Erfolgsmeldung gescrollt wird.');
 $arrLang['formHybridSendSubmissionAsNotification'] = array('E-Mail über Benachrichtigungscenter versenden', 'Beim erfolgreichen absenden des Formulars wird eine E-Mail über den Benachrichtungscenter ausgelößt.');
-$arrLang['formHybridSubmissionNotification'] = array('Nachricht auswählen', 'Wählen Sie eine Nachricht aus dem Benachrichtigungscenter aus.');
+$arrLang['formHybridSubmissionNotification'] = array('Benachrichtigung nach dem Absenden des Formulars verschicken', 'Wählen Sie hier eine Nachricht aus, die nach dem erfolgreichen Absenden des Formulars verschickt werden soll.');
 
 $arrLang['formHybridSendSubmissionViaEmail'] = array('Per E-Mail versenden', 'Die Formulardaten an eine E-Mail-Adresse versenden.');
 $arrLang['formHybridSubmissionMailSender'] = array('Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>');
@@ -42,7 +42,7 @@ $arrLang['formHybridSubmissionMailAttachment'] = array('E-Mail Anhänge', 'Verse
 
 $arrLang['formHybridSendConfirmationAsNotification'] = array('Bestätigungs-E-Mail über Benachrichtigungscenter versenden', 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars über den Benachrichtungscenter ausgelößt.');
 $arrLang['formHybridSendConfirmationViaEmail'] = array('Bestätigung per E-Mail versenden', 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars versendet.');
-$arrLang['formHybridConfirmationNotification'] = array('Nachricht auswählen', 'Wählen Sie eine Nachricht aus dem Benachrichtigungscenter aus.');
+$arrLang['formHybridConfirmationNotification'] = array('Bestätigungsbenachrichtigung verschicken', 'Wählen Sie hier eine Nachricht aus, die nach dem erfolgreichen Absenden des Formulars an dessen Absender verschickt werden soll.');
 $arrLang['formHybridConfirmationMailSender'] = array('Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>');
 $arrLang['formHybridConfirmationMailRecipientField'] = array('Formularfeld mit E-Mail-Adresse des Empfängers', 'Wählen Sie hier das Formularfeld, in dem der Absender seine E-Mail-Adresse angibt oder ein Formularfeld, das die Empfänger-Adresse als Wert enthält.');
 $arrLang['formHybridConfirmationAvisotaMessage'] = array('Benachrichtigung', 'Wählen Sie hier eine Avisota-Nachricht aus.');
