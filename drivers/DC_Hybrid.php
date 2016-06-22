@@ -64,6 +64,15 @@ class DC_Hybrid extends \DataContainer
 	protected $isFilterForm = false;
 
 	protected $skipValidation = false;
+	
+	protected $mode = FORMHYBRID_MODE_CREATE;
+
+	/**
+	 * Set true, and skip ajax form request handling.
+	 * Might be helpful if you want inject Form within your own module and handle ajax by own methods.
+	 * @var bool
+	 */
+	protected $skipFormAjax = false;
 
 	public function __construct($strTable, $objModule = null, $intId = 0)
 	{
@@ -76,9 +85,9 @@ class DC_Hybrid extends \DataContainer
 		$this->initialize();
 
 		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted) if post
-		if ($_POST && \Environment::get('isAjaxRequest') && ($this->isSubmitted || $this->strMethod == FORMHYBRID_METHOD_GET)) {
+		if ($this->isValidAjaxRequest()) {
 			$this->objAjax = new FormAjax(\Input::post('action'));
-			$this->objAjax->executePostActions($this);
+			$this->objAjax->executePreActions($this);
 		}
 	}
 
@@ -94,6 +103,7 @@ class DC_Hybrid extends \DataContainer
 		if ($this->intId && is_numeric($this->intId)) {
 			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
 				$this->objActiveRecord = $objModel;
+				$this->setMode(FORMHYBRID_MODE_EDIT);
 
 				if ($this->saveToBlob)
 				{
@@ -285,7 +295,15 @@ class DC_Hybrid extends \DataContainer
 
 		$this->compile();
 
-		return \Controller::replaceInsertTags($this->Template->parse(), false);
+		$strBuffer = \Controller::replaceInsertTags($this->Template->parse(), false);
+
+		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted) if post
+		if ($this->isValidAjaxRequest()) {
+			$this->objAjax = new FormAjax(\Input::post('action'));
+			$this->objAjax->executePostActions($this, $strBuffer, $this->Template);
+		}
+
+		return $strBuffer;
 	}
 
 	public function generateFields($ajaxId = null)
@@ -617,7 +635,7 @@ class DC_Hybrid extends \DataContainer
 		{
 			if($blnAutoSubmit)
 			{
-				$arrWidget['onchange'] = "this.form.submit();";
+				$arrWidget['onchange'] = $this->async ? 'FormhybridAjaxRequest.asyncSubmit(this.form);' : "this.form.submit();";
 			}
 			else
 			{
@@ -636,10 +654,33 @@ class DC_Hybrid extends \DataContainer
 			}
 		}
 		// the field does trigger a form reload without validation
-		else if($arrWidget['submitOnChange'] && $arrWidget['onchange'])
+		else if($arrWidget['submitOnChange'])
 		{
-			$arrWidget['onchange'] = "FormhybridAjaxRequest.reload('" . $this->getFormId() . "')";
-			unset($arrWidget['submitOnChange']);
+			$strEvent = null;
+
+			if($arrWidget['onchange'])
+			{
+				$strEvent = 'onchange';
+			}
+			else if($arrWidget['onclick'])
+			{
+				$strEvent = 'onclick';
+			}
+
+			if($strEvent !== null)
+			{
+				// use skipValidationOnSubmit in eval configuration for conditional input reloads (e.g. change options for input 2 on change input 1)
+				if($arrWidget['skipValidationOnSubmit'])
+				{
+					$arrWidget[$strEvent] = "FormhybridAjaxRequest.reload('" . $this->getFormId() . "')";
+				}
+				else
+				{
+					$arrWidget[$strEvent] = $this->async ? 'FormhybridAjaxRequest.asyncSubmit(this.form);' : "this.form.submit();";
+				}
+
+				unset($arrWidget['submitOnChange']);
+			}
 		}
 
 		$objWidget = new $strClass($arrWidget);
@@ -1147,6 +1188,12 @@ class DC_Hybrid extends \DataContainer
 	{
 	}
 
+	protected function isValidAjaxRequest()
+	{
+		return \Environment::get('isAjaxRequest') && ($this->isSubmitted && $_POST|| $this->strMethod == FORMHYBRID_METHOD_GET);
+	}
+
+
 	public function getTable()
 	{
 		return $this->strTable;
@@ -1154,7 +1201,7 @@ class DC_Hybrid extends \DataContainer
 
 	public function getFormId()
 	{
-		return $this->strTable . '_' . $this->objModule->id;
+		return $this->strTable . '_' . $this->objModule->id . ($this->intId ? '_' . $this->intId : '');
 	}
 
 	public function getFormName()
@@ -1194,6 +1241,21 @@ class DC_Hybrid extends \DataContainer
 		$this->doNotSubmit = $doNotSubmit;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getMode()
+	{
+		return $this->mode;
+	}
+
+	/**
+	 * @param mixed $mode
+	 */
+	public function setMode($mode)
+	{
+		$this->mode = $mode;
+	}
 
 	public function runOnValidationError($arrInvalidFields) {}
 

@@ -25,7 +25,16 @@
         registerEvents: function () {
             this.asyncSubmit();
         },
-        asyncSubmit: function (data) {
+        asyncSubmit: function (form)
+        {
+            if(form !== 'undefined') {
+                var $form = $(form);
+                if($form.length > 0) {
+                    FormhybridAjaxRequest._asyncFormSubmit($form);
+                }
+                return false;
+            }
+
             $('body').on('submit', '.formhybrid form[data-async]', function (e) {
                 var $form = $(this);
                 e.preventDefault();

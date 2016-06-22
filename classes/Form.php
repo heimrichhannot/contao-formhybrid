@@ -60,6 +60,8 @@ abstract class Form extends DC_Hybrid
 				$this->strAction = Url::removeQueryString(array('file'), \Environment::get('uri'));
 			}
 
+			$this->intId            = $intId;
+
 			$this->strFormId        = $this->getFormId();
 			$this->strFormName      = $this->getFormName();
 
@@ -82,7 +84,6 @@ abstract class Form extends DC_Hybrid
 				FormHelper::getAssocMultiColumnWizardList(deserialize($objModule->formHybridDefaultValues, true), 'field');
 			$this->skipValidation        =
 				$objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
-			$this->intId            = $intId;
 			$this->strTemplateStart      = $this->formHybridStartTemplate ?: $this->strTemplateStart;
 			$this->strTemplateStop       = $this->formHybridStopTemplate ?: $this->strTemplateStop;
 			$this->async                 = $this->formHybridAsync;
@@ -92,7 +93,7 @@ abstract class Form extends DC_Hybrid
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
 		// GET is checked for each field separately
-		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->strFormId);
+		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->getFormId());
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
 
 		// prevent from caching form, chrome is greedy
@@ -484,10 +485,14 @@ abstract class Form extends DC_Hybrid
 	{
 		if($this->async)
 		{
-			$this->isSubmitted = false;
-			$this->intId = null;
-			$this->initialize();
-			$this->generateFields();
+			if($this->getMode() == FORMHYBRID_MODE_CREATE)
+			{
+				$this->isSubmitted = false;
+				$this->intId = null;
+				$this->initialize();
+				$this->generateFields();
+			}
+
 			return;
 		}
 

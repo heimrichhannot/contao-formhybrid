@@ -57,10 +57,10 @@ class FormAjax extends \Controller
 	}
 
 	/**
-	 * Ajax actions that do require a data container object
+	 * Ajax actions before form has been generated
 	 * @param \DataContainer
 	 */
-	public function executePostActions(\DataContainer &$dc)
+	public function executePreActions(\DataContainer &$dc)
 	{
 		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
 
@@ -68,18 +68,6 @@ class FormAjax extends \Controller
 
 		switch ($this->strAction)
 		{
-			case 'asyncFormSubmit':
-				if (\Input::post('load'))
-				{
-					if(\Input::post('skipValidation'))
-					{
-						$dc->setSkipValidation(true);
-						$dc->setDoNotSubmit(true);
-					}
-
-					echo $dc->edit(\Input::post('id'));
-				}
-			exit; break;
 			case 'toggleSubpalette':
 				$strField = \Input::post('field');
 				$varValue = \Input::post($strField);
@@ -114,6 +102,31 @@ class FormAjax extends \Controller
 				}
 
 			exit; break;
+		}
+	}
+
+	/**
+	 * Ajax actions after form has been generated
+	 * @param \DataContainer
+	 */
+	public function executePostActions(\DataContainer &$dc, $strBuffer)
+	{
+		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
+
+		switch ($this->strAction)
+		{
+			case 'asyncFormSubmit':
+				if (\Input::post('load'))
+				{
+					if(\Input::post('skipValidation'))
+					{
+						$dc->setSkipValidation(true);
+						$dc->setDoNotSubmit(true);
+					}
+
+					die($strBuffer);
+				}
+				exit; break;
 		}
 	}
 }
