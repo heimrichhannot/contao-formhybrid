@@ -369,8 +369,6 @@ class DC_Hybrid extends \DataContainer
 		// check for existing type selector in palettes
 		if (is_array($arrSelectors))
 		{
-			$strTypeSelector = 'default';
-
 			foreach ($arrSelectors as $strSelector)
 			{
 				$varValue = $this->getFieldValue($strSelector);
@@ -379,6 +377,10 @@ class DC_Hybrid extends \DataContainer
 
 				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions))
 				{
+					// no messages
+					$this->blnSilentMode = true;
+					$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
+
 					// remove fields not existing in the current palette
 					$arrFields = array_intersect($arrFields, FormHelper::getEditableFields($this->strTable, $varValue));
 
