@@ -960,6 +960,22 @@ class DC_Hybrid extends \DataContainer
 		$objVersion->setUserId($objUser->id);
 		$objVersion->setUsername($objUser->email);
 
+		foreach ($GLOBALS['BE_MOD'] as $strGroup => $arrGroup)
+		{
+			foreach ($arrGroup as $strModule => $arrModule)
+			{
+				if (!isset($arrModule['tables']) || !is_array($arrModule['tables']))
+					continue;
+
+				if (in_array($this->strTable, $arrModule['tables']))
+				{
+					$objVersion->formhybrid_backend_url = sprintf('contao/main.php?do=%s&table=%s&act=edit&id=%s&rt=%s',
+						$strModule, $this->strTable, $this->objActiveRecord->id, \RequestToken::get());
+					break 2;
+				}
+			}
+		}
+
 		if (FE_USER_LOGGED_IN && ($objMember = \FrontendUser::getInstance()) !== null)
 		{
 			$objVersion->memberusername = $objMember->username;

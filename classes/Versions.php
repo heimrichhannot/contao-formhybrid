@@ -209,8 +209,8 @@ class Versions extends \Controller
 		$this->Database->prepare("UPDATE tl_version SET active='' WHERE pid=? AND fromTable=?")
 					   ->execute($this->intPid, $this->strTable);
 
-		$this->Database->prepare("INSERT INTO tl_version (pid, tstamp, version, fromTable, username, userid, memberid, memberusername, description, editUrl, active, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)")
-					   ->execute($this->intPid, time(), $intVersion, $this->strTable, $this->getUsername(), $this->getUserId(), $this->memberid, $this->memberusername, $strDescription, $this->getEditUrl(), serialize($objRecord->row()));
+		$this->Database->prepare("INSERT INTO tl_version (pid, tstamp, version, fromTable, username, userid, memberid, memberusername, formhybrid_backend_url, description, editUrl, active, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)")
+					   ->execute($this->intPid, time(), $intVersion, $this->strTable, $this->getUsername(), $this->getUserId(), $this->memberid, $this->memberusername, $this->formhybrid_backend_url, $strDescription, $this->getEditUrl(), serialize($objRecord->row()));
 
 		// Trigger the oncreate_version_callback
 		if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_version_callback']))
@@ -588,7 +588,7 @@ class Versions extends \Controller
 		$objTemplate->pagination = $objPagination->generate();
 
 		// Get the versions
-		$objVersions = $objDatabase->prepare("SELECT pid, tstamp, version, fromTable, username, userid, memberusername, memberid, description, editUrl, active FROM tl_version" . (!$objUser->isAdmin ? " WHERE userid=?" : "") . " ORDER BY tstamp DESC, pid, version DESC")
+		$objVersions = $objDatabase->prepare("SELECT pid, tstamp, version, fromTable, username, userid, memberusername, memberid, formhybrid_backend_url, description, editUrl, active FROM tl_version" . (!$objUser->isAdmin ? " WHERE userid=?" : "") . " ORDER BY tstamp DESC, pid, version DESC")
 								   ->limit(30, $intOffset)
 								   ->execute($objUser->id);
 

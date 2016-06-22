@@ -8,6 +8,9 @@ $arrFields = array(
 	),
 	'memberid' => array(
 		'sql' => "int(10) unsigned NULL"
+	),
+	'formhybrid_backend_url' => array(
+		'sql' => "varchar(255) NULL"
 	)
 );
 
