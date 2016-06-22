@@ -102,19 +102,6 @@ class FormAjax extends \Controller
 				}
 
 			exit; break;
-		}
-	}
-
-	/**
-	 * Ajax actions after form has been generated
-	 * @param \DataContainer
-	 */
-	public function executePostActions(\DataContainer &$dc, $strBuffer)
-	{
-		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
-
-		switch ($this->strAction)
-		{
 			case 'asyncFormSubmit':
 				if (\Input::post('load'))
 				{
@@ -123,7 +110,24 @@ class FormAjax extends \Controller
 						$dc->setSkipValidation(true);
 						$dc->setDoNotSubmit(true);
 					}
+				}
+			break;
+		}
+	}
 
+	/**
+	 * Ajax actions after form has been generated
+	 * @param \DataContainer
+	 */
+	public function executePostActions(\DataContainer &$dc, $strBuffer, $objTemplate)
+	{
+		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
+
+		switch ($this->strAction)
+		{
+			case 'asyncFormSubmit':
+				if (\Input::post('load'))
+				{
 					die($strBuffer);
 				}
 				exit; break;

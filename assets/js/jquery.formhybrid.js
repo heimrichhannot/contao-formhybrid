@@ -27,7 +27,7 @@
         },
         asyncSubmit: function (form)
         {
-            if(form !== 'undefined') {
+            if (typeof form !== 'undefined') {
                 var $form = $(form);
                 if($form.length > 0) {
                     FormhybridAjaxRequest._asyncFormSubmit($form);
@@ -193,10 +193,10 @@
     $(document).ready(function () {
         FormhybridAjaxRequest.registerEvents();
         FormhybridPlugins.init();
-    })
+    });
 
     $(document).ajaxComplete(function (event, jqXHR, ajaxOptions) {
         FormhybridPlugins.init(FormHybridHelper.getParameterByName('action', ajaxOptions.data));
-    })
+	});
 
 })(jQuery);
