@@ -22,3 +22,8 @@ $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['order'] = 'Auftrag ert
  */
 $GLOBALS['TL_LANG']['formhybrid']['messages']['success'] = 'Vielen Dank für Ihre Einsendung.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'] = 'Es wurde kein Datensatz mit dieser ID gefunden.';
+
+/**
+ * Misc
+ */
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['memberVersion'] = ' (Mitglied)';

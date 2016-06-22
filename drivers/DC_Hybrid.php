@@ -960,6 +960,12 @@ class DC_Hybrid extends \DataContainer
 		$objVersion->setUserId($objUser->id);
 		$objVersion->setUsername($objUser->email);
 
+		if (FE_USER_LOGGED_IN && ($objMember = \FrontendUser::getInstance()) !== null)
+		{
+			$objVersion->memberusername = $objMember->username;
+			$objVersion->memberid = $objMember->id;
+		}
+
 		$objVersion = $this->modifyVersion($objVersion);
 
 		$objVersionCheck = $this->Database->prepare("SELECT COUNT(*) AS count FROM tl_version WHERE fromTable=? AND pid=?")
