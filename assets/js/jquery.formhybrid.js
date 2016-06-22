@@ -51,7 +51,12 @@
                 {
                     name: 'load',
                     value: true
-                });
+                },
+				{
+					name:  'FORM_SUBMIT',
+					value: $form.attr('id')
+				}
+			);
 
             if (typeof data != "undefined") {
                 $formData.push(data);
@@ -106,6 +111,11 @@
                             scrollTop: parseInt(alertOffset.top) - 70 + 'px'
                         }, 500);
                     }
+
+					if ($(data).find('form').data('close-modal-on-submit') && $form.data('has-errors') != 1)
+					{
+						replace.closest('.modal').find('.close').trigger('click');
+					}
                 }
             });
         },
@@ -120,7 +130,7 @@
                     id: id,
                     field: field,
                     REQUEST_TOKEN: Formhybrid.request_token,
-                    FORM_SUBMIT: $form.find('input[name=FORM_SUBMIT]').val()
+                    FORM_SUBMIT: $form.attr('id')
                 };
 
             if ($el.is(':checkbox') || $el.is(':radio')) {

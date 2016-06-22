@@ -37,6 +37,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $arrFields = array();
 
+	protected $arrHiddenFields = array();
+
 	protected $arrSubFields = array();
 
 	protected $arrEditable = array();
@@ -262,7 +264,9 @@ class DC_Hybrid extends \DataContainer
 		}
 
 		if ($this->isSubmitted && $this->isDoNotSubmit())
+		{
 			$this->runOnValidationError($this->arrInvalidFields);
+		}
 
 		if ($this->isSubmitted && !$this->isDoNotSubmit())
 		{
@@ -286,6 +290,7 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->fields = $this->arrFields;
 		$this->Template->isSubmitted = $this->isSubmitted;
 		$this->Template->submission = $this->objActiveRecord;
+		$this->Template->hidden = $this->generateHiddenFields();
 
 		if(!StatusMessage::isEmpty($this->objModule->id))
 		{
@@ -434,6 +439,11 @@ class DC_Hybrid extends \DataContainer
 			$this->generateSubmitField();
 		}
 
+		if(!$this->async)
+		{
+			$this->generateFormIdentifierField();
+		}
+
 		return $blnAjax;
 	}
 
@@ -580,11 +590,6 @@ class DC_Hybrid extends \DataContainer
 		// Continue if the class is not defined
 		if (!class_exists($strClass)) {
 			return false;
-		}
-
-		// GET fallback
-		if ($this->strMethod == FORMHYBRID_METHOD_GET && isset($_GET[$strName])) {
-			$this->isSubmitted = true;
 		}
 
 		$arrWidgetErrors = array();
@@ -856,7 +861,11 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
-			$this->arrAttributes['data-async'] = 'true';
+			$this->arrAttributes['data-async'] = true;
+		}
+
+		if ($this->closeModalAfterSubmit && !$this->doNotSubmit) {
+			$this->arrAttributes['data-close-modal-on-submit'] = true;
 		}
 
 		if (is_array($this->arrAttributes)) {
@@ -1141,6 +1150,34 @@ class DC_Hybrid extends \DataContainer
 
 		$this->arrFields[FORMHYBRID_NAME_SUBMIT] = $this->generateField(FORMHYBRID_NAME_SUBMIT, $arrData);
 	}
+	
+	protected function generateFormIdentifierField()
+	{
+		$arrData = array
+		(
+			'inputType' => 'hidden',
+			'default'   => $this->getFormId()
+		);
+
+		$this->arrHiddenFields[FORMHYBRID_NAME_FORM_SUBMIT] = $this->generateField(FORMHYBRID_NAME_FORM_SUBMIT, $arrData);
+	}
+
+	protected function generateHiddenFields()
+	{
+		if(!is_array($this->arrHiddenFields))
+		{
+			return '';
+		}
+
+		$strBuffer = '';
+
+		foreach ($this->arrHiddenFields as $strName => $objWidget)
+		{
+			$strBuffer .= $objWidget->parse();
+		}
+
+		return $strBuffer;
+	}
 
 	protected function loadDC()
 	{
@@ -1216,7 +1253,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function isValidAjaxRequest()
 	{
-		return \Environment::get('isAjaxRequest') && ($this->isSubmitted && $_POST|| $this->strMethod == FORMHYBRID_METHOD_GET);
+		return \Environment::get('isAjaxRequest') && $this->isSubmitted;
 	}
 
 

@@ -93,7 +93,7 @@ abstract class Form extends DC_Hybrid
 
 		$this->strInputMethod   = $strInputMethod = strtolower($this->strMethod);
 		// GET is checked for each field separately
-		$this->isSubmitted  = (\Input::post('FORM_SUBMIT') == $this->getFormId());
+		$this->isSubmitted  = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
 
 		// prevent from caching form, chrome is greedy
