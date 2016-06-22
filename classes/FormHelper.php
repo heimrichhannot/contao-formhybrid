@@ -490,8 +490,13 @@ class FormHelper extends \System
 		return $arrFilteredSubPalettes;
 	}
 
-	public static function getEditableFields($strDataContainer, $strPalette) // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
+	public static function getEditableFields($strDataContainer, $strPalette='default') // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	{
+		if (!$strDataContainer)
+		{
+			return array();
+		}
+
 		\Controller::loadDataContainer($strDataContainer);
 
 		if (!is_array($GLOBALS['TL_DCA'][$strDataContainer])) {

@@ -612,7 +612,7 @@ class tl_form_hybrid_module extends \Backend
 
 	public static function getEditable($objDc)
 	{
-		return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->formHybridDataContainer, $objDc->formHybridPalette);
+		return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer, $objDc->activeRecord->formHybridPalette);
 	}
 
 	public function getDataContainers(\DataContainer $dc)
