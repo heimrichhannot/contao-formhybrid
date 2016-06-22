@@ -1,7 +1,9 @@
 <?php
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\Haste\Security\CodeGenerator;
 use HeimrichHannot\Haste\Util\FormSubmission;
+use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
@@ -54,8 +56,6 @@ class DC_Hybrid extends \DataContainer
 	protected $arrAttributes = array();
 
 	protected $useCustomSubTemplates = false;
-
-	protected $username = FORMHYBRID_USERNAME;
 
 	protected $saveToBlob = false;
 
@@ -265,7 +265,7 @@ class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord->refresh();
 
 			// create new version
-			//$this->createVersion();
+			$this->createVersion();
 
 			// process form
 			$this->processForm();
@@ -885,18 +885,42 @@ class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
-		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model) {
+		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model ||
+			!$GLOBALS['TL_DCA'][$this->strTable]['config']['enableVersioning']) {
 			return;
 		}
 
 		// Create the initial version (see #7816)
-		$objVersion = new \Versions($this->strTable, $this->objActiveRecord->id);
-		$objVersion->userid = 0;
-		$objVersion->username = $this->username;
+		$objVersion = new \Contao\Versions($this->strTable, $this->objActiveRecord->id);
+		
+		if (($objUser = \UserModel::findByUsername(FORMHYBRID_USER_EMAIL)) === null)
+		{
+			$objUser = new \UserModel();
+			$objUser->username = $objUser->email = FORMHYBRID_USER_EMAIL;
+			$objUser->name = FORMHYBRID_USER_NAME;
+			// at least something must be in there
+			$objUser->password = CodeGenerator::generate();
+			$objUser->disable = true;
+			$objUser->dateAdded = $objUser->tstamp = time();
+			$objUser->save();
+		}
+
+		$objVersion->setUserId($objUser->id);
+		$objVersion->setUsername($objUser->email);
 
 		$objVersion = $this->modifyVersion($objVersion);
 
-		$objVersion->initialize();
+		$objVersionCheck = $this->Database->prepare("SELECT COUNT(*) AS count FROM tl_version WHERE fromTable=? AND pid=?")
+			->limit(1)->execute($this->strTable, $this->objActiveRecord->id);
+
+		if ($objVersionCheck->count > 0)
+		{
+			$objVersion->create();
+		}
+		else
+		{
+			$objVersion->initialize();
+		}
 
 		// Call the onversion_callback
 		if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onversion_callback'])) {

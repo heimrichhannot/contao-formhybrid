@@ -6,7 +6,8 @@ define('FORMHYBRID_NAME_SUBMIT', 'submit');
 define('FORMHYBRID_MESSAGE_SUCCESS', 'FORMHYBRID_SUCCESS');
 define('FORMHYBRID_MESSAGE_ERROR', 'FORMHYBRID_ERROR');
 define('FORMHYBRID_NAME_SKIP_VALIDATION', 'skipvalidation');
-define('FORMHYBRID_USERNAME', 'Formhybrid');
+define('FORMHYBRID_USER_EMAIL', 'info@formhybrid.de');
+define('FORMHYBRID_USER_NAME', 'FormHybrid');
 
 define('FORMHYBRID_PALETTE_DEFAULT', '
 {formhybrid_config_legend},formHybridDataContainer,formHybridPalette,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues;
