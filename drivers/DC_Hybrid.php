@@ -1178,10 +1178,12 @@ class DC_Hybrid extends \DataContainer
 		$arrData = array
 		(
 			'inputType' => 'hidden',
-			'default'   => $this->getFormId()
+			'value'   => $this->getFormId()
 		);
 
-		$this->arrHiddenFields[FORMHYBRID_NAME_FORM_SUBMIT] = $this->generateField(FORMHYBRID_NAME_FORM_SUBMIT, $arrData);
+		$objWidget = $this->generateField(FORMHYBRID_NAME_FORM_SUBMIT, $arrData);
+		$objWidget->value = $this->getFormId();
+		$this->arrHiddenFields[FORMHYBRID_NAME_FORM_SUBMIT] = $objWidget;
 	}
 
 	protected function generateHiddenFields()
