@@ -69,6 +69,8 @@ class DC_Hybrid extends \DataContainer
 	
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
+	protected $blnIsModified = false;
+
 	/**
 	 * Set true, and skip ajax form request handling.
 	 * Might be helpful if you want inject Form within your own module and handle ajax by own methods.
@@ -275,11 +277,6 @@ class DC_Hybrid extends \DataContainer
 
 			// save for save_callbacks
 			$this->save();
-
-			$this->objActiveRecord->refresh();
-
-			// create new version
-			$this->createVersion();
 
 			// process form
 			$this->processForm();
@@ -1232,18 +1229,39 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
-		if ($this->saveToBlob)
+		$intTimestamp = time();
+
+		if (!$this->objActiveRecord->tstamp)
 		{
-			$this->objActiveRecord->formHybridBlob = null;
-			\Database::getInstance()->prepare("UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?")
-				->execute(serialize($this->objActiveRecord->row()), $this->intId);
+			$this->objActiveRecord->tstamp = $intTimestamp;
+			$this->onCreateCallback($this->objActiveRecord, $this);
 		}
-		else
+
+		$this->blnIsModified = $this->objActiveRecord->isModified();
+
+		if ($this->objActiveRecord->isModified())
 		{
-			$this->objActiveRecord->tstamp = time();
-			$this->objActiveRecord->save();
-			$this->intId = $this->objActiveRecord->id;
+			$this->objActiveRecord->tstamp = $intTimestamp;
+
+			if ($this->saveToBlob) {
+				$this->objActiveRecord->formHybridBlob = null;
+				\Database::getInstance()->prepare(
+					"UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?"
+				)->execute(serialize($this->objActiveRecord->row()), $this->intId);
+			}
+			else
+			{
+				$this->objActiveRecord->save();
+
+				// refresh for callbacks
+				$this->objActiveRecord->refresh();
+
+				// create new version
+				$this->createVersion();
+			}
 		}
+
+		$this->intId = $this->objActiveRecord->id;
 	}
 
 	/**
@@ -1280,6 +1298,9 @@ class DC_Hybrid extends \DataContainer
 		return \Environment::get('isAjaxRequest') && $this->isSubmitted;
 	}
 
+	public function onCreateCallback($objItem, \DataContainer $objDc) {}
+
+	public function onUpdateCallback($objItem, \DataContainer $objDc) {}
 
 	public function getTable()
 	{

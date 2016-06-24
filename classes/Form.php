@@ -132,6 +132,12 @@ abstract class Form extends DC_Hybrid
 			// reload model from database, maybe something has changed in callback
 			$this->objActiveRecord->refresh();
 
+			// run callback after update after submit_callbacks since these could do important updates
+			if ($this->blnIsModified)
+			{
+				$this->onUpdateCallback($this->objActiveRecord, $this);
+			}
+
 			$arrSubmissionData = $this->prepareSubmissionData();
 
 			if($this->formHybridSendSubmissionAsNotification || $this->formHybridSubmissionNotification)
