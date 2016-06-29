@@ -132,9 +132,26 @@ abstract class Form extends DC_Hybrid
 			// reload model from database, maybe something has changed in callback
 			$this->objActiveRecord->refresh();
 
-			// run callback after update after submit_callbacks since these could do important updates
-			if ($this->blnIsModified)
+			$blnIsModified = false;
+			foreach ($this->objActiveRecord->row() as $strField => $varValue)
 			{
+				if ($this->arrOriginalRow[$strField] != $varValue)
+				{
+					$blnIsModified = true;
+					break;
+				}
+			}
+
+			// run callback after update after submit_callbacks since these could do important updates
+			if ($blnIsModified)
+			{
+				// update tstamp
+				$this->objActiveRecord->tstamp = time();
+				$this->objActiveRecord->save();
+
+				// create new version - only if modified
+				$this->createVersion();
+
 				$this->onUpdateCallback($this->objActiveRecord, $this);
 			}
 

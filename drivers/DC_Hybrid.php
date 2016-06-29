@@ -69,8 +69,6 @@ class DC_Hybrid extends \DataContainer
 	
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
-	protected $blnIsModified = false;
-
 	/**
 	 * Set true, and skip ajax form request handling.
 	 * Might be helpful if you want inject Form within your own module and handle ajax by own methods.
@@ -1229,36 +1227,23 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
-		$intTimestamp = time();
-
 		if (!$this->objActiveRecord->tstamp)
 		{
-			$this->objActiveRecord->tstamp = $intTimestamp;
+			$this->objActiveRecord->tstamp = time();
 			$this->onCreateCallback($this->objActiveRecord, $this);
 		}
 
-		$this->blnIsModified = $this->objActiveRecord->isModified();
+		$this->arrOriginalRow = $this->objActiveRecord->originalRow();
 
-		if ($this->objActiveRecord->isModified())
+		if ($this->saveToBlob) {
+			$this->objActiveRecord->formHybridBlob = null;
+			\Database::getInstance()->prepare(
+				"UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?"
+			)->execute(serialize($this->objActiveRecord->row()), $this->intId);
+		}
+		else
 		{
-			$this->objActiveRecord->tstamp = $intTimestamp;
-
-			if ($this->saveToBlob) {
-				$this->objActiveRecord->formHybridBlob = null;
-				\Database::getInstance()->prepare(
-					"UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?"
-				)->execute(serialize($this->objActiveRecord->row()), $this->intId);
-			}
-			else
-			{
-				$this->objActiveRecord->save();
-
-				// refresh for callbacks
-				$this->objActiveRecord->refresh();
-
-				// create new version
-				$this->createVersion();
-			}
+			$this->objActiveRecord->save();
 		}
 
 		$this->intId = $this->objActiveRecord->id;
