@@ -132,6 +132,15 @@ abstract class Form extends DC_Hybrid
 			// reload model from database, maybe something has changed in callback
 			$this->objActiveRecord->refresh();
 
+			// just created?
+			$blnJustCreated = false;
+			if (!$this->objActiveRecord->tstamp)
+			{
+				$blnJustCreated = true;
+				$this->objActiveRecord->tstamp = time();
+				$this->onCreateCallback($this->objActiveRecord, $this);
+			}
+
 			$blnIsModified = false;
 			foreach ($this->objActiveRecord->row() as $strField => $varValue)
 			{
@@ -152,7 +161,7 @@ abstract class Form extends DC_Hybrid
 				// create new version - only if modified
 				$this->createVersion();
 
-				$this->onUpdateCallback($this->objActiveRecord, $this);
+				$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated);
 			}
 
 			$arrSubmissionData = $this->prepareSubmissionData();

@@ -1227,12 +1227,6 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
-		if (!$this->objActiveRecord->tstamp)
-		{
-			$this->objActiveRecord->tstamp = time();
-			$this->onCreateCallback($this->objActiveRecord, $this);
-		}
-
 		$this->arrOriginalRow = $this->objActiveRecord->originalRow();
 
 		if ($this->saveToBlob) {
@@ -1285,7 +1279,7 @@ class DC_Hybrid extends \DataContainer
 
 	public function onCreateCallback($objItem, \DataContainer $objDc) {}
 
-	public function onUpdateCallback($objItem, \DataContainer $objDc) {}
+	public function onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated) {}
 
 	public function getTable()
 	{
