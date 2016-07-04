@@ -13,12 +13,10 @@ namespace HeimrichHannot\FormHybrid;
 
 class FormHelper extends \System
 {
-	public static function replaceInsertTags($varValue, $blnCache=true)
+	public static function replaceInsertTags($varValue, $blnCache = true)
 	{
-		if(is_array($varValue))
-		{
-			foreach ($varValue as $key => $value)
-			{
+		if (is_array($varValue)) {
+			foreach ($varValue as $key => $value) {
 				$varValue[$key] = static::replaceInsertTags($value, $blnCache);
 			}
 
@@ -32,38 +30,37 @@ class FormHelper extends \System
 	{
 		$arrOptions = array();
 
-		if(is_array($arrData['options']))
-		{
+		if (is_array($arrData['options'])) {
 			$arrOptions = $arrData['options'];
 		}
 
-		if ($objDc !== null && empty($arrOptions) &&
-			(is_array($arrData['options_callback']) || is_callable($arrData['options_callback']))) {
+		if ($objDc !== null && empty($arrOptions)
+			&& (is_array($arrData['options_callback']) || is_callable($arrData['options_callback']))
+		) {
 			$arrCallback = array();
 
 			if (is_array($arrData['options_callback'])) {
-				$strClass  = $arrData['options_callback'][0];
-				$strMethod = $arrData['options_callback'][1];
+				$strClass    = $arrData['options_callback'][0];
+				$strMethod   = $arrData['options_callback'][1];
 				$objInstance = \Controller::importStatic($strClass);
 
 				try {
 					$arrCallback = @$objInstance->$strMethod($objDc);
-				} catch (\Exception $e)
-				{
+				} catch (\Exception $e) {
 					\System::log("$strClass::$strMethod raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
 				}
 			} elseif (is_callable($arrData['options_callback'])) {
 				try {
 					$arrCallback = @$arrData['options_callback']($objDc);
-				} catch (\Exception $e)
-				{
+				} catch (\Exception $e) {
 					$strCallback = serialize($arrData['options_callback']);
 					\System::log("$strCallback raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
 				}
 			}
 
-			if (is_array($arrCallback))
+			if (is_array($arrCallback)) {
 				$arrOptions = $arrCallback;
+			}
 		}
 
 		return $arrOptions;
@@ -91,20 +88,20 @@ class FormHelper extends \System
 
 	private static function doTidyClean($varValue)
 	{
-		if (!$varValue)
+		if (!$varValue) {
 			return $varValue;
+		}
 
 		$blnHasSurroundingP = substr($varValue, 0, 3) == '<p>';
 
 		libxml_use_internal_errors(true);
-		$objDoc = new \DOMDocument();
+		$objDoc           = new \DOMDocument();
 		$objDoc->encoding = 'utf-8';
 		$objDoc->loadHTML(utf8_decode($varValue), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 		$varValue = $objDoc->saveHTML();
 		libxml_use_internal_errors(false);
 
-		if (!$blnHasSurroundingP)
-		{
+		if (!$blnHasSurroundingP) {
 			$varValue = trim($varValue);
 			$varValue = ltrim($varValue, '<p>');
 			$varValue = substr($varValue, 0, strlen($varValue) - 4);
@@ -117,15 +114,14 @@ class FormHelper extends \System
 	{
 		\Controller::loadDataContainer($strDca);
 
-		if (!is_array($varValue) && \Validator::isUuid($varValue))
+		if (!is_array($varValue) && \Validator::isUuid($varValue)) {
 			return $varValue;
+		}
 
-		if (is_array($varValue))
-		{
+		if (is_array($varValue)) {
 			$arrValues = array();
 
-			foreach($varValue as $i => $strValue)
-			{
+			foreach ($varValue as $i => $strValue) {
 				$arrValues[$i] = static::escapeAllEntities($strDca, $strField, $strValue);
 			}
 
@@ -490,10 +486,9 @@ class FormHelper extends \System
 		return $arrFilteredSubPalettes;
 	}
 
-	public static function getEditableFields($strDataContainer, $strPalette='default') // no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
+	public static function getEditableFields($strDataContainer)
 	{
-		if (!$strDataContainer)
-		{
+		if (!$strDataContainer) {
 			return array();
 		}
 
@@ -503,25 +498,18 @@ class FormHelper extends \System
 			return array();
 		}
 
-		$arrFields = static::getPaletteFields(
-			$strDataContainer,
-			$GLOBALS['TL_DCA'][$strDataContainer]['palettes'][$strPalette]
-		);
+		$arrFields = array();
 
-		if (is_array($GLOBALS['TL_DCA'][$strDataContainer]['subpalettes'])) {
-			$arrSubPalettes = array_keys($GLOBALS['TL_DCA'][$strDataContainer]['subpalettes']);
+		if (is_array($GLOBALS['TL_DCA'][$strDataContainer]['fields']))
+		{
+			foreach ($GLOBALS['TL_DCA'][$strDataContainer]['fields'] as $strName => $arrData)
+			{
+				if (in_array($strName, array('id', 'tstamp')))
+				{
+					continue;
+				}
 
-			// ignore subpalettes not in palette
-			$arrSubPalettes = static::getFilteredSubPalettes($arrSubPalettes, $arrFields, $dc);
-
-			foreach ($arrSubPalettes as $strSubPalette) {
-				$arrFields = array_merge(
-					$arrFields,
-					static::getPaletteFields(
-						$strDataContainer,
-						$GLOBALS['TL_DCA'][$strDataContainer]['subpalettes'][$strSubPalette]
-					)
-				);
+				$arrFields[] = $strName;
 			}
 		}
 

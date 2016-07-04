@@ -49,36 +49,4 @@ class FormConfiguration
 			$this->{$key} = $value;
 		}
 	}
-
-	public function __set($strKey, $varValue)
-	{
-		switch($strKey)
-		{
-			case 'formHybridPalette':
-			case 'palette':
-				$this->setPalette($varValue);
-			break;
-		}
-	}
-
-	public function __get($strKey)
-	{
-		switch($strKey)
-		{
-			case 'formHybridPalette':
-			case 'palette':
-				return $this->getPalette();
-		}
-	}
-
-	public function setPalette($value)
-	{
-		$this->strPalette = $value;
-	}
-
-	public function getPalette()
-	{
-		return $this->strPalette;
-	}
-
 }

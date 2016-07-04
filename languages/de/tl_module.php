@@ -6,7 +6,6 @@ $arrLang = &$GLOBALS['TL_LANG']['tl_module'];
  * Fields
  */
 $arrLang['formHybridDataContainer'] = array('DataContainer', 'Wählen Sie hier den gewünschten DataContainer aus.');
-$arrLang['formHybridPalette'] = array('Palette', 'Wählen Sie hier die gewünschte Palette aus.');
 $arrLang['formHybridEditable'] = array('Felder', 'Wählen Sie hier die gewünschten Felder aus.');
 $arrLang['formHybridAddEditableRequired'] = array('Pflichtfelder überschreiben', 'Legen Sie die Pflichtfelder unabhängig von der DCA-Konfiguration fest.');
 $arrLang['formHybridEditableRequired'] = array('Pflichtfelder', 'Wählen Sie hier die gewünschten Pflichtfelder aus.');

@@ -45,11 +45,10 @@ abstract class Form extends DC_Hybrid
 
 		$strInputMethod = strtolower($this->strMethod);
 
-		if ($objModule !== null && $objModule->formHybridDataContainer && $objModule->formHybridPalette) {
+		if ($objModule !== null && $objModule->formHybridDataContainer) {
 			$this->objModule   = $objModule;
 			$this->arrData     = $objModule->row();
 			$this->strTable    = $objModule->formHybridDataContainer;
-			$this->strPalette  = $objModule->formHybridPalette;
 
 			if($objModule->formHybridAction && ($objActionPage = \PageModel::findWithDetails($objModule->formHybridAction)) !== null)
 			{

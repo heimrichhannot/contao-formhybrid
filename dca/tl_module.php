@@ -58,22 +58,6 @@ $arrFields = array
 		'exclude'          => true,
 		'sql'              => "varchar(255) NOT NULL default ''",
 	),
-	'formHybridPalette'                          => array
-	(
-		'inputType'        => 'select',
-		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPalette'],
-		'default'          => 'default',
-		'options_callback' => array('tl_form_hybrid_module', 'getPalette'),
-		'eval'             => array(
-			'chosen'             => true,
-			'submitOnChange'     => true,
-			'includeBlankOption' => true,
-			'tl_class'           => 'w50',
-			'mandatory'          => true,
-		),
-		'exclude'          => true,
-		'sql'              => "varchar(255) NOT NULL default ''",
-	),
 	'formHybridEditable'                         => array
 	(
 		'inputType'        => 'checkboxWizard',
@@ -612,7 +596,7 @@ class tl_form_hybrid_module extends \Backend
 
 	public static function getEditable($objDc)
 	{
-		return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer, $objDc->activeRecord->formHybridPalette);
+		return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer);
 	}
 
 	public function getDataContainers(\DataContainer $dc)
