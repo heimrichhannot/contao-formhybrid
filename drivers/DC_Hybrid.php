@@ -131,46 +131,6 @@ class DC_Hybrid extends \DataContainer
 			$this->objActiveRecord = class_exists($strModelClass) && !$objReflection->isAbstract() ? new $strModelClass : new Submission();
 			$this->setDefaults();
 			$this->setSubmission();
-
-			// frontendedit saves the model initially in order to get an id
-			if ($this->initiallySaveModel && !$this->intId) {
-				$this->objActiveRecord->tstamp = 0;
-				$this->objActiveRecord->save();
-
-				// run onsubmit_callback, required for example by HeimrichHannot\FormHybrid\TagsHelper::saveTagsFromDefaults()
-				if (is_array($this->dca['config']['onsubmit_callback'])) {
-					foreach ($this->dca['config']['onsubmit_callback'] as $callback) {
-						$this->import($callback[0]);
-						$this->$callback[0]->$callback[1]($this);
-
-						// reload model from database, maybe something has changed in callback
-						$this->objActiveRecord->refresh();
-					}
-				}
-
-				$strUrl = Url::getUrl();
-
-				if (in_array('frontendedit', \ModuleLoader::getActive()))
-				{
-					// create -> edit
-					$strUrl = Url::removeQueryString(array('act'), $strUrl);
-					$strUrl = Url::addQueryString('act=' . FRONTENDEDIT_ACT_EDIT, $strUrl);
-				}
-
-				$strUrl = Url::addQueryString('id=' . $this->objActiveRecord->id, $strUrl);
-
-				if (\Environment::get('isAjaxRequest'))
-				{
-					die(json_encode(array(
-						'type' => 'redirect',
-						'url' => $strUrl
-					)));
-				}
-				else
-				{
-					\Controller::redirect($strUrl);
-				}
-			}
 		}
 	}
 
