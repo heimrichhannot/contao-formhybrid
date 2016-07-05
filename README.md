@@ -41,3 +41,11 @@ The following tokens are provided for usage:
 - {{elseif}}
 - {{else}}
 - {{endif}}
+
+
+### Config Callbacks
+
+Type | Description
+---- | -----------
+onload_callback | Add a 3rd parameter with boolean true to your onload_callbacks to run through them in frontend mode.  
+

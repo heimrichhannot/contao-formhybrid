@@ -1169,6 +1169,26 @@ class DC_Hybrid extends \DataContainer
 
 		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
+		// Call onload_callback, but only if 3rd callback parameter is set to true, otherwise contao backend related callbacks
+		// where a BackendUser is required might get called
+		if (is_array($this->dca['config']['onload_callback']))
+		{
+			foreach ($this->dca['config']['onload_callback'] as $callback)
+			{
+				if($callback[2] !== true) continue;
+
+				if (is_array($callback))
+				{
+					$this->import($callback[0]);
+					$this->{$callback[0]}->{$callback[1]}($this, true);
+				}
+				elseif (is_callable($callback))
+				{
+					$callback($this, true);
+				}
+			}
+		}
+
 		$this->modifyDC($this->dca);
 
 		// store modified dca, otherwise for example widgets wont contain modified callbacks
@@ -1303,6 +1323,24 @@ class DC_Hybrid extends \DataContainer
 	{
 		$this->mode = $mode;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function getEditableFields()
+	{
+		return $this->arrEditable;
+	}
+
+	/**
+	 * @param array $arrEditable
+	 */
+	public function setEditableFields(array $arrEditable)
+	{
+		$this->arrEditable = $arrEditable;
+	}
+
+
 
 	public function runOnValidationError($arrInvalidFields) {}
 
