@@ -56,7 +56,7 @@ $arrFields = array
 			'mandatory'          => true,
 		),
 		'exclude'          => true,
-		'sql'              => "varchar(255) NOT NULL default ''",
+		'sql'              => "varchar(64) NOT NULL default ''",
 	),
 	'formHybridEditable'                         => array
 	(
@@ -178,7 +178,7 @@ $arrFields = array
 		'sql'        => "int(10) unsigned NOT NULL default '0'",
 		'relation'   => array('type' => 'hasOne', 'load' => 'eager'),
 	),
-	'formHybridAddHashToAction'              => array
+	'formHybridAddHashToAction'                  => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddHashToAction'],
 		'exclude'   => true,
@@ -192,8 +192,8 @@ $arrFields = array
 		'exclude'   => true,
 		'filter'    => false,
 		'inputType' => 'text',
-		'eval'      => array('maxlength' => 255, 'tl_class' => 'w50 clr'),
-		'sql'       => "varchar(255) NOT NULL default ''",
+		'eval'      => array('maxlength' => 64, 'tl_class' => 'w50 clr'),
+		'sql'       => "varchar(64) NOT NULL default ''",
 	),
 	'formHybridStartTemplate'                    => array
 	(
@@ -255,7 +255,7 @@ $arrFields = array
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
 		'eval'             => array('chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
-		'sql'              => "varchar(255) NOT NULL default ''",
+		'sql'              => "int(10) unsigned NOT NULL default '0'",
 	),
 	'formHybridSendSubmissionViaEmail'           => array(
 		'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'],
@@ -272,8 +272,8 @@ $arrFields = array
 		'filter'      => false,
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
-		'eval'        => array('mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(255) NOT NULL default ''",
+		'eval'        => array('mandatory' => false, 'maxlength' => 128, 'tl_class' => 'w50 clr', 'helpwizard' => true),
+		'sql'         => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailRecipient'          => array
 	(
@@ -282,8 +282,8 @@ $arrFields = array
 		'search'      => true,
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
-		'eval'        => array('mandatory' => true, 'maxlength' => 1022, 'rgxp' => 'emails', 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(1022) NOT NULL default ''",
+		'eval'        => array('mandatory' => true, 'maxlength' => 128, 'rgxp' => 'emails', 'tl_class' => 'w50 clr', 'helpwizard' => true),
+		'sql'         => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailSubject'            => array
 	(
@@ -294,12 +294,12 @@ $arrFields = array
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
 			'mandatory'      => false,
-			'maxlength'      => 255,
+			'maxlength'      => 128,
 			'decodeEntities' => true,
 			'tl_class'       => 'w50',
 			'helpwizard'     => true,
 		),
-		'sql'         => "varchar(255) NOT NULL default ''",
+		'sql'         => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridSubmissionMailText'               => array
 	(
@@ -349,7 +349,7 @@ $arrFields = array
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getNoficiationMessages'),
 		'eval'             => array('chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true),
-		'sql'              => "varchar(255) NOT NULL default ''",
+		'sql'              => "int(10) unsigned NOT NULL default '0'",
 	),
 	'formHybridSendConfirmationViaEmail'         => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'],
@@ -365,8 +365,8 @@ $arrFields = array
 		'search'           => true,
 		'inputType'        => 'select',
 		'options_callback' => array('tl_form_hybrid_module', 'getEmailFormFields'),
-		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr'),
-		'sql'              => "varchar(255) NOT NULL default ''",
+		'eval'             => array('mandatory' => true, 'chosen' => true, 'maxlength' => 128, 'tl_class' => 'w50 clr'),
+		'sql'              => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailSender'           => array
 	(
@@ -375,8 +375,8 @@ $arrFields = array
 		'filter'      => false,
 		'inputType'   => 'text',
 		'explanation' => 'formhybrid_inserttags',
-		'eval'        => array('mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'helpwizard' => true),
-		'sql'         => "varchar(255) NOT NULL default ''",
+		'eval'        => array('mandatory' => false, 'maxlength' => 128, 'tl_class' => 'w50 clr', 'helpwizard' => true),
+		'sql'         => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailSubject'          => array
 	(
@@ -387,12 +387,12 @@ $arrFields = array
 		'explanation' => 'formhybrid_inserttags_text',
 		'eval'        => array(
 			'mandatory'      => false,
-			'maxlength'      => 255,
+			'maxlength'      => 128,
 			'decodeEntities' => true,
 			'tl_class'       => 'w50',
 			'helpwizard'     => true,
 		),
-		'sql'         => "varchar(255) NOT NULL default ''",
+		'sql'         => "varchar(128) NOT NULL default ''",
 	),
 	'formHybridConfirmationMailText'             => array
 	(
@@ -438,8 +438,8 @@ $arrFields = array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectKeepParams'],
 		'inputType' => 'text',
-		'eval'      => array('tl_class' => 'w50'),
-		'sql'       => "varchar(255) NOT NULL default ''",
+		'eval'      => array('tl_class' => 'w50', 'maxlength' => 64),
+		'sql'       => "varchar(64) NOT NULL default ''",
 	),
 	'formHybridCustomSubmit'                     => array
 	(
@@ -455,17 +455,17 @@ $arrFields = array
 		'exclude'          => true,
 		'inputType'        => 'select',
 		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\Module', 'getSubmitLabels'),
-		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true),
-		'sql'              => "varchar(255) NOT NULL default ''",
+		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'maxlength' => 64),
+		'sql'              => "varchar(64) NOT NULL default ''",
 	),
 	'formHybridSubmitClass'                      => array
 	(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmitClass'],
 		'exclude'   => true,
 		'inputType' => 'text',
-		'eval'      => array('maxlength' => 255, 'tl_class' => 'w50'),
-		'sql'       => "varchar(255) NOT NULL default ''",
-	)
+		'eval'      => array('maxlength' => 64, 'tl_class' => 'w50'),
+		'sql'       => "varchar(64) NOT NULL default ''",
+	),
 );
 
 // conditions for the field depending redirect
@@ -657,8 +657,7 @@ class tl_form_hybrid_module extends \Backend
 	// no type because of multicolumnwizard not supporting passing a dc to an options_callback :-(
 	public static function getFields($objDc)
 	{
-		if($objDc->activeRecord->formHybridDataContainer)
-		{
+		if ($objDc->activeRecord->formHybridDataContainer) {
 			return \HeimrichHannot\Haste\Dca\General::getFields($objDc->activeRecord->formHybridDataContainer, false);
 		}
 	}
