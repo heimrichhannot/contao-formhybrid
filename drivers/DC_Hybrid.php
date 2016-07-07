@@ -109,12 +109,7 @@ class DC_Hybrid extends \DataContainer
 
 				if ($this->saveToBlob)
 				{
-					$arrBlob = deserialize($objModel->formHybridBlob, true);
-
-					foreach ($arrBlob as $strField => $varValue)
-					{
-						$this->objActiveRecord->{$strField} = $varValue;
-					}
+					$this->loadFromBlob(deserialize($objModel->formHybridBlob, true));
 				}
 
 				// redirect on specific field value
@@ -132,6 +127,26 @@ class DC_Hybrid extends \DataContainer
 			$this->setDefaults();
 			$this->setSubmission();
 		}
+	}
+
+	public function loadFromBlob($arrBlob)
+	{
+		foreach ($arrBlob as $strField => $varValue)
+		{
+			$this->objActiveRecord->{$strField} = $varValue;
+		}
+	}
+
+	public function saveToBlob()
+	{
+		$varBlob = $this->objActiveRecord->formHybridBlob;
+		$this->objActiveRecord->formHybridBlob = null;
+
+		\Database::getInstance()->prepare(
+			"UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?"
+		)->execute(serialize($this->objActiveRecord->row()), $this->intId);
+
+		$this->objActiveRecord->formHybridBlob = $varBlob;
 	}
 
 	public static function doFieldDependentRedirect($objModule, $objModel)
@@ -1210,10 +1225,7 @@ class DC_Hybrid extends \DataContainer
 		$this->arrOriginalRow = $this->objActiveRecord->originalRow();
 
 		if ($this->saveToBlob) {
-			$this->objActiveRecord->formHybridBlob = null;
-			\Database::getInstance()->prepare(
-				"UPDATE $this->strTable SET $this->strTable.formHybridBlob = ? WHERE id=?"
-			)->execute(serialize($this->objActiveRecord->row()), $this->intId);
+			$this->saveToBlob();
 		}
 		else
 		{

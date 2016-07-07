@@ -81,6 +81,8 @@ abstract class Form extends DC_Hybrid
 			$this->addDefaultValues      = $objModule->formHybridAddDefaultValues;
 			$this->arrDefaultValues      =
 				FormHelper::getAssocMultiColumnWizardList(deserialize($objModule->formHybridDefaultValues, true), 'field');
+			$this->addSubmitValues      = $objModule->formHybridAddSubmitValues;
+			$this->arrSubmitValues      = deserialize($this->formHybridSubmitValues, true);
 			$this->skipValidation        =
 				$objModule->formHybridSkipValidation ?: (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION) ?: false);
 			$this->strTemplateStart      = $this->formHybridStartTemplate ?: $this->strTemplateStart;
@@ -113,6 +115,22 @@ abstract class Form extends DC_Hybrid
 	{
 		if ($this->isSubmitted && !$this->doNotSubmit)
 		{
+			if ($this->addSubmitValues && !empty($this->arrSubmitValues))
+			{
+				foreach ($this->arrSubmitValues as $arrSubmitValue)
+				{
+					$this->objActiveRecord->{$arrSubmitValue['field']} = $arrSubmitValue['value'];
+				}
+
+				if ($this->saveToBlob)
+				{
+					$this->saveToBlob();
+				}
+				else {
+					$this->objActiveRecord->save();
+				}
+			}
+
 			$this->onSubmitCallback($this);
 
 			if (!$this->isSkipValidation())
@@ -155,10 +173,18 @@ abstract class Form extends DC_Hybrid
 			{
 				// update tstamp
 				$this->objActiveRecord->tstamp = time();
-				$this->objActiveRecord->save();
 
-				// create new version - only if modified
-				$this->createVersion();
+				if ($this->saveToBlob)
+				{
+					$this->saveToBlob();
+				}
+				else
+				{
+					$this->objActiveRecord->save();
+
+					// create new version - only if modified
+					$this->createVersion();
+				}
 
 				$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated);
 			}

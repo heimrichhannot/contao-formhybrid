@@ -56,6 +56,9 @@ $GLOBALS['TL_FFL']['multiColumnWizard'] = '\\HeimrichHannot\\FormHybrid\\FormMul
  * Notification Center Tokens
  */
 if (in_array('notification_center_plus', \ModuleLoader::getActive())) {
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_value_*';
+	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_plain_*';
+
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission';
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission_all';
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_submission_*';

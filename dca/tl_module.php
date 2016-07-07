@@ -14,6 +14,8 @@ $dc['palettes']['__selector__'][]                      = 'formHybridAddEditableR
 $dc['palettes']['__selector__'][]                      = 'formHybridAddDisplayedSubPaletteFields';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
 $dc['palettes']['__selector__'][]                      = 'formHybridCustomSubmit';
+$dc['palettes']['__selector__'][]                      = 'formHybridAddSubmitValues';
+
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
 	'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
@@ -31,6 +33,8 @@ $dc['subpalettes']['formHybridAddDisplayedSubPaletteFields'] = 'formHybridDispla
 $dc['subpalettes']['formHybridAddFieldDependentRedirect'] = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
 
 $dc['subpalettes']['formHybridCustomSubmit'] = 'formHybridSubmitLabel,formHybridSubmitClass';
+
+$dc['subpalettes']['formHybridAddSubmitValues'] = 'formHybridSubmitValues';
 
 
 /**
@@ -146,6 +150,40 @@ $arrFields = array
 					'inputType' => 'text',
 					'eval'      => array('style' => 'width: 350px', 'allowHtml' => true),
 				),
+			),
+			'tl_class'     => 'clr long',
+		),
+		'sql'       => "blob NULL",
+	),
+	'formHybridAddSubmitValues'                 => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddSubmitValues'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridSubmitValues'                    => array
+	(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmitValues'],
+		'exclude'   => true,
+		'inputType' => 'multiColumnWizard',
+		'eval'      => array(
+			'columnFields' => array(
+				'field' => array(
+					'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['field'],
+					'exclude'          => true,
+					'inputType'        => 'select',
+					'options_callback' => array(
+						'tl_form_hybrid_module', 'getFields',
+					),
+					'eval'             => array('style' => 'width: 150px', 'chosen' => true),
+				),
+				'value' => array(
+					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
+					'exclude'   => true,
+					'inputType' => 'text',
+					'eval'      => array('style' => 'width: 100px'),
+				)
 			),
 			'tl_class'     => 'clr long',
 		),
@@ -472,8 +510,9 @@ $arrFields = array
 $arrFields['formHybridFieldDependentRedirectConditions']          = $arrFields['formHybridDefaultValues'];
 $arrFields['formHybridFieldDependentRedirectConditions']['label'] =
 	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectConditions'];
-unset($arrFields['formHybridFieldDependentRedirectConditions']['label']['eval']['columnFields']['label']);
-unset($arrFields['formHybridFieldDependentRedirectConditions']['label']['eval']['columnFields']['hidden']);
+unset($arrFields['formHybridFieldDependentRedirectConditions']['eval']['columnFields']['label']);
+unset($arrFields['formHybridFieldDependentRedirectConditions']['eval']['columnFields']['hidden']);
+
 $arrFields['formHybridFieldDependentRedirectJumpTo']                      = $dc['fields']['jumpTo'];
 $arrFields['formHybridFieldDependentRedirectJumpTo']['label']             =
 	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectJumpTo'];
