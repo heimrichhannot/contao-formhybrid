@@ -187,7 +187,10 @@ class DC_Hybrid extends \DataContainer
 						}
 					}
 
-					$strRedirect = Url::addQueryString('token=' . \RequestToken::get(), $strRedirect);
+					if (!$objModule->deactivateTokens)
+					{
+						$strRedirect = Url::addQueryString('token=' . \RequestToken::get(), $strRedirect);
+					}
 
 					StatusMessage::resetAll();
 					\Controller::redirect($strRedirect);
