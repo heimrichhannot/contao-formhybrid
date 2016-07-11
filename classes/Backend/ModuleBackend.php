@@ -11,7 +11,9 @@
 namespace HeimrichHannot\FormHybrid\Backend;
 
 
-class Module extends \Backend
+use HeimrichHannot\Haste\Util\Arrays;
+
+class ModuleBackend extends \Backend
 {
 	/**
 	 * Import the back end user object
@@ -20,6 +22,11 @@ class Module extends \Backend
 	{
 		parent::__construct();
 		$this->import('BackendUser', 'User');
+	}
+
+	public function getViewModes()
+	{
+		return array_values(Arrays::filterByPrefixes(get_defined_constants(), array('FORMHYBRID_VIEW_MODE_')));
 	}
 
 	public function getSubmitLabels()
@@ -44,5 +51,25 @@ class Module extends \Backend
 		}
 
 		return $arrOptions;
+	}
+
+	public function getFormHybridStartTemplates()
+	{
+		return \Controller::getTemplateGroup('formhybridStart_');
+	}
+
+	public function getFormHybridStopTemplates()
+	{
+		return \Controller::getTemplateGroup('formhybridStop_');
+	}
+
+	public function getFormHybridTemplates()
+	{
+		return \Controller::getTemplateGroup('formhybrid_');
+	}
+
+	public function getFormHybridReadonlyTemplates()
+	{
+		return \Controller::getTemplateGroup('formhybridreadonly_');
 	}
 }

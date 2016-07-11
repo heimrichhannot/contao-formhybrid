@@ -1,0 +1,4 @@
+<div class="form-group <?= $this->name; ?>">
+	<?= $this->label; ?>
+	<p class="form-control-static"><?= $this->value; ?></p>
+</div>

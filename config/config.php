@@ -11,9 +11,11 @@ define('FORMHYBRID_USER_EMAIL', 'info@formhybrid.de');
 define('FORMHYBRID_USER_NAME', 'FormHybrid');
 define('FORMHYBRID_MODE_CREATE', 'formhybrid_mode_create');
 define('FORMHYBRID_MODE_EDIT', 'formhybrid_mode_edit');
+define('FORMHYBRID_VIEW_MODE_DEFAULT', 'default');
+define('FORMHYBRID_VIEW_MODE_READONLY', 'readonly');
 
 define('FORMHYBRID_PALETTE_DEFAULT', '
-{formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues;
+{formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
 {formhybrid_template_legend},formHybridTemplate,formHybridCustomSubTemplates,formHybridStartTemplate,formHybridStopTemplate,formHybridCustomSubmit;
 {formhybrid_action_legend},formHybridAction,formHybridAddHashToAction,formHybridAsync,formHybridAddFieldDependentRedirect;
 {formhybrid_message_legend},formHybridSuccessMessage,formHybridSkipScrollingToSuccessMessage;

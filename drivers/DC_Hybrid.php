@@ -9,6 +9,8 @@ use HeimrichHannot\StatusMessages\StatusMessage;
 
 class DC_Hybrid extends \DataContainer
 {
+	protected $arrData = array();
+
 	protected $strFormId;
 
 	protected $strFormName;
@@ -36,6 +38,8 @@ class DC_Hybrid extends \DataContainer
 	protected $arrDefaults = array();
 
 	protected $arrFields = array();
+
+	protected $objConfig = null;
 
 	protected $arrHiddenFields = array();
 
@@ -69,6 +73,12 @@ class DC_Hybrid extends \DataContainer
 	
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
+	private $useModelData = false;
+
+	protected $blnSilentMode = false;
+
+	protected $objAjax;
+
 	/**
 	 * Set true, and skip ajax form request handling.
 	 * Might be helpful if you want inject Form within your own module and handle ajax by own methods.
@@ -76,11 +86,40 @@ class DC_Hybrid extends \DataContainer
 	 */
 	protected $skipFormAjax = false;
 
-	public function __construct($strTable, $objModule = null, $intId = 0)
+	public function __construct($strTable='', $varConfig = null, $intId = 0)
 	{
+		$this->objConfig = new FormConfiguration($varConfig);
+		$this->setData($this->objConfig->getData());
+		$this->objModule = $this->objConfig->getModule();
+
+		// backwards compatibility for direct DC_Hybrid calls
+		if($strTable)
+		{
+			$this->strTable = $strTable;
+		}
+
+		$this->intId   = $intId;
+		$this->strFormId   = $this->getFormId();
+		$this->strFormName = $this->getFormName();
+
+		if ($this->addEditableRequired)
+		{
+			$this->overwriteRequired = true;
+		}
+
+		$this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
+
+		if(\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION))
+		{
+			$this->setSkipValidation(\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION));
+		}
+
+		// GET is checked for each field separately
+		$this->isSubmitted  = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
+		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
+
 		$this->import('Database');
-		$this->strTable = $strTable;
-		$this->objModule = $objModule;
+		$this->objModule = $this->objConfig->getModule();
 		$this->intId = $this->intId ?: $intId;
 		$this->loadDC();
 
@@ -127,6 +166,12 @@ class DC_Hybrid extends \DataContainer
 			$this->setDefaults();
 			$this->setSubmission();
 		}
+
+		if($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY)
+		{
+			$this->strTemplate = $this->readonlyTemplate;
+			$this->setDoNotSubmit(true);
+		}
 	}
 
 	public function loadFromBlob($arrBlob)
@@ -149,17 +194,18 @@ class DC_Hybrid extends \DataContainer
 		$this->objActiveRecord->formHybridBlob = $varBlob;
 	}
 
-	public static function doFieldDependentRedirect($objModule, $objModel)
+	public function doFieldDependentRedirect()
 	{
-		if ($objModule->formHybridAddFieldDependentRedirect)
+		if ($this->addFieldDependentRedirect)
 		{
-			$arrConditions = deserialize($objModule->formHybridFieldDependentRedirectConditions, true);
+			$arrConditions = $this->fieldDependentRedirectConditions;
 			$blnRedirect = true;
 
-			if (!empty($arrConditions)) {
+			if (!empty($arrConditions))
+			{
 				foreach ($arrConditions as $arrCondition)
 				{
-					if ($objModel->{$arrCondition['field']} != $objModule->replaceInsertTags($arrCondition['value']))
+					if ($this->activeRecord->{$arrCondition['field']} != $this->replaceInsertTags($arrCondition['value']))
 						$blnRedirect = false;
 				}
 
@@ -169,14 +215,14 @@ class DC_Hybrid extends \DataContainer
 			{
 				global $objPage;
 
-				if (($objPageJumpTo = \PageModel::findByPk($objModule->formHybridFieldDependentRedirectJumpTo)) !== null
+				if (($objPageJumpTo = \PageModel::findByPk($this->fieldDependentRedirectJumpTo)) !== null
 					|| $objPageJumpTo = $objPage)
 				{
 					$strRedirect = \Controller::generateFrontendUrl($objPageJumpTo->row());
 
-					if ($objModule->formHybridFieldDependentRedirectKeepParams)
+					if ($this->fieldDependentRedirectKeepParams)
 					{
-						$arrParamsToKeep = explode(',', $objModule->formHybridFieldDependentRedirectKeepParams);
+						$arrParamsToKeep = explode(',', $this->fieldDependentRedirectKeepParams);
 						if (!empty($arrParamsToKeep))
 						{
 							foreach (Url::getUriParameters(Url::getUrl()) as $strParam => $strValue)
@@ -187,7 +233,7 @@ class DC_Hybrid extends \DataContainer
 						}
 					}
 
-					if (!$objModule->deactivateTokens)
+					if (!$this->deactivateTokens)
 					{
 						$strRedirect = Url::addQueryString('token=' . \RequestToken::get(), $strRedirect);
 					}
@@ -218,7 +264,7 @@ class DC_Hybrid extends \DataContainer
 
 			return \Controller::replaceInsertTags($this->Template->parse(), false);
 		}
-
+		
 		$this->Template = new \FrontendTemplate($this->strTemplate);
 
 		if ($this->renderStop) {
@@ -558,6 +604,13 @@ class DC_Hybrid extends \DataContainer
 	protected function generateField($strName, $arrData, $skipValidation = false)
 	{
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+
+		// overwrite the widget in readonly mode
+		if($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY)
+		{
+			$strClass = 'HeimrichHannot\FormHybrid\FormReadonlyField';
+		}
+
 		$strInputMethod = $this->strInputMethod;
 
 		// Continue if the class is not defined
@@ -828,9 +881,7 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->skipScrollingToSuccessMessage = $this->skipScrollingToSuccessMessage;
 		$this->Template->novalidate = $this->novalidate ? ' novalidate' : '';
 
-		$this->Template->class = (strlen($this->strClass) ? $this->strClass . ' ' : '') . $this->strFormName
-			. ' formhybrid' . ($this->isFilterForm ? ' filter-form' : '') . ($this->isSubmitted ? ' submitted' : '') .
-			($this->intId ? ' has-model' : '');
+		$this->Template->class = $this->generateContainerClass();
 		$this->Template->formClass = (strlen($this->strFormClass) ? $this->strFormClass : '');
 
 		if ($this->async) {
@@ -1126,14 +1177,14 @@ class DC_Hybrid extends \DataContainer
 			return false;
 		}
 
-		if($this->objModule->formHybridCustomSubmit)
+		if($this->customSubmit)
 		{
-			if($this->objModule->formHybridSubmitLabel != '')
+			if($this->submitLabel != '')
 			{
-				$strLabel = $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels'][$this->objModule->formHybridSubmitLabel];
+				$strLabel = $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels'][$this->submitLabel];
 			}
 
-			$strClass = $this->objModule->formHybridSubmitClass;
+			$strClass = $this->submitClass;
 		}
 		
 		$arrData = array
@@ -1238,6 +1289,40 @@ class DC_Hybrid extends \DataContainer
 		$this->intId = $this->objActiveRecord->id;
 	}
 
+	protected function generateContainerClass()
+	{
+		$arrClasses = explode(' ', $this->strClass);
+
+		$arrClasses[] = $this->strFormName;
+
+		if($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY)
+		{
+			$arrClasses[] = 'formhybrid-readonly';
+		}
+
+		if($this->viewMode == FORMHYBRID_VIEW_MODE_DEFAULT)
+		{
+			$arrClasses[] = 'formhybrid formhybrid-edit';
+		}
+
+		if($this->isFilterForm)
+		{
+			$arrClasses[] = 'filter-form';
+		}
+
+		if($this->isSubmitted)
+		{
+			$arrClasses[] = 'submitted';
+		}
+
+		if($this->intId)
+		{
+			$arrClasses[] = 'has-model';
+		}
+
+		return implode(' ', $arrClasses);
+	}
+
 	/**
 	 * Return the name of the current palette
 	 *
@@ -1307,6 +1392,20 @@ class DC_Hybrid extends \DataContainer
 		$this->skipValidation = $skipValidation;
 	}
 
+	public function isSubmitted()
+	{
+		return $this->isSubmitted;
+	}
+
+	/**
+	 * @deprecated use $this->isDoNotSubmit()
+	 * @return bool
+	 */
+	public function doNotSubmit()
+	{
+		return $this->isDoNotSubmit();
+	}
+
 	/**
 	 * @return boolean
 	 */
@@ -1355,6 +1454,90 @@ class DC_Hybrid extends \DataContainer
 		$this->arrEditable = $arrEditable;
 	}
 
+	/**
+	 * Return an object property
+	 *
+	 * @param string
+	 *
+	 * @return mixed
+	 */
+	public function __get($strKey)
+	{
+		// legacy: support 'formHybrid' prefix
+
+		if(FormConfiguration::isLegacyKey($strKey))
+		{
+			$strKey = FormConfiguration::getKey($strKey);
+		}
+
+		// parent getter must be dominant, otherwise intId will taken from arrData
+		// tl_calendar_events::adjustTime callback make usage of $dc->id instead of $dc->activeRecord->id
+		if (($strParent = parent::__get($strKey)) != '') {
+			return $strParent;
+		}
+
+		switch ($strKey)
+		{
+			// Fallback for old formHybrid modules
+			case 'objModel' :
+				return $this->objModule;
+			break;
+			default:
+				if (isset($this->arrData[$strKey]))
+				{
+					return $this->arrData[$strKey];
+				}
+		}
+	}
+
+	protected function setData(array $arrData = array())
+	{
+		foreach ($arrData as $key => $varValue)
+		{
+			$this->{$key} = $varValue;
+		}
+	}
+
+	/**
+	 * Set an object property
+	 *
+	 * @param string
+	 * @param mixed
+	 */
+	public function __set($strKey, $varValue)
+	{
+		// legacy: support 'formHybrid' prefix
+		if(FormConfiguration::isLegacyKey($strKey))
+		{
+			$strKey = FormConfiguration::getKey($strKey);
+		}
+
+		if(property_exists($this, $strKey))
+		{
+			$this->{$strKey} = $varValue;
+			return;
+		}
+
+		$this->arrData[$strKey] = $varValue;
+	}
+
+	/**
+	 * Check whether a property is set
+	 *
+	 * @param string
+	 *
+	 * @return boolean
+	 */
+	public function __isset($strKey)
+	{
+		// legacy: support 'formHybrid' prefix
+		if(FormConfiguration::isLegacyKey($strKey))
+		{
+			$strKey = FormConfiguration::getKey($strKey);
+		}
+		
+		return isset($this->arrData[$strKey]);
+	}
 
 
 	public function runOnValidationError($arrInvalidFields) {}

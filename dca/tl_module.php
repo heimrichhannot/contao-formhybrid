@@ -15,6 +15,10 @@ $dc['palettes']['__selector__'][]                      = 'formHybridAddDisplayed
 $dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
 $dc['palettes']['__selector__'][]                      = 'formHybridCustomSubmit';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddSubmitValues';
+array_insert($dc['palettes']['__selector__'], 0, array('formHybridViewMode')); // bug??  must be indexed before "type"
+
+$dc['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT] = 'formHybridTemplate';
+$dc['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_READONLY] = 'formHybridReadonlyTemplate';
 
 $dc['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
 $dc['subpalettes']['formHybridSendSubmissionViaEmail'] =
@@ -35,6 +39,7 @@ $dc['subpalettes']['formHybridAddFieldDependentRedirect'] = 'formHybridFieldDepe
 $dc['subpalettes']['formHybridCustomSubmit'] = 'formHybridSubmitLabel,formHybridSubmitClass';
 
 $dc['subpalettes']['formHybridAddSubmitValues'] = 'formHybridSubmitValues';
+
 
 
 /**
@@ -61,6 +66,17 @@ $arrFields = array
 		),
 		'exclude'          => true,
 		'sql'              => "varchar(64) NOT NULL default ''",
+	),
+	'formHybridViewMode'                             => array
+	(
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridViewMode'],
+		'default'          => FORMHYBRID_VIEW_MODE_DEFAULT,
+		'exclude'          => true,
+		'inputType'        => 'select',
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getViewModes'),
+		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true),
+		'sql'              => "varchar(10) NOT NULL default 'default'",
+		'reference'		   => &$GLOBALS['TL_LANG']['tl_module']['reference'],
 	),
 	'formHybridEditable'                         => array
 	(
@@ -195,9 +211,19 @@ $arrFields = array
 		'default'          => 'formhybrid_default',
 		'exclude'          => true,
 		'inputType'        => 'select',
-		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridTemplates'),
-		'eval'             => array('tl_class' => 'w50 clr'),
-		'sql'              => "varchar(64) NOT NULL default ''",
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getFormHybridTemplates'),
+		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true),
+		'sql'              => "varchar(64) NOT NULL default 'formhybrid_default'",
+	),
+	'formHybridReadonlyTemplate'                         => array
+	(
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridReadonlyTemplate'],
+		'default'          => 'formhybridreadonly_default',
+		'exclude'          => true,
+		'inputType'        => 'select',
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getFormHybridReadonlyTemplates'),
+		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true),
+		'sql'              => "varchar(64) NOT NULL default 'formhybridreadonly_default'",
 	),
 	'formHybridCustomSubTemplates'               => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCustomSubTemplates'],
@@ -239,7 +265,7 @@ $arrFields = array
 		'default'          => 'formhybridStart_default',
 		'exclude'          => true,
 		'inputType'        => 'select',
-		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridStartTemplates'),
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getFormHybridStartTemplates'),
 		'eval'             => array('tl_class' => 'w50'),
 		'sql'              => "varchar(64) NOT NULL default ''",
 	),
@@ -249,7 +275,7 @@ $arrFields = array
 		'default'          => 'formhybridStop_default',
 		'exclude'          => true,
 		'inputType'        => 'select',
-		'options_callback' => array('tl_form_hybrid_module', 'getFormHybridStopTemplates'),
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getFormHybridStopTemplates'),
 		'eval'             => array('tl_class' => 'w50'),
 		'sql'              => "varchar(64) NOT NULL default ''",
 	),
@@ -492,7 +518,7 @@ $arrFields = array
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmitLabel'],
 		'exclude'          => true,
 		'inputType'        => 'select',
-		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\Module', 'getSubmitLabels'),
+		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getSubmitLabels'),
 		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'maxlength' => 64),
 		'sql'              => "varchar(64) NOT NULL default ''",
 	),
@@ -650,7 +676,7 @@ class tl_form_hybrid_module extends \Backend
 
 		foreach ($arrModules as $strModule) {
 			$strDir = TL_ROOT . '/system/modules/' . $strModule . '/dca';
-			
+
 			if (file_exists($strDir)) {
 				foreach (scandir($strDir) as $strFile) {
 					if (substr($strFile, 0, 1) != '.' && file_exists($strDir . '/' . $strFile)) {
@@ -659,13 +685,13 @@ class tl_form_hybrid_module extends \Backend
 				}
 			}
 		}
-		
+
 		$arrDCA = array_unique($arrDCA);
 		sort($arrDCA);
-		
+
 		return $arrDCA;
 	}
-	
+
 	public function getPalette(\DataContainer $dc)
 	{
 		$return = array();
@@ -688,7 +714,7 @@ class tl_form_hybrid_module extends \Backend
 				$return[$k] = $k;
 			}
 		}
-		
+
 		return $return;
 	}
 
@@ -746,21 +772,6 @@ class tl_form_hybrid_module extends \Backend
 		}
 
 		return $arrOptions;
-	}
-
-	public function getFormHybridStartTemplates()
-	{
-		return \Controller::getTemplateGroup('formhybridStart_');
-	}
-
-	public function getFormHybridStopTemplates()
-	{
-		return \Controller::getTemplateGroup('formhybridStop_');
-	}
-
-	public function getFormHybridTemplates()
-	{
-		return \Controller::getTemplateGroup('formhybrid_');
 	}
 
 	public function modifyPalette()
