@@ -1236,13 +1236,11 @@ class DC_Hybrid extends \DataContainer
 			return false;
 		}
 
-		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
-
 		// Call onload_callback, but only if 3rd callback parameter is set to true, otherwise contao backend related callbacks
 		// where a BackendUser is required might get called
-		if (is_array($this->dca['config']['onload_callback']))
+		if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback']))
 		{
-			foreach ($this->dca['config']['onload_callback'] as $callback)
+			foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback'] as $callback)
 			{
 				if($callback[2] !== true) continue;
 
@@ -1257,6 +1255,8 @@ class DC_Hybrid extends \DataContainer
 				}
 			}
 		}
+
+		$this->dca = $GLOBALS['TL_DCA'][$this->strTable];
 
 		$this->modifyDC($this->dca);
 
