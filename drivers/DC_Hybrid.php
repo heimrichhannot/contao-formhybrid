@@ -501,6 +501,7 @@ class DC_Hybrid extends \DataContainer
 		$blnActive = null;
 		$blnAutoSubmit = false;
 		$strSubpalette = null;
+		$arrActiveSubPaletteFields = array();
 
 		$varValue = $this->getFieldValue($strSelector);
 
@@ -536,6 +537,7 @@ class DC_Hybrid extends \DataContainer
 				{
 					$blnActive = true;
 					$strSubpalette = $strSelector .'_'. $varValue;
+					$arrActiveSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
 				}
 
 				// filter out non selected type subpalette fields
@@ -559,7 +561,16 @@ class DC_Hybrid extends \DataContainer
 
 						if(is_array($arrSiblingSubPaletteFields))
 						{
-							$arrFields = array_diff($arrFields, $arrSiblingSubPaletteFields);
+							foreach ($arrSiblingSubPaletteFields as $strField)
+							{
+								// leave active subpalette fields in arrFields
+								if(in_array($strField, $arrActiveSubPaletteFields))
+								{
+									continue;
+								}
+
+								$arrFields = array_diff($arrFields, array($strField));
+							}
 						}
 					}
 				}
