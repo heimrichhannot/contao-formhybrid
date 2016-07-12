@@ -78,6 +78,8 @@ class DC_Hybrid extends \DataContainer
 	protected $blnSilentMode = false;
 
 	protected $objAjax;
+	
+	protected $arrOriginalRow = array();
 
 	/**
 	 * Set true, and skip ajax form request handling.
@@ -1359,7 +1361,7 @@ class DC_Hybrid extends \DataContainer
 
 	public function onCreateCallback($objItem, \DataContainer $objDc) {}
 
-	public function onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated) {}
+	public function onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, array $arrOriginalRow = array()) {}
 
 	public function getTable()
 	{

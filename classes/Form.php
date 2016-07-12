@@ -95,7 +95,7 @@ abstract class Form extends DC_Hybrid
 					$this->createVersion();
 				}
 
-				$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated);
+				$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated, $this->arrOriginalRow);
 			}
 
 			$arrSubmissionData = $this->prepareSubmissionData();
