@@ -563,7 +563,6 @@ class DC_Hybrid extends \DataContainer
 						{
 							foreach ($arrSiblingSubPaletteFields as $strField)
 							{
-							
 								// leave active subpalette fields in arrFields
 								if(in_array($strField, $arrActiveSubPaletteFields))
 								{

@@ -84,6 +84,14 @@ class FormReadonlyField extends \Widget
 		switch($this->type)
 		{
 			case 'multifileupload':
+				if ($this->fieldType == 'checkbox')
+				{
+					$value = '<ul class="download-list">' . implode('', array_map(function($val) {
+						return '<li>{{download::' . $val . '}}</li>';
+					}, explode(', ', $value))) . '</ul>';
+					break;
+				}
+
 				$value = '{{download::' . $value . '}}';
 			break;
 		}
