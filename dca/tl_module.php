@@ -74,7 +74,7 @@ $arrFields = array
 		'exclude'          => true,
 		'inputType'        => 'select',
 		'options_callback' => array('HeimrichHannot\FormHybrid\Backend\ModuleBackend', 'getViewModes'),
-		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true),
+		'eval'             => array('tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true, 'submitOnChange' => true),
 		'sql'              => "varchar(10) NOT NULL default 'default'",
 		'reference'		   => &$GLOBALS['TL_LANG']['tl_module']['reference'],
 	),
