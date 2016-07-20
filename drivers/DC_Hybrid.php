@@ -408,7 +408,7 @@ class DC_Hybrid extends \DataContainer
 					$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
 
 					// remove fields not existing in the current palette
-					$arrFields = array_intersect($arrFields, FormHelper::getEditableFields($this->strTable, $varValue));
+					$arrFields = array_intersect($arrFields, FormHelper::getPaletteFields($this->strTable, $strPalette));
 
 					// only one palette can be active at a time
 					break;
