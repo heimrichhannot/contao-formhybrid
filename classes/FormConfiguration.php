@@ -139,6 +139,10 @@ class FormConfiguration
 				$strKey = 'arrRequired';
 				$varValue = deserialize($varValue, true);
 			break;
+			case 'permanentFields':
+				$strKey = 'arrPermanentFields';
+				$varValue = deserialize($varValue, true);
+				break;
 			case 'subPalettes':
 				$strKey = 'arrSubPalettes';
 				$varValue = deserialize($varValue, true);

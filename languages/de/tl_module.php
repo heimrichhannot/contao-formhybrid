@@ -64,6 +64,8 @@ $arrLang['formHybridCustomSubTemplates'] = array('Eigene Formular-Template für 
 $arrLang['formHybridIsComplete'] = array('Komplett', 'Diese Option wird automatisch vom Modul gesetzt, wenn das Formular mindestens einmal ');
 $arrLang['formHybridAction'] = array('Form action / Zielseite', 'Wählen Sie eine Zielseite aus.');
 $arrLang['formHybridAddHashToAction'] = array('Hash zur Form-Action hinzufügen', 'Wählen Sie diese Option, um der Form-Action die Form-ID als Hash hinzuzufügen.');
+$arrLang['formHybridAddPermanentFields'] = array('Immer auszugebende Felder hinzufügen', 'Wählen Sie diese Option, um dem Formular bestimmte Felder unter allen Umständen hinzuzufügen. Diese Felder sind in aller Regel Subpalettenfelder, die auch dann ausgegeben werden, wenn deren Selektor nicht aktiv ist. Sinnvoll etwa, wenn Felder im Kontext mehrerer Type-Selektoren vorkommen.');
+$arrLang['formHybridPermanentFields'] = array('Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.');
 
 /**
  * References

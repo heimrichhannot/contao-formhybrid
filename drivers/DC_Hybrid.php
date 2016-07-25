@@ -387,6 +387,11 @@ class DC_Hybrid extends \DataContainer
 				// inactive
 				else
 				{
+					if ($this->addPermanentFields)
+					{
+						$arrActiveSubpaletteFields = array_diff($arrActiveSubpaletteFields, $this->arrPermanentFields);
+					}
+
 					$arrFields = array_diff($arrFields, $arrActiveSubpaletteFields);
 				}
 			}
@@ -569,7 +574,10 @@ class DC_Hybrid extends \DataContainer
 									continue;
 								}
 
-								$arrFields = array_diff($arrFields, array($strField));
+								if (!$this->addPermanentFields || !in_array($strField, $this->arrPermanentFields))
+								{
+									$arrFields = array_diff($arrFields, array($strField));
+								}
 							}
 						}
 					}

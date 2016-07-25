@@ -15,6 +15,7 @@ $dc['palettes']['__selector__'][]                      = 'formHybridAddDisplayed
 $dc['palettes']['__selector__'][]                      = 'formHybridAddFieldDependentRedirect';
 $dc['palettes']['__selector__'][]                      = 'formHybridCustomSubmit';
 $dc['palettes']['__selector__'][]                      = 'formHybridAddSubmitValues';
+$dc['palettes']['__selector__'][]                      = 'formHybridAddPermanentFields';
 array_insert($dc['palettes']['__selector__'], 0, array('formHybridViewMode')); // bug??  must be indexed before "type"
 
 $dc['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT] = 'formHybridTemplate';
@@ -40,7 +41,7 @@ $dc['subpalettes']['formHybridCustomSubmit'] = 'formHybridSubmitLabel,formHybrid
 
 $dc['subpalettes']['formHybridAddSubmitValues'] = 'formHybridSubmitValues';
 
-
+$dc['subpalettes']['formHybridAddPermanentFields'] = 'formHybridPermanentFields';
 
 /**
  * Callbacks
@@ -97,11 +98,12 @@ $arrFields = array
 	),
 	'formHybridEditableRequired'                 => array
 	(
-		'inputType'        => 'checkboxWizard',
+		'inputType'        => 'select',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
 		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
 		'exclude'          => true,
-		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
+		'eval'             => array('multiple' => true, 'chosen' => true,
+									'includeBlankOption' => true, 'tl_class' => 'w50 autoheight',),
 		'sql'              => "blob NULL",
 	),
 	'formHybridAddDisplayedSubPaletteFields'     => array
@@ -530,6 +532,23 @@ $arrFields = array
 		'eval'      => array('maxlength' => 64, 'tl_class' => 'w50'),
 		'sql'       => "varchar(64) NOT NULL default ''",
 	),
+	'formHybridAddPermanentFields' => array(
+		'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddPermanentFields'],
+		'exclude'                 => true,
+		'inputType'               => 'checkbox',
+		'eval'                    => array('submitOnChange' => true, 'tl_class' => 'w50'),
+		'sql'                     => "char(1) NOT NULL default ''"
+	),
+	'formHybridPermanentFields'                         => array
+	(
+		'inputType'        => 'select',
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPermanentFields'],
+		'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
+		'exclude'          => true,
+		'eval'             => array('multiple' => true, 'includeBlankOption' => true, 'chosen' => true,
+									'tl_class' => 'w50', 'mandatory' => true),
+		'sql'              => "blob NULL",
+	)
 );
 
 // conditions for the field depending redirect
