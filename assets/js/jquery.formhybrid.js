@@ -55,7 +55,11 @@
 				{
 					name:  'FORM_SUBMIT',
 					value: $form.attr('id')
-				}
+				},
+                {
+                    name: 'scope',
+                    value: Formhybrid.scope,
+                }
 			);
 
             if (typeof data != "undefined") {
@@ -127,6 +131,7 @@
                 checked = true,
                 data = {
                     action: 'toggleSubpalette',
+                    scope: Formhybrid.scope,
                     id: id,
                     field: field,
                     REQUEST_TOKEN: Formhybrid.request_token,

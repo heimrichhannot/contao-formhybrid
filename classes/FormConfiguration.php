@@ -94,6 +94,12 @@ class FormConfiguration
 				else
 				{
 					$varValue = Url::removeQueryString(array('file'), \Environment::get('uri'));
+					
+					// remove all query parameters within ajax request
+					if(\Environment::get('isAjaxRequest'))
+					{
+						$varValue = strtok($varValue, '?');
+					}
 				}
 
 				// add hash

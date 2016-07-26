@@ -13,6 +13,7 @@ define('FORMHYBRID_MODE_CREATE', 'formhybrid_mode_create');
 define('FORMHYBRID_MODE_EDIT', 'formhybrid_mode_edit');
 define('FORMHYBRID_VIEW_MODE_DEFAULT', 'default');
 define('FORMHYBRID_VIEW_MODE_READONLY', 'readonly');
+define('FORMHYBRID_ACTION_SCOPE', 'formhybrid');
 
 define('FORMHYBRID_PALETTE_DEFAULT', '
 {formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
@@ -29,6 +30,7 @@ $GLOBALS['TL_CTE']['formhybrid'] = array(
 	'formhybridElement' => 'HeimrichHannot\\FormHybrid\\ContentFormHybridElement',
 	'formhybridStop'    => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStop',
 );
+
 
 /**
  * Indent elements

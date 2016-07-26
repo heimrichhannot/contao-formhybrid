@@ -13,6 +13,21 @@ namespace HeimrichHannot\FormHybrid;
 
 class FormHelper extends \System
 {
+	public static function getFormId($strTable, $intModule, $intId = null)
+	{
+		$arrValues = array();
+		
+		$arrValues[0] = $strTable;
+		$arrValues[1] = $intModule;
+		
+		if($intId !== null)
+		{
+			$arrValues[2] = $intId;
+		}
+		
+		return implode('_', $arrValues);
+	}
+	
 	public static function replaceInsertTags($varValue, $blnCache = true)
 	{
 		if (is_array($varValue)) {
@@ -249,7 +264,8 @@ class FormHelper extends \System
 			. 'script_url:"' . TL_ASSETS_URL . '",'
 			. 'path:"' . TL_PATH . '",'
 			. 'request_token:"' . REQUEST_TOKEN . '",'
-			. 'referer_id:"' . TL_REFERER_ID . '"'
+			. 'referer_id:"' . TL_REFERER_ID . '",'
+			. 'scope:"' . FORMHYBRID_ACTION_SCOPE .'"'
 			. '};';
 	}
 
