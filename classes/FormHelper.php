@@ -81,21 +81,37 @@ class FormHelper extends \System
 		return $arrOptions;
 	}
 
+	/**
+	 * XSS clean values
+	 * @param      $varValue
+	 * @param bool $tidy If true, close tags without a closing tag
+	 *
+	 * @return mixed $varValue xssClean
+	 */
 	public static function xssClean($varValue, $tidy = false)
 	{
-		$varValue = preg_replace('/(&#[A-Za-z0-9]+);?/i', '$1;', $varValue);
+		if (is_array($varValue))
+		{
+			foreach ($varValue as $key => $value)
+			{
+				$varValue[$key] = static::xssClean($value, $tidy);
+			}
 
+			return $varValue;
+		}
+
+		// do not xss clean binary uuids
+		if(\Validator::isBinaryUuid($varValue))
+		{
+			return $varValue;
+		}
+
+		$varValue = preg_replace('/(&#[A-Za-z0-9]+);?/i', '$1;', $varValue);
 		$varValue = \Input::xssClean($varValue, true);
 
-		// close tags without a closing tag
-		if ($tidy) {
-			if (is_array($varValue)) {
-				foreach ($varValue as $key => $value) {
-					$varValue[$key] = static::doTidyClean($value);
-				}
-			} else {
-				$varValue = static::doTidyClean($varValue);
-			}
+		if($tidy)
+		{
+			$varValue = static::doTidyClean($varValue);
 		}
 
 		return $varValue;
