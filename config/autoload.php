@@ -39,6 +39,7 @@ ClassLoader::addClasses(array
 	'HeimrichHannot\FormHybrid\ContentFormHybridStart'        => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
 
 	// Classes
+	'HeimrichHannot\FormHybrid\FormSession'                   => 'system/modules/formhybrid/classes/FormSession.php',
 	'HeimrichHannot\FormHybrid\Submission'                    => 'system/modules/formhybrid/classes/Submission.php',
 	'HeimrichHannot\FormHybrid\Form'                          => 'system/modules/formhybrid/classes/Form.php',
 	'HeimrichHannot\FormHybrid\FormAjax'                      => 'system/modules/formhybrid/classes/FormAjax.php',

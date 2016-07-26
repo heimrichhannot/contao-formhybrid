@@ -80,6 +80,8 @@ class DC_Hybrid extends \DataContainer
 	protected $objAjax;
 	
 	protected $arrOriginalRow = array();
+	
+	protected $isAjaxRequest = false;
 
 	/**
 	 * Set true, and skip ajax form request handling.
@@ -115,7 +117,7 @@ class DC_Hybrid extends \DataContainer
 		{
 			$this->setSkipValidation(\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION));
 		}
-
+		
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
 		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
@@ -129,8 +131,16 @@ class DC_Hybrid extends \DataContainer
 
 		// Ajax request - FORM_SUBMIT must be given ($this->isSubmitted) if post
 		if ($this->isValidAjaxRequest()) {
-			$this->objAjax = new FormAjax(\Input::post('action'));
-			$this->objAjax->executePreActions($this);
+			try
+			{
+				$this->objAjax = new FormAjax(\Input::post('action'));
+				$this->objAjax->executePreActions($this);
+				$this->isAjaxRequest = true;
+			}
+			catch (\Exception $e)
+			{
+				\System::log($e, 'HeimrichHannot\FormHybrid\FormAjax::__construct()', TL_FORMS);
+			}
 		}
 	}
 
@@ -143,8 +153,10 @@ class DC_Hybrid extends \DataContainer
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 
-		if ($this->intId && is_numeric($this->intId)) {
-			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
+		if ($this->intId && is_numeric($this->intId))
+		{
+			if (($objModel = $strModelClass::findByPk($this->intId)) !== null)
+			{
 				$this->objActiveRecord = $objModel;
 				$this->setMode(FORMHYBRID_MODE_EDIT);
 
@@ -155,16 +167,16 @@ class DC_Hybrid extends \DataContainer
 
 				// redirect on specific field value
 				static::doFieldDependentRedirect($this, $this->objActiveRecord);
-			} else {
+			}
+			else
+			{
 				$this->Template->invalid = true;
 				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
 			}
-		} else {
-			if (class_exists($strModelClass))
-			{
-				$objReflection = new \ReflectionClass($strModelClass);
-			}
-			$this->objActiveRecord = class_exists($strModelClass) && !$objReflection->isAbstract() ? new $strModelClass : new Submission();
+		}
+		else
+		{
+			$this->objActiveRecord = $this->createSubmission($strModelClass);
 			$this->setDefaults();
 			$this->setSubmission();
 		}
@@ -174,6 +186,29 @@ class DC_Hybrid extends \DataContainer
 			$this->strTemplate = $this->readonlyTemplate;
 			$this->setDoNotSubmit(true);
 		}
+	}
+	
+	protected function createSubmission($strModelClass = null)
+	{
+		$objSubmission = new Submission();
+		
+		if ($strModelClass !== null && class_exists($strModelClass))
+		{
+			$objReflection = new \ReflectionClass($strModelClass);
+			
+			if(!$objReflection->isAbstract())
+			{
+				$objSubmission = new $strModelClass();
+			}
+		}
+		
+		if($objSubmission !== null)
+		{
+			// store id once per module only
+			FormSession::addSubmissionId(FormHelper::getFormId($this->strTable, $this->objModule->id), $objSubmission->id);
+		}
+		
+		return $objSubmission;
 	}
 
 	public function loadFromBlob($arrBlob)
@@ -329,6 +364,11 @@ class DC_Hybrid extends \DataContainer
 			$this->objAjax->executePostActions($this, $strBuffer, $this->Template);
 		}
 
+		if($this->isAjaxRequest)
+		{
+			die($strBuffer);
+		}
+		
 		return $strBuffer;
 	}
 
@@ -592,10 +632,11 @@ class DC_Hybrid extends \DataContainer
 
 	protected function addField($strName)
 	{
-		if (!in_array($strName, array_keys($this->dca['fields']))) {
+		if (!in_array($strName, array_keys($this->dca['fields'])))
+		{
 			return false;
 		}
-
+		
 		if ($objField = $this->generateField($strName, $this->dca['fields'][$strName]))
 		{
 			$this->arrFields[$strName] = $objField;
@@ -636,6 +677,14 @@ class DC_Hybrid extends \DataContainer
 
 		// Continue if the class is not defined
 		if (!class_exists($strClass)) {
+			return false;
+		}
+		
+		$reflection = new \ReflectionClass($strClass);
+		
+		// skip ajax request independent fields like captcha
+		if(($reflection->getName() == 'Contao\FormCaptcha' || $reflection->isSubclassOf('Contao\FormCaptcha')) && $this->isSubmitted && !$this->isAjaxRequest && \Environment::get('isAjaxRequest'))
+		{
 			return false;
 		}
 
@@ -1375,7 +1424,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function isValidAjaxRequest()
 	{
-		return \Environment::get('isAjaxRequest') && $this->isSubmitted;
+		return \Environment::get('isAjaxRequest') && $this->isSubmitted && \Input::post('scope') == FORMHYBRID_ACTION_SCOPE;
 	}
 
 	public function onCreateCallback($objItem, \DataContainer $objDc) {}
@@ -1386,10 +1435,15 @@ class DC_Hybrid extends \DataContainer
 	{
 		return $this->strTable;
 	}
-
+	
+	/**
+	 * @internal Use FormHelper::getFormId() for static calls
+	 *
+	 * @return string
+	 */
 	public function getFormId()
 	{
-		return $this->strTable . '_' . $this->objModule->id . ($this->intId ? '_' . $this->intId : '');
+		return FormHelper::getFormId($this->strTable, $this->objModule->id, $this->intId);
 	}
 
 	public function getFormName()
