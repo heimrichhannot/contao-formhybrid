@@ -48,13 +48,13 @@ if (TL_MODE == 'FE') {
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['parseWidget'][] = array('HeimrichHannot\\FormHybrid\\Hooks', 'parseWidgetHook');
+$GLOBALS['TL_HOOKS']['parseWidget'][] = array('HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook');
 
 /**
  * Front end widgets
  */
 
-$GLOBALS['TL_FFL']['multiColumnWizard'] = '\\HeimrichHannot\\FormHybrid\\FormMultiColumnWizard';
+$GLOBALS['TL_FFL']['multiColumnWizard'] = 'HeimrichHannot\FormHybrid\FormMultiColumnWizard';
 
 /**
  * Notification Center Tokens

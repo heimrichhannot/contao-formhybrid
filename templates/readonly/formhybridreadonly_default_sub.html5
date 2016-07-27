@@ -1,0 +1,7 @@
+<?php if (is_array($this->fields)): ?>
+	<div id="<?= $this->ajaxId; ?>">
+		<?php foreach($this->fields as $name => $objField): ?>
+			<?= $objField->parse(); ?>
+		<?php endforeach; ?>
+	</div>
+<?php endif; ?>

@@ -982,6 +982,11 @@ class DC_Hybrid extends \DataContainer
 	{
 		$strSubTemplate = 'formhybrid_default_sub';
 
+		if($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY)
+		{
+			$strSubTemplate = 'formhybridreadonly_default_sub';
+		}
+
 		if ($this->useCustomSubTemplates) {
 			$strSubTemplate = $this->strTemplate . '_' . $ajaxId;
 		}

@@ -1,4 +1,5 @@
 <div class="form-group <?= $this->name; ?>">
 	<?= $this->label; ?>
-	<p class="form-control-static"><?= $this->value; ?></p>
+	<div class="form-control-static"><?= $this->value; ?></div>
 </div>
+<?= $this->sub; ?>

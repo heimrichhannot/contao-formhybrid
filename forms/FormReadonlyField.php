@@ -87,12 +87,12 @@ class FormReadonlyField extends \Widget
 				if ($this->fieldType == 'checkbox')
 				{
 					$value = '<ul class="download-list">' . implode('', array_map(function($val) {
-						return '<li>{{download::' . $val . '}}</li>';
+						return '<li>{{download::' . str_replace(\Environment::get('url') . '/', '', $val) . '}}</li>';
 					}, explode(', ', $value))) . '</ul>';
 					break;
 				}
 
-				$value = '{{download::' . $value . '}}';
+				$value = '{{download::' . str_replace(\Environment::get('url') . '/', '', $value) . '}}';
 			break;
 		}
 
@@ -128,6 +128,7 @@ class FormReadonlyField extends \Widget
 
 		$this->Template->label = $this->generateLabel();
 		$this->Template->value = $this->generate();
+		$this->Template->sub = $this->sub;
 
 		return $this->Template->parse();
 	}
