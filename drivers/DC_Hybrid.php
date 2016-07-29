@@ -81,7 +81,7 @@ class DC_Hybrid extends \DataContainer
 	
 	protected $arrOriginalRow = array();
 	
-	protected $isAjaxRequest = false;
+	protected $relatedAjaxRequest = false;
 
 	/**
 	 * Set true, and skip ajax form request handling.
@@ -135,7 +135,7 @@ class DC_Hybrid extends \DataContainer
 			{
 				$this->objAjax = new FormAjax(\Input::post('action'));
 				$this->objAjax->executePreActions($this);
-				$this->isAjaxRequest = true;
+				$this->relatedAjaxRequest = true;
 			}
 			catch (\Exception $e)
 			{
@@ -200,12 +200,6 @@ class DC_Hybrid extends \DataContainer
 			{
 				$objSubmission = new $strModelClass();
 			}
-		}
-		
-		if($objSubmission !== null)
-		{
-			// store id once per module only
-			FormSession::addSubmissionId(FormHelper::getFormId($this->strTable, $this->objModule->id), $objSubmission->id);
 		}
 		
 		return $objSubmission;
@@ -364,7 +358,7 @@ class DC_Hybrid extends \DataContainer
 			$this->objAjax->executePostActions($this, $strBuffer, $this->Template);
 		}
 
-		if($this->isAjaxRequest)
+		if($this->relatedAjaxRequest)
 		{
 			die($strBuffer);
 		}
@@ -683,7 +677,7 @@ class DC_Hybrid extends \DataContainer
 		$reflection = new \ReflectionClass($strClass);
 		
 		// skip ajax request independent fields like captcha
-		if(($reflection->getName() == 'Contao\FormCaptcha' || $reflection->isSubclassOf('Contao\FormCaptcha')) && $this->isSubmitted && !$this->isAjaxRequest && \Environment::get('isAjaxRequest'))
+		if(($reflection->getName() == 'Contao\FormCaptcha' || $reflection->isSubclassOf('Contao\FormCaptcha')) && $this->isSubmitted && !$this->relatedAjaxRequest && \Environment::get('isAjaxRequest'))
 		{
 			return false;
 		}
@@ -722,6 +716,12 @@ class DC_Hybrid extends \DataContainer
 		if ($this->isFilterForm)
 		{
 			$arrData['eval']['mandatory'] = false;
+		}
+		
+		// to make captcha form related, add the form id without entity id
+		if ($arrData['inputType'] == 'captcha')
+		{
+			$strName .= '_' . $this->getFormId(false);
 		}
 
 		$arrWidget = \Widget::getAttributesFromDca(
@@ -798,7 +798,7 @@ class DC_Hybrid extends \DataContainer
 		if ($objWidget instanceof \uploadable) {
 			$this->hasUpload = true;
 		}
-
+		
 		// always xss clean the user input (also if filter, non-model submission, ...) -> done another time
 		// FrontendWidget::validateGetAndPost() in
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
@@ -1441,9 +1441,9 @@ class DC_Hybrid extends \DataContainer
 	 *
 	 * @return string
 	 */
-	public function getFormId()
+	public function getFormId($blnAddEntityId = true)
 	{
-		return FormHelper::getFormId($this->strTable, $this->objModule->id, $this->intId);
+		return FormHelper::getFormId($this->strTable, $this->objModule->id, $this->intId, $blnAddEntityId);
 	}
 
 	public function getFormName()
@@ -1512,6 +1512,25 @@ class DC_Hybrid extends \DataContainer
 	{
 		$this->mode = $mode;
 	}
+	
+	/**
+	 * @return boolean
+	 */
+	public function isRelatedAjaxRequest()
+	{
+		return $this->relatedAjaxRequest;
+	}
+	
+	/**
+	 * @param boolean $relatedAjaxRequest
+	 */
+	public function setRelatedAjaxRequest($relatedAjaxRequest)
+	{
+		$this->relatedAjaxRequest = $relatedAjaxRequest;
+	}
+	
+	
+	
 
 	/**
 	 * @return array

@@ -13,14 +13,14 @@ namespace HeimrichHannot\FormHybrid;
 
 class FormHelper extends \System
 {
-	public static function getFormId($strTable, $intModule, $intId = null)
+	public static function getFormId($strTable, $intModule, $intId = null, $blnAddEntityId = true)
 	{
 		$arrValues = array();
 		
 		$arrValues[0] = $strTable;
 		$arrValues[1] = $intModule;
 		
-		if($intId !== null)
+		if($intId !== null && $blnAddEntityId)
 		{
 			$arrValues[2] = $intId;
 		}
