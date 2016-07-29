@@ -459,13 +459,12 @@ abstract class Form extends DC_Hybrid
 
 	protected function reset()
 	{
-		if ($this->async) {
-			if ($this->getMode() == FORMHYBRID_MODE_CREATE) {
-				$this->isSubmitted = false;
-				$this->intId       = null;
-				$this->initialize();
-				$this->generateFields();
-			}
+		if ($this->async && $this->isRelatedAjaxRequest())
+		{
+			$this->isSubmitted = false;
+			$this->intId       = null;
+			$this->initialize();
+			$this->generateFields();
 
 			return;
 		}
