@@ -11,126 +11,120 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use HeimrichHannot\Ajax\Response\ResponseData;
+use HeimrichHannot\Ajax\Response\ResponseError;
+use HeimrichHannot\Ajax\Response\ResponseSuccess;
+use HeimrichHannot\Request\Request;
+use HeimrichHannot\StatusMessages\StatusMessage;
 
-class FormAjax extends \Controller
+class FormAjax
 {
 	/**
-	 * Ajax action
-	 * @var string
+	 * Current DataContainer DC_Hybrid
+	 *
+	 * @var object
 	 */
-	protected $strAction;
-
+	protected $dc;
+	
 	/**
-	 * Ajax id
-	 * @var string
+	 * Datacontainer array
+	 *
+	 * @var array
 	 */
-	protected $strAjaxId;
-
+	protected $dca;
+	
 	/**
-	 * Ajax key
+	 * HTML for the response object
+	 *
 	 * @var string
 	 */
-	protected $strAjaxKey;
-
-	/**
-	 * Ajax name
-	 * @var string
-	 */
-	protected $strAjaxName;
-
-
+	protected $html;
+	
 	/**
 	 * Get the current action
-	 * @param string
+	 *
+	 * @param $dc   DC_Hybrid
+	 * @param $html string
+	 *
 	 * @throws \Exception
 	 */
-	public function __construct($strAction)
+	public function __construct(DC_Hybrid $dc, $html = '')
 	{
-		if ($strAction == '')
-		{
-			throw new \Exception('Missing Ajax action');
-		}
-
-		$this->strAction = $strAction;
-		parent::__construct();
-		$this->import('Database');
+		$this->dc   = $dc;
+		$this->dca  = $dc->getDca();
+		$this->html = $html;
+		$this->dc->setRelatedAjaxRequest(true);
 	}
-
+	
 	/**
-	 * Ajax actions before form has been generated
-	 * @param \DataContainer
+	 * Reload the form without validation (TypeSelector, Concatenated TypeSelecotor, or fields with submitOnChange, but no Subpalettes/Selector
+	 * @return ResponseSuccess|void
 	 */
-	public function executePreActions(\DataContainer &$dc)
+	public function reload()
 	{
-		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
-
-		$dca = $dc->getDca();
-
-		switch ($this->strAction)
+		// 1st call, set skipValidation and doNotSubmit, to generate the form without validation
+		if (!$this->html)
 		{
-			case 'toggleSubpalette':
-				$strField = \Input::post('field');
-				$varValue = \Input::post($strField);
-
-				if (!is_array($dca['palettes']['__selector__']) || !in_array($strField, $dca['palettes']['__selector__']))
-				{
-					$this->log('Field "' . $strField . '" is not an allowed selector field (possible SQL injection attempt)', __METHOD__, TL_ERROR);
-					header('HTTP/1.1 400 Bad Request');
-					die('Bad Request');
-				}
-
-				$arrData = $dca['fields'][$strField];
-
-				if(!Validator::isValidOption($varValue, $arrData, $dc))
-				{
-					$this->log('Field "' . $strField . '" value is not an allowed option (possible SQL injection attempt)', __METHOD__, TL_ERROR);
-					header('HTTP/1.1 400 Bad Request');
-					die('Bad Request');
-				}
-
-				if(empty(FormHelper::getFieldOptions($arrData, $dc)))
-				{
-					$varValue = (intval($varValue) ? 1 : '');
-				}
-
-				$dc->activeRecord->{$strField} = $varValue;
-
-				if (\Input::post('load'))
-				{
-					$strBuffer = $dc->edit(false, \Input::post('id'));
-					echo $strBuffer;
-				}
-
-			exit; break;
-			case 'asyncFormSubmit':
-				if (\Input::post('load'))
-				{
-					if(\Input::post('skipValidation'))
-					{
-						$dc->setSkipValidation(true);
-						$dc->setDoNotSubmit(true);
-					}
-				}
-			break;
+			$this->dc->setSkipValidation(true);
+			$this->dc->setDoNotSubmit(true);
+			return;
 		}
+		
+		// 2nd call, we return the generated form without validation
+		return $this->asyncFormSubmit();
 	}
-
+	
 	/**
-	 * Ajax actions after form has been generated
-	 * @param \DataContainer
+	 * Async form Submit
+	 * @return ResponseSuccess
 	 */
-	public function executePostActions(\DataContainer &$dc, $strBuffer, $objTemplate)
+	public function asyncFormSubmit()
 	{
-		header('Content-Type: text/html; charset=' . \Config::get('characterSet'));
-
-		switch ($this->strAction)
-		{
-			case 'asyncFormSubmit':
-				if (\Input::post('load'))
-				{
-					die($strBuffer);
-				}
-				exit; break;
+		$objResponse = new ResponseSuccess();
+		$objResponse->setResult(new ResponseData($this->html, array('id' => $this->dc->getFormId())));
+		StatusMessage::reset($this->dc->objModule->id); // reset messages after html has been submitted
+		return $objResponse;
+	}
+	
+	/**
+	 * Toggle Subpalette
+	 * @param      $id
+	 * @param      $strField
+	 * @param bool $blnLoad
+	 *
+	 * @return ResponseError|ResponseSuccess
+	 */
+	function toggleSubpalette($id, $strField, $blnLoad = false)
+	{
+		$varValue = Request::getPost($strField) ?: 0;
+		
+		if (!is_array($this->dca['palettes']['__selector__']) || !in_array($strField, $this->dca['palettes']['__selector__'])) {
+			\Controller::log('Field "' . $strField . '" is not an allowed selector field (possible SQL injection attempt)', __METHOD__, TL_ERROR);
+			
+			return new ResponseError();
 		}
+		
+		$arrData = $this->dca['fields'][$strField];
+		
+		if (!Validator::isValidOption($varValue, $arrData, $this->dc)) {
+			\Controller::log('Field "' . $strField . '" value is not an allowed option (possible SQL injection attempt)', __METHOD__, TL_ERROR);
+			
+			return new ResponseError();
+		}
+		
+		if (empty(FormHelper::getFieldOptions($arrData, $this->dc))) {
+			$varValue = (intval($varValue) ? 1 : '');
+		}
+		
+		$this->dc->activeRecord->{$strField} = $varValue;
+		
+		$objResponse = new ResponseSuccess();
+		
+		if ($blnLoad)
+		{
+			$objResponse->setResult(new ResponseData($this->dc->edit(false, $id)));
+		}
+		
+		return $objResponse;
 	}
 }

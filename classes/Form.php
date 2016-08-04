@@ -10,9 +10,9 @@ use MatthiasMullie\Minify\Exception;
 
 abstract class Form extends DC_Hybrid
 {
+	const FORMHYBRID_NAME = 'formhybrid';
+	
 	protected $arrSubmitCallbacks = array();
-
-	private $resetAfterSubmission = true;
 
 	protected $strLogFile = 'formhybrid.log';
 
@@ -150,12 +150,6 @@ abstract class Form extends DC_Hybrid
 			}
 
 			$this->afterSubmitCallback($this);
-
-			// reset form is default. disable by $this->setReset(false)
-			// Exception: filter forms should never been reset after submit
-			if ($this->getReset() && !$this->isFilterForm) {
-				$this->reset();
-			}
 		}
 	}
 
@@ -457,35 +451,6 @@ abstract class Form extends DC_Hybrid
 		}
 	}
 
-	protected function reset()
-	{
-		if ($this->async && $this->isRelatedAjaxRequest())
-		{
-			$this->isSubmitted = false;
-			$this->intId       = null;
-			$this->initialize();
-			$this->generateFields();
-
-			return;
-		}
-
-		global $objPage;
-
-		// if no jumpTo is set or jumpTo is equal to current page, reload
-		if ($this->jumpTo && $this->jumpTo != $objPage->id
-			&& ($objTargetPage = \PageModel::findByPk($this->jumpTo)) !== null
-		) {
-			// unset messages
-			if (!StatusMessage::isEmpty($this->objModule->id)) {
-				\HeimrichHannot\StatusMessages\StatusMessage::reset($this->objModule->id);
-			}
-
-			\Controller::redirect(\Controller::generateFrontendUrl($objTargetPage->row()));
-		} else {
-			\Controller::reload();
-		}
-	}
-
 	abstract protected function compile();
 
 	/**
@@ -535,26 +500,5 @@ abstract class Form extends DC_Hybrid
 	public function setSubmitCallbacks(array $callbacks)
 	{
 		$this->arrSubmitCallbacks = $callbacks;
-	}
-
-	/**
-	 * Clear inputs, set default values
-	 *
-	 * @return bool
-	 * @deprecated set $this->reset to true/fals on onsubmit_callback
-	 */
-	public function clearInputs()
-	{
-		$this->resetAfterSubmission = true;
-	}
-
-	public function setReset($varValue)
-	{
-		$this->resetAfterSubmission = (bool) $varValue;
-	}
-
-	public function getReset()
-	{
-		return $this->resetAfterSubmission;
 	}
 }

@@ -12,6 +12,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
@@ -102,6 +103,12 @@ class FormConfiguration
 					}
 				}
 
+				// async form
+				if($this->async)
+				{
+					$varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
+				}
+				
 				// add hash
 				if($this->addHashToAction)
 				{

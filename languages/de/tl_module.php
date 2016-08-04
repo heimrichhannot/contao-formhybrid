@@ -67,6 +67,8 @@ $arrLang['formHybridAddHashToAction'] = array('Hash zur Form-Action hinzufügen'
 $arrLang['formHybridAddPermanentFields'] = array('Immer auszugebende Felder hinzufügen', 'Wählen Sie diese Option, um dem Formular bestimmte Felder unter allen Umständen hinzuzufügen. Diese Felder sind in aller Regel Subpalettenfelder, die auch dann ausgegeben werden, wenn deren Selektor nicht aktiv ist. Sinnvoll etwa, wenn Felder im Kontext mehrerer Type-Selektoren vorkommen.');
 $arrLang['formHybridPermanentFields'] = array('Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.');
 
+$arrLang['formHybridResetAfterSubmission'] = array('Formular nach absenden zurücksetzen', 'Deaktivieren um nach Absenden, das Formular mit den Daten erneut zu laden. (Achtung: Nur einmaliges Absenden möglich!)');
+$arrLang['formHybridJumpToPreserveParams']			= array('Parameter beibehalten', 'Wählen Sie diese Option, wenn die Weiterleitungsseite (nach dem Speichern) wieder ein Frontendedit-Leser-Modul enthält. Dadurch werden die aktuelle Action sowie die ID beibehalten.');
 /**
  * References
  */

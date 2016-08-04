@@ -18,7 +18,7 @@ define('FORMHYBRID_ACTION_SCOPE', 'formhybrid');
 define('FORMHYBRID_PALETTE_DEFAULT', '
 {formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
 {formhybrid_template_legend},formHybridTemplate,formHybridCustomSubTemplates,formHybridStartTemplate,formHybridStopTemplate,formHybridCustomSubmit;
-{formhybrid_action_legend},formHybridAction,formHybridAddHashToAction,formHybridAsync,formHybridAddFieldDependentRedirect;
+{formhybrid_action_legend},formHybridResetAfterSubmission,formHybridAction,formHybridAddHashToAction,formHybridAsync,formHybridAddFieldDependentRedirect;
 {formhybrid_message_legend},formHybridSuccessMessage,formHybridSkipScrollingToSuccessMessage;
 {formhybrid_notification_legend},formHybridSendSubmissionAsNotification,formHybridSendSubmissionViaEmail,formHybridSendConfirmationAsNotification,formHybridSendConfirmationViaEmail');
 
@@ -80,3 +80,28 @@ if (in_array('notification_center_plus', \ModuleLoader::getActive())) {
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_value_*';
 	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_plain_*';
 }
+
+/**
+ * Ajax Actions
+ */
+$GLOBALS['AJAX'][\HeimrichHannot\FormHybrid\Form::FORMHYBRID_NAME] = array
+(
+	'actions' => array
+	(
+		'toggleSubpalette' => array
+		(
+			'arguments' => array('subId', 'subField', 'subLoad'),
+			'optional'   => array('subLoad'),
+		),
+		'asyncFormSubmit'  => array
+		(
+			'arguments' => array(),
+			'optional'   => array(),
+		),
+		'reload'  => array
+		(
+			'arguments' => array(),
+			'optional'   => array(),
+		),
+	),
+);

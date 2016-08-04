@@ -25,11 +25,10 @@
         registerEvents: function () {
             this.asyncSubmit();
         },
-        asyncSubmit: function (form)
-        {
+        asyncSubmit: function (form) {
             if (typeof form !== 'undefined') {
                 var $form = $(form);
-                if($form.length > 0) {
+                if ($form.length > 0) {
                     FormhybridAjaxRequest._asyncFormSubmit($form);
                 }
                 return false;
@@ -41,115 +40,88 @@
                 FormhybridAjaxRequest._asyncFormSubmit($form);
             });
         },
-        _asyncFormSubmit: function ($form, data) {
-            $formData = $form.serializeArray();
+        _asyncFormSubmit: function ($form, url, data) {
+            var $formData = $form.serializeArray();
 
             $formData.push({
-                    name: 'action',
-                    value: 'asyncFormSubmit'
-                },
-                {
-                    name: 'load',
-                    value: true
-                },
-				{
-					name:  'FORM_SUBMIT',
-					value: $form.attr('id')
-				},
-                {
-                    name: 'scope',
-                    value: Formhybrid.scope,
-                }
-			);
+                name: 'FORM_SUBMIT',
+                value: $form.attr('id')
+            });
 
             if (typeof data != "undefined") {
                 $formData.push(data);
             }
 
             $.ajax({
-                url: $form.attr('action'),
+                url: url ? url : $form.attr('action'),
+                dataType: 'json',
                 data: $formData,
                 method: $form.attr('method'),
-                success: function (data) {
-                    var replace;
+                error: function(jqXHR, textStatus, errorThrown){
+                    if (jqXHR.status == 301) {
+                        location.href = jqXHR.responseJSON.result.data.url;
+                        return;
+                    }
+                },
+                success: function (response, textStatus, jqXHR) {
 
-					try {
-						dataJson = $.parseJSON(data);
-
-						if (dataJson.type == 'redirect')
-						{
-							location.href = dataJson.url;
-							return;
-						}
-					} catch(e) {
-						// fail silently
-					}
-
-					data = '<div>' + data + '</div>';
-
-                    if ($form.data('replace')) {
-                        replace = $(data).find($form.data('replace'));
-                        if (replace !== undefined) {
-                            $($form.data('replace')).html(replace);
-                        }
-
-                    } else {
-
-                        // html page returned
-                        replace = $(data).find('#' + $form.attr('id'));
-                        if (replace.length < 1) {
-                            $form.html(data); // module handle ajax request, replace inner html
-                            replace = data;
-                        } else {
-                            $form.replaceWith(replace);
-                        }
+                    if (typeof response == 'undefined') {
+                        return;
                     }
 
-                    // scroll to first alert message or first error field
-                    var alert = replace.find('.alert:first, .error:first');
+                    if (response.result.html && response.result.data.id) {
 
-                    if (alert.length > 0 && !$('.formhybrid:first').hasClass('noscroll')) {
-                        var alertOffset = alert.offset();
+                        var container = '<div>' + response.result.html + '</div>',
+                            $replace = $(container).find('#' + response.result.data.id);
 
-                        $('html,body').animate({
-                            scrollTop: parseInt(alertOffset.top) - 70 + 'px'
-                        }, 500);
+                        if (typeof $replace !== 'undefined') {
+                            $form.replaceWith($replace);
+                        }
+
+                        // scroll to first alert message or first error field
+                        var alert = $replace.find('#' + $form.data('id')).find('.alert:first, .error:first');
+
+                        if (alert.length > 0 && !$(response.result.html).hasClass('noscroll')) {
+                            var alertOffset = alert.offset();
+
+                            $('html,body').animate({
+                                scrollTop: parseInt(alertOffset.top) - 70 + 'px'
+                            }, 500);
+                        }
+
+                        if ($replace.data('close-modal-on-submit') && $replace.data('has-errors') != 1) {
+                            $replace.closest('.modal').find('.close').trigger('click');
+                        }
                     }
-
-					if ($(data).find('form').data('close-modal-on-submit') && $form.data('has-errors') != 1)
-					{
-						replace.closest('.modal').find('.close').trigger('click');
-					}
                 }
             });
         },
-        toggleSubpalette: function (el, id, field) {
+        toggleSubpalette: function (el, id, field, url) {
             el.blur();
             var $el = $(el),
                 $item = $('#' + id),
                 $form = $el.closest('form'),
-                checked = true,
-                data = {
-                    action: 'toggleSubpalette',
-                    scope: Formhybrid.scope,
-                    id: id,
-                    field: field,
-                    REQUEST_TOKEN: Formhybrid.request_token,
-                    FORM_SUBMIT: $form.attr('id')
-                };
+                checked = true;
+
+            var $formData = $form.serializeArray();
+
+            $formData.push(
+                {name: 'FORM_SUBMIT', value: $form.attr('id')},
+                {name: 'subId', value: id},
+                {name: 'subField',value: field});
 
             if ($el.is(':checkbox') || $el.is(':radio')) {
                 checked = $el.is(':checked');
             }
 
             if (checked === false) {
-                data[field] = 0;
 
                 $.ajax({
                     type: 'post',
-                    url: location.href,
-                    data: data,
-                    success: function () {
+                    url: url,
+                    dataType: 'json',
+                    data: $formData,
+                    success: function (response) {
                         $item.remove();
                     }
                 });
@@ -157,33 +129,30 @@
                 return;
             }
 
-            data[field] = $el.val();
-            data['load'] = 1;
+            $formData.push(
+                {name: 'subLoad', value: 1}
+            );
 
             $.ajax({
                 type: 'post',
-                url: location.href,
-                dataType: 'html',
-                data: data,
-                success: function (data, textStatus, jqXHR) {
+                url: url,
+                dataType: 'json',
+                data: $formData,
+                success: function (response, textStatus, jqXHR) {
                     $item.remove();
                     // bootstrapped forms
                     if ($el.closest('form').find('.' + field).length > 0) {
                         // always try to attach subpalette after wrapper element from parent widget
-                        $el.closest('form').find('.' + field).eq(0).after(data);
+                        $el.closest('form').find('.' + field).eq(0).after(response.result.html);
                     } else {
-                        $el.closest('#ctrl_' + field).after(data);
+                        $el.closest('#ctrl_' + field).after(response.result.html);
                     }
                 }
             });
         },
-        reload: function (id) {
+        reload: function (id, url) {
             var $form = $('#' + id);
-
-            this._asyncFormSubmit($form, {
-                name: 'skipValidation',
-                value: true
-            });
+            this._asyncFormSubmit($form, url);
         },
     };
 
@@ -212,6 +181,6 @@
 
     $(document).ajaxComplete(function (event, jqXHR, ajaxOptions) {
         FormhybridPlugins.init(FormHybridHelper.getParameterByName('action', ajaxOptions.data));
-	});
+    });
 
 })(jQuery);

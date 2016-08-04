@@ -37,21 +37,18 @@ class FormSession
 	 * Delete submission id from user session
 	 *
 	 * @param $formId The form identifier
-	 * @param $intId  The submission id
 	 *
 	 * @return bool True, if submission id was found and deleted
 	 */
-	public static function deleteSubmissionId($formId, $intId)
+	public static function freeSubmissionId($formId)
 	{
 		if (!isset($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY][$formId])) {
 			return false;
 		}
 		
-		if (!is_array($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY][$formId])) {
-			return false;
-		}
+		unset($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY][$formId]);
 		
-		return Arrays::removeValue($intId, $_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY][$formId]);
+		return true;
 	}
 	
 	/**
