@@ -394,27 +394,28 @@ class DC_Hybrid extends \DataContainer
 					$arrFields = array_diff($arrFields, $arrActiveSubPaletteFields);
 				}
 			}
-		}
-		
-		// check for active palette from typeselector
-		foreach ($arrSelectors as $strSelector) {
-			$varValue   = $this->getFieldValue($strSelector);
-			$strPalette = $this->dca['palettes'][$varValue];
-			$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true); // TODO options_callback
 			
-			if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions)) {
-				// no messages
-				$this->blnSilentMode                                                 = $this->isSkipValidation();
-				$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
+			// check for active palette from typeselector
+			foreach ($arrSelectors as $strSelector) {
+				$varValue   = $this->getFieldValue($strSelector);
+				$strPalette = $this->dca['palettes'][$varValue];
+				$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true); // TODO options_callback
+			
+				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions)) {
+					// no messages
+					$this->blnSilentMode                                                 = $this->isSkipValidation();
+					$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
 				
-				// remove fields not existing in the current palette
-				$arrFields = array_intersect($arrFields, FormHelper::getPaletteFields($this->strTable, $strPalette));
+					// remove fields not existing in the current palette
+					$arrFields = array_intersect($arrFields, FormHelper::getPaletteFields($this->strTable, $strPalette));
 				
-				// only one palette can be active at a time
-				$this->activePalette = $varValue;
-				break;
+					// only one palette can be active at a time
+					$this->activePalette = $varValue;
+					break;
+				}
 			}
 		}
+		
 		
 		// add palette fields
 		foreach ($arrFields as $strName) {
