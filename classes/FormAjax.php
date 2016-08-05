@@ -116,6 +116,8 @@ class FormAjax
 			$varValue = (intval($varValue) ? 1 : '');
 		}
 		
+		$this->dc->setSkipValidation(true); // do not validate fields
+		$this->dc->setDoNotSubmit(true);
 		$this->dc->activeRecord->{$strField} = $varValue;
 		
 		$objResponse = new ResponseSuccess();
