@@ -92,6 +92,11 @@ class DC_Hybrid extends \DataContainer
 	
 	private $resetAfterSubmission = true;
 	
+	protected static $arrPermanentFieldClasses = array
+	(
+		'Contao\FormCaptcha'
+	);
+	
 	/**
 	 * Set true, and skip ajax form request handling.
 	 * Might be helpful if you want inject Form within your own module and handle ajax by own methods.
@@ -134,6 +139,8 @@ class DC_Hybrid extends \DataContainer
 		$this->objModule = $this->objConfig->getModule();
 		$this->intId     = $this->intId ?: $intId;
 		$this->loadDC();
+		
+		$this->setPermanentFields();
 		
 		$this->initialize();
 		
@@ -362,36 +369,52 @@ class DC_Hybrid extends \DataContainer
 			$toggleSubpalette = str_replace('sub_', '', $ajaxId);
 			
 			foreach ($arrSelectors as $strName) {
-				list($blnActive, $strSubPalette, $arrFields, $arrActiveSubPaletteFields) = $this->retrieveSubpaletteWithState($strName, $arrFields);
+				list($blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields) = $this->retrieveSubpaletteWithState($strName, $arrFields);
 				
 				if (!isset($this->dca['subpalettes'][$strSubPalette])) {
 					continue;
 				}
 				
-				// if subpalette is requested, set state to active, clear parent fields and break
-				if ($toggleSubpalette == $strName) {
-					$blnAjax      = true;
-					$arrSubFields = array($strName => $arrActiveSubPaletteFields);
-					break; // this function can only return one subpalette at once
-				}
-				
 				// active by default
-				if ($blnActive) {
+				if ($blnActive)
+				{
 					// selector field is visible
-					if (in_array($strName, $this->arrEditable)) {
-						$arrFields              = array_diff($arrFields, $arrActiveSubPaletteFields);
-						$arrSubFields[$strName] = $arrActiveSubPaletteFields;
-					} // for example selector is triggered by default value
-					else {
+					if (in_array($strName, $this->arrEditable))
+					{
+						if(is_array($arrSubPaletteFields) && is_array($arrFields))
+						{
+							$arrFields = array_diff($arrFields, $arrSubPaletteFields);
+						}
+						
+						$arrSubFields[$strName] = $arrSubPaletteFields;
+					}
+					// for example selector is triggered by default value
+					else
+					{
 						// do nothing, fields should remain in $arrFields
 					}
 				} // inactive
-				else {
-					if ($this->addPermanentFields) {
-						$arrActiveSubPaletteFields = array_diff($arrActiveSubPaletteFields, $this->arrPermanentFields);
+				else
+				{
+					// remove permanent subpalette fields from $arrSubPaletteFields
+					if (is_array($arrSubPaletteFields) && is_array($this->arrPermanentFields))
+					{
+						$arrSubPaletteFields = array_diff($arrSubPaletteFields, $this->arrPermanentFields);
 					}
 					
-					$arrFields = array_diff($arrFields, $arrActiveSubPaletteFields);
+					// subpalette fields should not remain in arrFields, they belong to parent field
+					if(is_array($arrSubPaletteFields) && is_array($arrFields))
+					{
+						$arrFields = array_diff($arrFields, $arrSubPaletteFields);
+					}
+				}
+				
+				// if subpalette is requested, set state to active, clear parent fields and break
+				if ($toggleSubpalette == $strName) {
+					$blnAjax      = true;
+					$arrFields = array($strName);
+					$arrSubFields = array($strName => $arrSubPaletteFields);
+					break; // this function can only return one subpalette at once
 				}
 			}
 			
@@ -400,15 +423,15 @@ class DC_Hybrid extends \DataContainer
 				$varValue   = $this->getFieldValue($strSelector);
 				$strPalette = $this->dca['palettes'][$varValue];
 				$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true); // TODO options_callback
-			
+				
 				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions)) {
 					// no messages
 					$this->blnSilentMode                                                 = $this->isSkipValidation();
 					$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
-				
+					
 					// remove fields not existing in the current palette
-					$arrFields = array_intersect($arrFields, FormHelper::getPaletteFields($this->strTable, $strPalette));
-				
+					$arrFields = array_intersect($arrFields, array_merge(FormHelper::getPaletteFields($this->strTable, $strPalette), $this->arrPermanentFields));
+					
 					// only one palette can be active at a time
 					$this->activePalette = $varValue;
 					break;
@@ -489,8 +512,8 @@ class DC_Hybrid extends \DataContainer
 	/**
 	 * Retrieve the subpalette by the field selector
 	 *
-	 * @param   String $strSelector
-	 * @param    Array $arrFields
+	 * @param   string $strSelector
+	 * @param   array $arrFields
 	 *
 	 * @return array Return the state, subpalette name, the filtered fields array and autosubmit state
 	 */
@@ -499,7 +522,7 @@ class DC_Hybrid extends \DataContainer
 		$blnActive                 = null;
 		$blnAutoSubmit             = false;
 		$strSubpalette             = null;
-		$arrActiveSubPaletteFields = array();
+		$arrSubPaletteFields = array();
 		
 		$varValue = $this->getFieldValue($strSelector);
 		
@@ -514,9 +537,7 @@ class DC_Hybrid extends \DataContainer
 				$blnActive     = ($varValue == true);
 				$strSubpalette = $strSelector;
 				
-				if ($blnActive) {
-					$arrActiveSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
-				}
+				$arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
 			}
 		} // radio: source in tl_news (source_default, source_external)
 		else {
@@ -526,48 +547,17 @@ class DC_Hybrid extends \DataContainer
 				$blnActive     = true;
 				$strSubpalette = $varValue;
 			} // concatenated type selector (e.g. source -> source_external)
-			elseif (is_array($this->dca['subpalettes'])) {
+			elseif (is_array($this->dca['subpalettes']))
+			{
 				if (isset($this->dca['subpalettes'][$strSelector . '_' . $varValue])) {
-					$blnActive                 = true;
-					$strSubpalette             = $strSelector . '_' . $varValue;
-					$arrActiveSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
-				}
-				
-				// filter out non selected type subpalette fields
-				foreach (array_keys($this->dca['subpalettes']) as $strKey) {
-					// skip current active type selector subpalette
-					if ($strKey == $strSelector . '_' . $varValue) {
-						continue;
-					}
-					
-					// remove fields from same selector, but not active
-					if (\HeimrichHannot\Haste\Util\StringUtil::startsWith($strKey, $strSelector . '_')) {
-						// if no concatenated type selector has been selected, yet -> return the first in order
-						// to create FormhybridAjaxRequest.toggleSubpalette calls in the following function
-						if (!$strSubpalette) {
-							$strSubpalette = $strKey;
-						}
-						
-						$arrSiblingSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strKey]);
-						
-						if (is_array($arrSiblingSubPaletteFields)) {
-							foreach ($arrSiblingSubPaletteFields as $strField) {
-								// leave active subpalette fields in arrFields
-								if (in_array($strField, $arrActiveSubPaletteFields)) {
-									continue;
-								}
-								
-								if (!$this->addPermanentFields || !in_array($strField, $this->arrPermanentFields)) {
-									$arrFields = array_diff($arrFields, array($strField));
-								}
-							}
-						}
-					}
+					$blnActive           = true;
+					$strSubpalette       = $strSelector . '_' . $varValue;
+					$arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
 				}
 			}
 		}
 		
-		return array($blnActive, $strSubpalette, $arrFields, $arrActiveSubPaletteFields, $blnAutoSubmit);
+		return array($blnActive, $strSubpalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit);
 	}
 	
 	
@@ -614,17 +604,6 @@ class DC_Hybrid extends \DataContainer
 		
 		// Continue if the class is not defined
 		if (!class_exists($strClass)) {
-			return false;
-		}
-		
-		$reflection = new \ReflectionClass($strClass);
-		
-		// skip ajax request independent fields like captcha
-		if (($reflection->getName() == 'Contao\FormCaptcha' || $reflection->isSubclassOf('Contao\FormCaptcha')) && $this->isSubmitted && !$this->relatedAjaxRequest
-			&& \Environment::get(
-				'isAjaxRequest'
-			)
-		) {
 			return false;
 		}
 		
@@ -685,7 +664,7 @@ class DC_Hybrid extends \DataContainer
 		
 		$this->updateWidget($arrWidget, $arrData);
 		
-		list($blnActive, $strSubPalette, $arrFields, $arrActiveSubPaletteFields, $blnAutoSubmit) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
+		list($blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 		
 		// support submitOnChange as form submission
 		if ($arrData['eval']['submitOnChange'] && isset($this->dca['subpalettes'][$strSubPalette])) {
@@ -1344,13 +1323,13 @@ class DC_Hybrid extends \DataContainer
 			// on reset, reset submission id within session
 			FormSession::freeSubmissionId($this->getFormId(false));
 			
-			$this->isSubmitted       = false;
-			$this->intId             = null;
-			$this->arrFields         = array();
-			$this->arrSubFields      = array();
-			$this->arrSubmission     = array();
-			$this->arrHiddenFields   = array();
-			$this->arrInvalidFields  = array();
+			$this->isSubmitted      = false;
+			$this->intId            = null;
+			$this->arrFields        = array();
+			$this->arrSubFields     = array();
+			$this->arrSubmission    = array();
+			$this->arrHiddenFields  = array();
+			$this->arrInvalidFields = array();
 			$this->setSkipValidation(false);
 			$this->setDoNotSubmit(false);
 			$this->initialize();
@@ -1408,6 +1387,33 @@ class DC_Hybrid extends \DataContainer
 		}
 		
 		\Controller::redirect($strUrl);
+	}
+	
+	protected function setPermanentFields()
+	{
+		// cleanup arrPermanentFields if required
+		if (!$this->addPermanentFields || !is_array($this->arrPermanentFields))
+		{
+			$this->arrPermanentFields = array();
+		}
+		
+		foreach ($this->arrEditable as $strName)
+		{
+			$arrData = $this->dca['fields'][$strName];
+			$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+			
+			$reflection = new \ReflectionClass($strClass);
+			
+			foreach (static::$arrPermanentFieldClasses as $strIndependendClass)
+			{
+				if(!($reflection->getName() == $strIndependendClass || $reflection->isSubclassOf($strIndependendClass)))
+				{
+					continue 2;
+				}
+				
+				$this->arrPermanentFields = array_merge($this->arrPermanentFields, array($strName));
+			}
+		}
 	}
 	
 	/**

@@ -20,7 +20,7 @@ class FormHelper extends \System
 		$arrValues[0] = $strTable;
 		$arrValues[1] = $intModule;
 		
-		if($intId !== null && $blnAddEntityId)
+		if($intId > 0 && $blnAddEntityId)
 		{
 			$arrValues[2] = $intId;
 		}
