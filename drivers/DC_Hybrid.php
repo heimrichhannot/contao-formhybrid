@@ -173,8 +173,12 @@ class DC_Hybrid extends \DataContainer
 				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
 			}
 		} // we require a module context for entity creation
-		else {
-			if ($this->objModule !== null) {
+		else
+		{
+			// do nothing, if ajax request but not related to formhybrid
+			// otherwise a new submission will be generated and validation will fail
+			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+			{
 				$this->objActiveRecord = $this->createSubmission($strModelClass);
 				$this->setDefaults();
 				$this->setSubmission();
