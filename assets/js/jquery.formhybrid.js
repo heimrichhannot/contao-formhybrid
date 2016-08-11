@@ -52,6 +52,19 @@
                 $formData.push(data);
             }
 
+            function closeModal(response, $form){
+
+                if (typeof response.result.data == 'undefined') {
+                    return;
+                }
+
+                if(!response.result.data.closeModal){
+                    return;
+                }
+
+                $form.closest('.modal').modal('hide');
+            }
+
             $.ajax({
                 url: url ? url : $form.attr('action'),
                 dataType: 'json',
@@ -60,6 +73,7 @@
                 error: function(jqXHR, textStatus, errorThrown){
                     if (jqXHR.status == 301) {
                         location.href = jqXHR.responseJSON.result.data.url;
+                        closeModal(jqXHR.responseJSON, $form);
                         return;
                     }
                 },
@@ -89,9 +103,7 @@
                             }, 500);
                         }
 
-                        if ($replace.data('close-modal-on-submit') && $replace.data('has-errors') != 1) {
-                            $replace.closest('.modal').find('.close').trigger('click');
-                        }
+                        closeModal(response, $form);
                     }
                 }
             });

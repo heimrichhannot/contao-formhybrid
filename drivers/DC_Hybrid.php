@@ -1386,7 +1386,7 @@ class DC_Hybrid extends \DataContainer
 			if ($blnRedirect) {
 				$objResponse = new ResponseRedirect();
 				$objResponse->setUrl($strUrl);
-				die(json_encode($objResponse));
+				$objResponse->output();
 			}
 			
 			return;
