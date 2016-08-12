@@ -322,7 +322,10 @@ class DC_Hybrid extends \DataContainer
 			$this->runOnValidationError($this->arrInvalidFields);
 		}
 
-		if ($this->isSubmitted && !$this->isDoNotSubmit()) {
+		$blnSubmittedBeforeReset = false;
+
+		if ($this->isSubmitted && !$this->isDoNotSubmit())
+		{
 			// run field callbacks, must be before save(), same as contao
 			$this->runCallbacks();
 
@@ -336,11 +339,11 @@ class DC_Hybrid extends \DataContainer
 
 			// reset form is default. disable by $this->setReset(false)
 			// Exception: filter forms should never been reset after submit
-			if ($this->getReset() && !$this->isFilterForm) {
+			if ($this->getReset() && !$this->isFilterForm)
+			{
 				$this->reset();
+				$blnSubmittedBeforeReset = true;
 			}
-
-
 		}
 
 		$this->generateStart();
@@ -354,7 +357,7 @@ class DC_Hybrid extends \DataContainer
 
 		$strBuffer = \Controller::replaceInsertTags($this->Template->parse(), false);
 
-		Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'asyncFormSubmit', new FormAjax($this, $strBuffer));
+		Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'asyncFormSubmit', new FormAjax($this, $strBuffer, $blnSubmittedBeforeReset));
 		Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'reload', new FormAjax($this, $strBuffer));
 
 		return $strBuffer;

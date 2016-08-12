@@ -39,6 +39,12 @@ class FormAjax
 	 * @var string
 	 */
 	protected $html;
+
+	/**
+	 * Overwrite isSubmitted
+	 * @var boolean
+	 */
+	protected $forceIsSubmitted;
 	
 	/**
 	 * Get the current action
@@ -48,11 +54,12 @@ class FormAjax
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(DC_Hybrid $dc, $html = '')
+	public function __construct(DC_Hybrid $dc, $html = '', $forceIsSubmitted = false)
 	{
 		$this->dc   = $dc;
 		$this->dca  = $dc->getDca();
 		$this->html = $html;
+		$this->forceIsSubmitted = $forceIsSubmitted;
 		$this->dc->setRelatedAjaxRequest(true);
 	}
 	
@@ -85,7 +92,7 @@ class FormAjax
 	 */
 	public function asyncFormSubmit()
 	{
-		if(!$this->dc->isSubmitted())
+		if(!$this->dc->isSubmitted() && !$this->forceIsSubmitted)
 		{
 			return;
 		}
