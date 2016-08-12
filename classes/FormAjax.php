@@ -62,6 +62,11 @@ class FormAjax
 	 */
 	public function reload()
 	{
+		if(!$this->dc->isSubmitted())
+		{
+			return;
+		}
+
 		// 1st call, set skipValidation and doNotSubmit, to generate the form without validation
 		if (!$this->html)
 		{
@@ -80,6 +85,11 @@ class FormAjax
 	 */
 	public function asyncFormSubmit()
 	{
+		if(!$this->dc->isSubmitted())
+		{
+			return;
+		}
+
 		$objResponse = new ResponseSuccess();
 		$objResponse->setResult(new ResponseData($this->html, array('id' => $this->dc->getFormId())));
 		StatusMessage::reset($this->dc->objModule->id); // reset messages after html has been submitted
@@ -96,6 +106,11 @@ class FormAjax
 	 */
 	function toggleSubpalette($id, $strField, $blnLoad = false)
 	{
+		if(!$this->dc->isSubmitted())
+		{
+			return;
+		}
+
 		$varValue = Request::getPost($strField) ?: 0;
 		
 		if (!is_array($this->dca['palettes']['__selector__']) || !in_array($strField, $this->dca['palettes']['__selector__'])) {
