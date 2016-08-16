@@ -106,7 +106,7 @@ class FormConfiguration
 				// async form
 				if($this->async)
 				{
-					$varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit', array(), false, Url::getUrl(true, true, false));
+					$varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
 				}
 				
 				// add hash
