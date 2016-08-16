@@ -139,17 +139,42 @@ class DC_Hybrid extends \DataContainer
 		$this->import('Database');
 		$this->objModule = $this->objConfig->getModule();
 		$this->intId     = $this->intId ?: $intId;
+
+		$blnCreated = $this->create();
+
 		$this->loadDC();
 
 		$this->setPermanentFields();
 
-		$this->initialize();
+		$this->initialize($blnCreated);
 
 		Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'toggleSubpalette', new FormAjax($this));
 		Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'reload', new FormAjax($this));
 	}
 
-	protected function initialize()
+	protected function create()
+	{
+		if (!$this->isFilterForm) {
+			$strModelClass = \Model::getClassFromTable($this->strTable);
+		}
+
+		if (!$this->intId || !is_numeric($this->intId))
+		{
+			// do nothing, if ajax request but not related to formhybrid
+			// otherwise a new submission will be generated and validation will fail
+			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+			{
+				$this->objActiveRecord = $this->createSubmission($strModelClass);
+				$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
+				$this->save(); // initially try to save record, as ajax requests for example require entity model
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected function initialize($blnCreated=false)
 	{
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
@@ -157,7 +182,8 @@ class DC_Hybrid extends \DataContainer
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 
-		if ($this->intId && is_numeric($this->intId)) {
+		if (!$blnCreated)
+		{
 			if (($objModel = $strModelClass::findByPk($this->intId)) !== null) {
 				$this->objActiveRecord = $objModel;
 				$this->setMode(FORMHYBRID_MODE_EDIT);
@@ -179,8 +205,7 @@ class DC_Hybrid extends \DataContainer
 			// otherwise a new submission will be generated and validation will fail
 			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
 			{
-				$this->objActiveRecord = $this->createSubmission($strModelClass);
-				$this->setDefaults();
+				$this->setDefaults($this->dca);
 				$this->setSubmission();
 				$this->save(); // initially try to save record, as ajax requests for example require entity model
 			}
@@ -1088,13 +1113,14 @@ class DC_Hybrid extends \DataContainer
 
 	/**
 	 * Set Model defaults from dca field
+	 * @param array $arrDca The DCA Array
 	 */
-	protected function setDefaults()
+	protected function setDefaults($arrDca = array())
 	{
 		if (\Database::getInstance()->tableExists($this->strTable)) {
 			$arrFields = \Database::getInstance()->listFields($this->strTable);
 		} else {
-			$arrFields = $this->dca['fields'];
+			$arrFields = $arrDca;
 		}
 
 		foreach ($arrFields as $strName => $arrField) {
@@ -1105,7 +1131,7 @@ class DC_Hybrid extends \DataContainer
 			}
 
 			// set from default field value
-			if (($varDefault = $this->dca['fields'][$strName]['default']) !== null) {
+			if (($varDefault = $arrDca['fields'][$strName]['default']) !== null) {
 				$this->arrDefaults[$strName] = $varDefault;
 			}
 
@@ -1117,12 +1143,12 @@ class DC_Hybrid extends \DataContainer
 		// add more fields, for example from other palettes or fields that have no palette or no sql
 		if (is_array($this->arrDefaultValues)) {
 			foreach ($this->arrDefaultValues as $strField => $varDefault) {
-				$arrData = $this->dca['fields'][$strField];
+				$arrData = $arrDca['fields'][$strField];
 
 				if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
 
 					if (strlen($varDefault['label']) > 0) {
-						$this->dca['fields'][$strField]['label'][0] = $varDefault['label'];
+						$arrDca['fields'][$strField]['label'][0] = $varDefault['label'];
 					}
 
 					switch ($arrData['inputType']) {
@@ -1132,7 +1158,7 @@ class DC_Hybrid extends \DataContainer
 							}
 
 							if ($varDefault['value'] != '') {
-								$this->dca['config']['onsubmit_callback'][] = array('HeimrichHannot\FormHybrid\TagsHelper', 'saveTagsFromDefaults');
+								$arrDca['config']['onsubmit_callback'][] = array('HeimrichHannot\FormHybrid\TagsHelper', 'saveTagsFromDefaults');
 							}
 
 							break;
