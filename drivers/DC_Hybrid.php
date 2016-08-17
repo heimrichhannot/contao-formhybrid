@@ -176,9 +176,12 @@ class DC_Hybrid extends \DataContainer
 				if ($this->intId && is_numeric($this->intId)) {
 					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
 				} else {
-					$this->invalid = true;
-					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
-					
+					if (!$this->isFilterForm)
+					{
+						$this->invalid = true;
+						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
+					}
+
 					return false;
 				}
 				
@@ -220,7 +223,7 @@ class DC_Hybrid extends \DataContainer
 					$this->setSubmission();
 					$this->save(); // initially try to save record, as ajax requests for example require entity model
 				}
-				else
+				elseif (!$this->isFilterForm)
 				{
 					$this->invalid = true;
 					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
