@@ -164,25 +164,28 @@ class DC_Hybrid extends \DataContainer
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 		
-		if (!$this->intId || !is_numeric($this->intId)) {
-			// do nothing, if ajax request but not related to formhybrid
-			// otherwise a new submission will be generated and validation will fail
-			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) {
-				$this->objActiveRecord = $this->createSubmission($strModelClass);
-				$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
-				$this->save(); // initially try to save record, as ajax requests for example require entity model
-				
-				// register form id in session if we got a new one from save()
-				if ($this->intId && is_numeric($this->intId)) {
-					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
-				} else {
-					$this->invalid = true;
-					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
+		if(class_exists($strModelClass))
+		{
+			if (!$this->intId || !is_numeric($this->intId)) {
+				// do nothing, if ajax request but not related to formhybrid
+				// otherwise a new submission will be generated and validation will fail
+				if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) {
+					$this->objActiveRecord = $this->createSubmission($strModelClass);
+					$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
+					$this->save(); // initially try to save record, as ajax requests for example require entity model
 					
-					return false;
+					// register form id in session if we got a new one from save()
+					if ($this->intId && is_numeric($this->intId)) {
+						FormSession::addSubmissionId($this->getFormId(false), $this->getId());
+					} else {
+						$this->invalid = true;
+						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
+						
+						return false;
+					}
+					
+					return true;
 				}
-				
-				return true;
 			}
 		}
 		
@@ -197,38 +200,40 @@ class DC_Hybrid extends \DataContainer
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 		
-		if (!$blnCreated && ($objModel = $strModelClass::findByPk($this->intId)) !== null) {
-			$this->objActiveRecord = $objModel;
-			$this->setMode(FORMHYBRID_MODE_EDIT);
-			
-			if ($this->saveToBlob) {
-				$this->loadFromBlob(deserialize($objModel->formHybridBlob, true));
-			}
-			
-			// redirect on specific field value
-			static::doFieldDependentRedirect($this, $this->objActiveRecord);
-		} // we require a module context for entity creation
-		else if($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+		if(class_exists($strModelClass))
 		{
-			
-			// do nothing, if ajax request but not related to formhybrid
-			// otherwise a new submission will be generated and validation will fail
-			if ($this->objActiveRecord instanceof \Contao\Model) {
-				$this->setDefaults($this->dca);
-				$this->setSubmission();
-				$this->save(); // initially try to save record, as ajax requests for example require entity model
-			}
-			else
+			if (!$blnCreated && ($objModel = $strModelClass::findByPk($this->intId)) !== null) {
+				$this->objActiveRecord = $objModel;
+				$this->setMode(FORMHYBRID_MODE_EDIT);
+				
+				if ($this->saveToBlob) {
+					$this->loadFromBlob(deserialize($objModel->formHybridBlob, true));
+				}
+				
+				// redirect on specific field value
+				static::doFieldDependentRedirect($this, $this->objActiveRecord);
+			} // we require a module context for entity creation
+			else if($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
 			{
-				$this->invalid = true;
-				StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
+				
+				// do nothing, if ajax request but not related to formhybrid
+				// otherwise a new submission will be generated and validation will fail
+				if ($this->objActiveRecord instanceof \Contao\Model) {
+					$this->setDefaults($this->dca);
+					$this->setSubmission();
+					$this->save(); // initially try to save record, as ajax requests for example require entity model
+				}
+				else
+				{
+					$this->invalid = true;
+					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
+				}
 			}
-		}
-		
-		
-		if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY) {
-			$this->strTemplate = $this->readonlyTemplate;
-			$this->setDoNotSubmit(true);
+			
+			if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY) {
+				$this->strTemplate = $this->readonlyTemplate;
+				$this->setDoNotSubmit(true);
+			}
 		}
 	}
 	
