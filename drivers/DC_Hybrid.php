@@ -229,11 +229,11 @@ class DC_Hybrid extends \DataContainer
 					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
 				}
 			}
-			
-			if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY) {
-				$this->strTemplate = $this->readonlyTemplate;
-				$this->setDoNotSubmit(true);
-			}
+		}
+		
+		if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY) {
+			$this->strTemplate = $this->readonlyTemplate;
+			$this->setDoNotSubmit(true);
 		}
 	}
 	
