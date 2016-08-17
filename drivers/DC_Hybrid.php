@@ -164,28 +164,25 @@ class DC_Hybrid extends \DataContainer
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
 		
-		if(class_exists($strModelClass))
-		{
-			if (!$this->intId || !is_numeric($this->intId)) {
-				// do nothing, if ajax request but not related to formhybrid
-				// otherwise a new submission will be generated and validation will fail
-				if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) {
-					$this->objActiveRecord = $this->createSubmission($strModelClass);
-					$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
-					$this->save(); // initially try to save record, as ajax requests for example require entity model
+		if (!$this->intId || !is_numeric($this->intId)) {
+			// do nothing, if ajax request but not related to formhybrid
+			// otherwise a new submission will be generated and validation will fail
+			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) {
+				$this->objActiveRecord = $this->createSubmission($strModelClass);
+				$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
+				$this->save(); // initially try to save record, as ajax requests for example require entity model
+				
+				// register form id in session if we got a new one from save()
+				if ($this->intId && is_numeric($this->intId)) {
+					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
+				} else {
+					$this->invalid = true;
+					StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
 					
-					// register form id in session if we got a new one from save()
-					if ($this->intId && is_numeric($this->intId)) {
-						FormSession::addSubmissionId($this->getFormId(false), $this->getId());
-					} else {
-						$this->invalid = true;
-						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
-						
-						return false;
-					}
-					
-					return true;
+					return false;
 				}
+				
+				return true;
 			}
 		}
 		
