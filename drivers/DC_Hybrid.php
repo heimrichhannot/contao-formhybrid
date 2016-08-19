@@ -697,7 +697,11 @@ class DC_Hybrid extends \DataContainer
 		if ($arrData['inputType'] == 'captcha') {
 			$strName .= '_' . $this->getFormId(false);
 		}
-		
+
+		$this->strField = $strName;
+		$this->strInputName = $strName;
+		$this->varValue = is_array($varValue) ? $varValue : \Controller::replaceInsertTags($varValue);
+
 		$arrWidget = \Widget::getAttributesFromDca(
 			$arrData,
 			$strName,
