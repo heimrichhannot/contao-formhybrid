@@ -230,6 +230,10 @@ class DC_Hybrid extends \DataContainer
 				}
 			}
 		}
+		else if($this->isFilterForm)
+		{
+			$this->setSubmission();
+		}
 		
 		if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY) {
 			$this->strTemplate = $this->readonlyTemplate;
