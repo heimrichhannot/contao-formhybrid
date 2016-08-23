@@ -1525,6 +1525,11 @@ class DC_Hybrid extends \DataContainer
 	 */
 	public function getFormId($blnAddEntityId = true)
 	{
+		if($this->useCustomFormId)
+		{
+			return $this->customFormId;
+		}
+
 		return FormHelper::getFormId($this->strTable, $this->objModule->id, $this->intId, $blnAddEntityId);
 	}
 	

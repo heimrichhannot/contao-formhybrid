@@ -16,6 +16,7 @@ $dc['palettes']['__selector__'][] = 'formHybridAddFieldDependentRedirect';
 $dc['palettes']['__selector__'][] = 'formHybridCustomSubmit';
 $dc['palettes']['__selector__'][] = 'formHybridAddSubmitValues';
 $dc['palettes']['__selector__'][] = 'formHybridAddPermanentFields';
+$dc['palettes']['__selector__'][] = 'formHybridUseCustomFormId';
 array_insert($dc['palettes']['__selector__'], 0, array('formHybridViewMode')); // bug??  must be indexed before "type"
 
 $dc['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT]  = 'formHybridTemplate';
@@ -42,6 +43,8 @@ $dc['subpalettes']['formHybridCustomSubmit'] = 'formHybridSubmitLabel,formHybrid
 $dc['subpalettes']['formHybridAddSubmitValues'] = 'formHybridSubmitValues';
 
 $dc['subpalettes']['formHybridAddPermanentFields'] = 'formHybridPermanentFields';
+
+$dc['subpalettes']['formHybridUseCustomFormId'] = 'formHybridCustomFormId';
 
 /**
  * Callbacks
@@ -572,6 +575,20 @@ $arrFields = array
 		'inputType' => 'text',
 		'eval'      => array('tl_class' => 'w50', 'maxlength' => 128),
 		'sql'       => "varchar(128) NOT NULL default ''",
+	),
+	'formHybridUseCustomFormId'             => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridUseCustomFormId'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridCustomFormId'      => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCustomFormId'],
+		'exclude'   => true,
+		'inputType' => 'text',
+		'eval'      => array('tl_class' => 'w50', 'maxlength' => 50),
+		'sql'       => "varchar(50) NOT NULL default ''",
 	),
 );
 

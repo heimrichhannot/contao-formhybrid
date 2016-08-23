@@ -68,7 +68,11 @@ $arrLang['formHybridAddPermanentFields'] = array('Immer auszugebende Felder hinz
 $arrLang['formHybridPermanentFields'] = array('Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.');
 
 $arrLang['formHybridResetAfterSubmission'] = array('Formular nach absenden zurücksetzen', 'Deaktivieren um nach Absenden, das Formular mit den Daten erneut zu laden. (Achtung: Nur einmaliges Absenden möglich!)');
-$arrLang['formHybridJumpToPreserveParams']			= array('Parameter beibehalten', 'Wählen Sie diese Option, wenn die Weiterleitungsseite (nach dem Speichern) wieder ein Frontendedit-Leser-Modul enthält. Dadurch werden die aktuelle Action sowie die ID beibehalten.');
+$arrLang['formHybridJumpToPreserveParams'] = array('Parameter beibehalten', 'Wählen Sie diese Option, wenn die Weiterleitungsseite (nach dem Speichern) wieder ein Frontendedit-Leser-Modul enthält. Dadurch werden die aktuelle Action sowie die ID beibehalten.');
+
+$arrLang['formHybridUseCustomFormId'] = array('FormId überschreiben', 'Wählen Sie diese Option, wenn sie die Id des Filtermodules bei der Submission überschreiben wollen.');
+$arrLang['formHybridCustomFormId'] = array('Neue FormID', 'Geben Sie hier die Id ein, die das Filtermodul bei der Submission-Überprüfung haben soll.');
+
 /**
  * References
  */
