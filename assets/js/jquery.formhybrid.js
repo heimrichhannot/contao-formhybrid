@@ -2,20 +2,22 @@
 
     FormhybridPlugins = {
         init: function (action) {
-            //this.scrollToMessages(action);
+            this.scrollToMessages();
         },
-        scrollToMessages: function (action) {
-            // do not scroll if ajax request
-            if (action == 'toggleSubpalette') return false;
+        scrollToMessages: function ($container) {
 
-            // sroll to first alert message or first error field, inside formhybrid modules
-            var alert = $('.formhybrid:first').not('.noscroll').parent(['class^="mod_"']).find(':input.alert:first, :input.error:first, .alert-success:first, .alter-danger:first, p.alert:first, fieldset.error:first');
+            if(typeof $container === 'undefined'){
+                $container = $('.formhybrid:first');
+            }
 
-            if (alert.length > 0) {
+            // scroll to first alert message or first error field
+            var alert = $container.find('.alert:first, .error:first');
+
+            if (alert.length > 0 && !$container.hasClass('noscroll')) {
                 var alertOffset = alert.offset();
 
                 $('html,body').animate({
-                    scrollTop: parseInt(alertOffset.top)
+                    scrollTop: (parseInt(alertOffset.top) - 30) + 'px'
                 }, 500);
             }
         }
@@ -92,16 +94,7 @@
                             $form.replaceWith($replace);
                         }
 
-                        // scroll to first alert message or first error field
-                        var alert = $replace.find('#' + $form.data('id')).find('.alert:first, .error:first');
-
-                        if (alert.length > 0 && !$(response.result.html).hasClass('noscroll')) {
-                            var alertOffset = alert.offset();
-
-                            $('html,body').animate({
-                                scrollTop: parseInt(alertOffset.top) - 70 + 'px'
-                            }, 500);
-                        }
+                        FormhybridPlugins.scrollToMessages($(response.result.html));
 
                         closeModal(response, $form);
                     }
