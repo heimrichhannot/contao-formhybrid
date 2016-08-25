@@ -13,6 +13,10 @@ $GLOBALS['TL_LANG']['CTE']['formhybridStop'] = array('Formular Stop','Deklariert
  */
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['default'] = 'Absenden';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['filter'] = 'Filtern';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['save'] = 'Speichern';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['saveNcontinue'] = 'Speichern & fortfahren';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['continue'] = 'Fortfahren';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['next'] = 'Weiter';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderWithCosts'] = 'Kostenpflichtig bestellen';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderFree'] = 'Kostenlos bestellen';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['order'] = 'Auftrag erteilen';

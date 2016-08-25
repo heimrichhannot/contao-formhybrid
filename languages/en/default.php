@@ -13,6 +13,10 @@ $GLOBALS['TL_LANG']['CTE']['formhybridStop'] = array('Form Stop','Declares the s
  */
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['default'] = 'Submit';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['filter'] = 'Filter';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['save'] = 'Save';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['continue'] = 'Continue';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['saveNcontinue'] = 'Save & continue';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['next'] = 'Next';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderWithCosts'] = 'Order';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderFree'] = 'Order for free';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['order'] = 'Place an order';
