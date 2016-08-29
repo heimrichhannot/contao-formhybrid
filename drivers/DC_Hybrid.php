@@ -10,6 +10,7 @@ use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
+use HeimrichHannot\Versions\Version;
 
 class DC_Hybrid extends \DataContainer
 {
@@ -1154,96 +1155,16 @@ class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
-		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model || !$GLOBALS['TL_DCA'][$this->strTable]['config']['enableVersioning'])
+		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model)
 		{
 			return;
 		}
 
-		// Create the initial version (see #7816)
-		$objVersion = new \Contao\Versions($this->strTable, $this->objActiveRecord->id);
-
-		if (($objUser = \UserModel::findByUsername(FORMHYBRID_USER_EMAIL)) === null)
-		{
-			$objUser           = new \UserModel();
-			$objUser->username = $objUser->email = FORMHYBRID_USER_EMAIL;
-			$objUser->name     = FORMHYBRID_USER_NAME;
-			// at least something must be in there
-			$objUser->password  = CodeGenerator::generate();
-			$objUser->disable   = true;
-			$objUser->dateAdded = $objUser->tstamp = time();
-			$objUser->save();
-		}
-
-		$objVersion->setUserId($objUser->id);
-		$objVersion->setUsername($objUser->email);
-
-		foreach ($GLOBALS['BE_MOD'] as $strGroup => $arrGroup)
-		{
-			foreach ($arrGroup as $strModule => $arrModule)
-			{
-				if (!isset($arrModule['tables']) || !is_array($arrModule['tables']))
-				{
-					continue;
-				}
-
-				if (in_array($this->strTable, $arrModule['tables']))
-				{
-					$objVersion->formhybrid_backend_url = sprintf(
-						'contao/main.php?do=%s&table=%s&act=edit&id=%s&rt=%s',
-						$strModule,
-						$this->strTable,
-						$this->objActiveRecord->id,
-						\RequestToken::get()
-					);
-					break 2;
-				}
-			}
-		}
-
-		if (FE_USER_LOGGED_IN && ($objMember = \FrontendUser::getInstance()) !== null)
-		{
-			$objVersion->memberusername = $objMember->username;
-			$objVersion->memberid       = $objMember->id;
-		}
-
+		$objVersion = Version::setFromModel($this->objActiveRecord);
 		$objVersion = $this->modifyVersion($objVersion);
-
-		$objVersionCheck = $this->Database->prepare("SELECT COUNT(*) AS count FROM tl_version WHERE fromTable=? AND pid=?")->limit(1)->execute($this->strTable, $this->objActiveRecord->id);
-
-		if ($objVersionCheck->count > 0)
-		{
-			$objVersion->create();
-		} else
-		{
-			$objVersion->initialize();
-		}
-
-		// Call the onversion_callback
-		if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onversion_callback']))
-		{
-			foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onversion_callback'] as $callback)
-			{
-				if (is_array($callback))
-				{
-					$this->import($callback[0]);
-					$this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this);
-				} elseif (is_callable($callback))
-				{
-					$callback($this->strTable, $this->intId, $this);
-				}
-			}
-		}
-
-		$this->log(
-			'A new version of record "' . $this->strTable . '.id=' . $this->intId . '" has been created' . $this->getParentEntries(
-				$this->strTable,
-				$this->intId
-			),
-			__METHOD__,
-			TL_GENERAL
-		);
+		Version::createVersion($objVersion, $this->objActiveRecord);
 	}
-
+	
 	protected function modifyVersion($objVersion)
 	{
 		return $objVersion;

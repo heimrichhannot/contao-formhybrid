@@ -3,9 +3,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 use HeimrichHannot\Haste\Util\FormSubmission;
-use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
-use HeimrichHannot\Submissions\SubmissionModel;
 use MatthiasMullie\Minify\Exception;
 
 abstract class Form extends DC_Hybrid
@@ -102,7 +100,7 @@ abstract class Form extends DC_Hybrid
 
 			if ($this->sendSubmissionAsNotification || $this->submissionNotification) {
 				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null) {
-					$arrToken = SubmissionModel::tokenizeData($arrSubmissionData);
+					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
 					if ($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken)) {
 						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
@@ -125,7 +123,7 @@ abstract class Form extends DC_Hybrid
 
 			if ($this->confirmationAsNotification || $this->confirmationNotification) {
 				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->confirmationNotification)) !== null) {
-					$arrToken = SubmissionModel::tokenizeData($arrSubmissionData);
+					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
 					if ($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken)) {
 						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
@@ -155,7 +153,7 @@ abstract class Form extends DC_Hybrid
 
 	protected function prepareSubmissionData()
 	{
-		return SubmissionModel::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
+		return FormSubmission::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
 	}
 
 	protected function onSubmitCallback(\DataContainer $dc)
