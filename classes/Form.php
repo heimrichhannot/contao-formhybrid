@@ -9,7 +9,7 @@ use MatthiasMullie\Minify\Exception;
 abstract class Form extends DC_Hybrid
 {
 	const FORMHYBRID_NAME = 'formhybrid';
-	
+
 	protected $arrSubmitCallbacks = array();
 
 	protected $strLogFile = 'formhybrid.log';
@@ -20,7 +20,7 @@ abstract class Form extends DC_Hybrid
 		header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
 		header("Pragma: no-cache"); // HTTP 1.0.
 		header("Expires: 0"); // Proxies.
-		
+
 		parent::__construct($this->strTable, $varConfig, $intId);
 	}
 
@@ -33,24 +33,32 @@ abstract class Form extends DC_Hybrid
 
 	protected function processForm()
 	{
-		if ($this->isSubmitted && !$this->doNotSubmit) {
-			if ($this->addSubmitValues && !empty($this->arrSubmitValues)) {
-				foreach ($this->arrSubmitValues as $arrSubmitValue) {
+		if ($this->isSubmitted && !$this->doNotSubmit)
+		{
+			if ($this->addSubmitValues && !empty($this->arrSubmitValues))
+			{
+				foreach ($this->arrSubmitValues as $arrSubmitValue)
+				{
 					$this->objActiveRecord->{$arrSubmitValue['field']} = $arrSubmitValue['value'];
 				}
 
-				if ($this->saveToBlob) {
+				if ($this->saveToBlob)
+				{
 					$this->saveToBlob();
-				} else {
+				} else
+				{
 					$this->objActiveRecord->save();
 				}
 			}
 
 			$this->onSubmitCallback($this);
 
-			if (!$this->isSkipValidation()) {
-				if (is_array($this->dca['config']['onsubmit_callback'])) {
-					foreach ($this->dca['config']['onsubmit_callback'] as $callback) {
+			if (!$this->isSkipValidation())
+			{
+				if (is_array($this->dca['config']['onsubmit_callback']))
+				{
+					foreach ($this->dca['config']['onsubmit_callback'] as $callback)
+					{
 						$this->import($callback[0]);
 						$this->$callback[0]->$callback[1]($this);
 
@@ -65,28 +73,34 @@ abstract class Form extends DC_Hybrid
 
 			// just created?
 			$blnJustCreated = false;
-			if (!$this->objActiveRecord->tstamp) {
+			if (!$this->objActiveRecord->tstamp)
+			{
 				$blnJustCreated                = true;
 				$this->objActiveRecord->tstamp = time();
 				$this->onCreateCallback($this->objActiveRecord, $this);
 			}
 
 			$blnIsModified = false;
-			foreach ($this->objActiveRecord->row() as $strField => $varValue) {
-				if ($this->arrOriginalRow[$strField] != $varValue) {
+			foreach ($this->objActiveRecord->row() as $strField => $varValue)
+			{
+				if ($this->arrOriginalRow[$strField] != $varValue)
+				{
 					$blnIsModified = true;
 					break;
 				}
 			}
 
 			// run callback after update after submit_callbacks since these could do important updates
-			if ($blnIsModified) {
+			if ($blnIsModified)
+			{
 				// update tstamp
 				$this->objActiveRecord->tstamp = time();
 
-				if ($this->saveToBlob) {
+				if ($this->saveToBlob)
+				{
 					$this->saveToBlob();
-				} else {
+				} else
+				{
 					$this->objActiveRecord->save();
 
 					// create new version - only if modified
@@ -98,52 +112,65 @@ abstract class Form extends DC_Hybrid
 
 			$arrSubmissionData = $this->prepareSubmissionData();
 
-			if ($this->sendSubmissionAsNotification || $this->submissionNotification) {
-				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null) {
+			if ($this->sendSubmissionAsNotification || $this->submissionNotification)
+			{
+				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null)
+				{
 					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
-					if ($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken)) {
+					if ($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken))
+					{
 						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
 					}
 				}
 			}
 
-			if ($this->sendSubmissionViaEmail) {
-				if ($this->submissionAvisotaMessage) {
+			if ($this->sendSubmissionViaEmail)
+			{
+				if ($this->submissionAvisotaMessage)
+				{
 					$this->createSubmissionAvisotaEmail(
 						$this->submissionAvisotaMessage,
 						$this->submissionAvisotaSalutationGroup,
 						$arrSubmissionData
 					);
-				} else {
+				} else
+				{
 					$this->createSubmissionEmail($arrSubmissionData);
 				}
 			}
 
 
-			if ($this->confirmationAsNotification || $this->confirmationNotification) {
-				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->confirmationNotification)) !== null) {
+			if ($this->confirmationAsNotification || $this->confirmationNotification)
+			{
+				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->confirmationNotification)) !== null)
+				{
 					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
-					if ($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken)) {
+					if ($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken))
+					{
 						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
 					}
 				}
 			}
 
-			if ($this->sendConfirmationViaEmail) {
-				if ($this->confirmationAvisotaMessage) {
+			if ($this->sendConfirmationViaEmail)
+			{
+				if ($this->confirmationAvisotaMessage)
+				{
 					$this->createConfirmationAvisotaEmail(
 						$this->confirmationAvisotaMessage,
 						$this->confirmationAvisotaSalutationGroup,
 						$arrSubmissionData
 					);
-				} else {
+				} else
+				{
 					$this->createConfirmationEmail($arrSubmissionData);
 				}
 			}
 
-			if (!$this->isFilterForm && !$this->blnSilentMode) {
+			if (!$this->isFilterForm && !$this->blnSilentMode)
+			{
 				$this->createSuccessMessage($arrSubmissionData);
 			}
 
@@ -171,13 +198,13 @@ abstract class Form extends DC_Hybrid
 		$objEmail           = new \Email();
 		$objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
 		$objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-		$objEmail->subject  =
-			\String::parseSimpleTokens(
-				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->submissionMailSubject, $arrSubmissionData), false),
-				$arrSubmissionData
-			);
+		$objEmail->subject  = \String::parseSimpleTokens(
+			$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->submissionMailSubject, $arrSubmissionData), false),
+			$arrSubmissionData
+		);
 
-		if ($hasText = (strlen($this->submissionMailText) > 0)) {
+		if ($hasText = (strlen($this->submissionMailText) > 0))
+		{
 			$objEmail->text = \String::parseSimpleTokens(
 				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->submissionMailText, $arrSubmissionData), false),
 				$arrSubmissionData
@@ -188,10 +215,12 @@ abstract class Form extends DC_Hybrid
 		}
 
 
-		if ($this->submissionTemplate != '') {
+		if ($this->submissionTemplate != '')
+		{
 			$objModel = \FilesModel::findByUuid($this->submissionTemplate);
 
-			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path)) {
+			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
+			{
 				$objFile = new \File($objModel->path, true);
 
 				$objEmail->html = \String::parseSimpleTokens(
@@ -200,7 +229,8 @@ abstract class Form extends DC_Hybrid
 				);
 
 				// if no text is set, convert html to text
-				if (!$hasText) {
+				if (!$hasText)
+				{
 					$objHtml2Text   = new \Html2Text\Html2Text($objEmail->html);
 					$objEmail->text = $objHtml2Text->getText();
 				}
@@ -208,24 +238,30 @@ abstract class Form extends DC_Hybrid
 		}
 
 		// overwrite default from and
-		if (!empty($this->submissionMailSender)) {
+		if (!empty($this->submissionMailSender))
+		{
 			list($senderName, $sender) = \String::splitFriendlyEmail($this->submissionMailSender);
 			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
-		if ($this->submissionMailAttachment != '') {
+		if ($this->submissionMailAttachment != '')
+		{
 			$this->addAttachmentToEmail($objEmail, deserialize($this->submissionMailAttachment));
 		}
 
-		if ($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
-			if (is_array($arrRecipient)) {
+		if ($this->sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData))
+		{
+			if (is_array($arrRecipient))
+			{
 				$arrRecipient = array_filter(array_unique($arrRecipient));
 				$to           = $this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false);
 
-				try {
+				try
+				{
 					$objEmail->sendTo($to);
-				} catch (Exception $e) {
+				} catch (Exception $e)
+				{
 					log_message('Error sending submission email for entity ' . $this->strTable . ':' . $this->intId . ' to : ' . $to . ' (' . $e . ')', $this->strLogFile);
 				}
 			}
@@ -245,10 +281,12 @@ abstract class Form extends DC_Hybrid
 			)
 		);
 
-		foreach ($objMessage->getContents() as $objContent) {
+		foreach ($objMessage->getContents() as $objContent)
+		{
 			$strText = $objContent->getText();
 
-			if (!$strText) {
+			if (!$strText)
+			{
 				continue;
 			}
 
@@ -268,10 +306,13 @@ abstract class Form extends DC_Hybrid
 			$objMessage,
 			explode(',', $this->replaceInsertTags(FormHelper::replaceFormDataTags(implode(',', $arrRecipient), $arrSubmissionData), false)),
 			array_map(
-				function ($arrValue) {
-					if (isset($arrValue['value'])) {
+				function ($arrValue)
+				{
+					if (isset($arrValue['value']))
+					{
 						return $arrValue['value'];
-					} else {
+					} else
+					{
 						return $arrValue;
 					}
 				},
@@ -325,7 +366,8 @@ abstract class Form extends DC_Hybrid
 			$arrSubmissionData
 		);
 
-		if ($hasText = (strlen($this->confirmationMailText) > 0)) {
+		if ($hasText = (strlen($this->confirmationMailText) > 0))
+		{
 			$objEmail->text = \String::parseSimpleTokens(
 				$this->replaceInsertTags(FormHelper::replaceFormDataTags($this->confirmationMailText, $arrSubmissionData), false),
 				$arrSubmissionData
@@ -335,10 +377,12 @@ abstract class Form extends DC_Hybrid
 			$objEmail->text = strip_tags(preg_replace('/<br(\s+)?\/?>/i', "\n", $objEmail->text), '<a>');
 		}
 
-		if ($this->confirmationMailTemplate != '') {
+		if ($this->confirmationMailTemplate != '')
+		{
 			$objModel = \FilesModel::findByUuid($this->confirmationMailTemplate);
 
-			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path)) {
+			if ($objModel !== null && is_file(TL_ROOT . '/' . $objModel->path))
+			{
 				$objFile = new \File($objModel->path, true);
 
 				$objEmail->html = \String::parseSimpleTokens(
@@ -347,7 +391,8 @@ abstract class Form extends DC_Hybrid
 				);
 
 				// if no text is set, convert html to text
-				if (!$hasText) {
+				if (!$hasText)
+				{
 					$objHtml2Text   = new \Html2Text\Html2Text($objEmail->html);
 					$objEmail->text = $objHtml2Text->getText();
 				}
@@ -355,23 +400,29 @@ abstract class Form extends DC_Hybrid
 		}
 
 		// overwrite default from and
-		if (!empty($this->confirmationMailSender)) {
+		if (!empty($this->confirmationMailSender))
+		{
 			list($senderName, $sender) = \String::splitFriendlyEmail($this->confirmationMailSender);
 			$objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
 			$objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
 		}
 
-		if ($this->confirmationMailAttachment != '') {
+		if ($this->confirmationMailAttachment != '')
+		{
 			$this->addAttachmentToEmail($objEmail, deserialize($this->confirmationMailAttachment));
 		}
 
-		if ($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)) {
-			if (is_array($arrRecipient)) {
+		if ($this->sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData))
+		{
+			if (is_array($arrRecipient))
+			{
 				$arrRecipient = array_filter(array_unique($arrRecipient));
 
-				try {
+				try
+				{
 					$objEmail->sendTo($arrRecipient);
-				} catch (Exception $e) {
+				} catch (Exception $e)
+				{
 					log_message('Error sending submission email for entity ' . $this->strTable . ':' . $this->intId . ' to : ' . implode(',', $arrRecipient) . ' (' . $e . ')', $this->strLogFile);
 				}
 			}
@@ -389,10 +440,12 @@ abstract class Form extends DC_Hybrid
 			)
 		);
 
-		foreach ($objMessage->getContents() as $objContent) {
+		foreach ($objMessage->getContents() as $objContent)
+		{
 			$strText = $objContent->getText();
 
-			if (!$strText) {
+			if (!$strText)
+			{
 				continue;
 			}
 
@@ -408,10 +461,13 @@ abstract class Form extends DC_Hybrid
 			$objMessage,
 			$arrSubmissionData[$this->confirmationMailRecipientField]['value'],
 			array_map(
-				function ($arrValue) {
-					if (isset($arrValue['value'])) {
+				function ($arrValue)
+				{
+					if (isset($arrValue['value']))
+					{
 						return $arrValue['value'];
-					} else {
+					} else
+					{
 						return $arrValue;
 					}
 				},
@@ -436,11 +492,14 @@ abstract class Form extends DC_Hybrid
 	{
 		$objAttachments = \FilesModel::findMultipleByUuids($arrUuids);
 
-		if ($objAttachments !== null) {
-			while ($objAttachments->next()) {
+		if ($objAttachments !== null)
+		{
+			while ($objAttachments->next())
+			{
 				$strMime = 'application/octet-stream';
 
-				if (isset($GLOBALS['TL_MIME'][$objAttachments->extension])) {
+				if (isset($GLOBALS['TL_MIME'][$objAttachments->extension]))
+				{
 					$strMime = $GLOBALS['TL_MIME'][$objAttachments->extension][0];
 				}
 
@@ -463,36 +522,42 @@ abstract class Form extends DC_Hybrid
 	{
 		$arrSubmission = $this->arrSubmission;
 
-		if (!$this->isSubmitted()) {
+		if (!$this->isSubmitted())
+		{
 			$arrSubmission = $blnSkipDefaults ? array() : $this->getDefaults();
 		}
 
-		if ($this->isFilterForm && is_array($arrSubmission)) {
+		if (($this->isFilterForm || !$this->useModelData()) && is_array($arrSubmission))
+		{
 			$arrDca = $this->getDca();
 
-			if (empty($arrSubmission)) {
+			if (empty($arrSubmission))
+			{
 				return null;
 			}
 
 			$objSubmission = new Submission();
 
-			foreach ($arrSubmission as $strField => $varValue) {
+			foreach ($arrSubmission as $strField => $varValue)
+			{
 				$arrData = $arrDca['fields'][$strField];
 
-				if (is_array($arrData['options']) && !Validator::isValidOption($varValue, $arrData, $this)) {
+				if (is_array($arrData['options']) && !Validator::isValidOption($varValue, $arrData, $this))
+				{
 					continue;
 				}
 
-				if ($blnFormatted) {
-					$objSubmission->{$strField} =
-						FormSubmission::prepareSpecialValueForPrint($varValue, $arrData, $this->strTable, $this);
-				} else {
+				if ($blnFormatted)
+				{
+					$objSubmission->{$strField} = FormSubmission::prepareSpecialValueForPrint($varValue, $arrData, $this->strTable, $this);
+				} else
+				{
 					$objSubmission->{$strField} = $varValue;
 				}
 			}
 		}
 
-		return $this->isFilterForm ? $objSubmission : $this->objActiveRecord;
+		return ($this->isFilterForm || !$this->useModelData()) ? $objSubmission : $this->objActiveRecord;
 	}
 
 	public function setSubmitCallbacks(array $callbacks)

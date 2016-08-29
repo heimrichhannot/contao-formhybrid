@@ -80,7 +80,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
-	private $useModelData = false;
+	protected $useModelData = false;
 
 	protected $blnSilentMode = false;
 
@@ -139,7 +139,17 @@ class DC_Hybrid extends \DataContainer
 
 		// GET is checked for each field separately
 		$this->isSubmitted  = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
-		$this->useModelData = \Database::getInstance()->tableExists($this->strTable);
+		$this->setUseModelData(\Database::getInstance()->tableExists($this->strTable));
+
+		if($this->useModelData())
+		{
+			$strModelClass = \Model::getClassFromTable($this->strTable);
+
+			if(!class_exists($strModelClass))
+			{
+				$this->setUseModelData(false);
+			}
+		}
 
 		$this->import('Database');
 
@@ -163,7 +173,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function create()
 	{
-		if (!$this->isFilterForm)
+		if (!$this->isFilterForm && $this->useModelData())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
@@ -184,7 +194,7 @@ class DC_Hybrid extends \DataContainer
 					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
 				} else
 				{
-					if (!$this->isFilterForm)
+					if (!$this->isFilterForm && $this->useModelData())
 					{
 						$this->invalid = true;
 						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
@@ -204,7 +214,7 @@ class DC_Hybrid extends \DataContainer
 	{
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
-		if (!$this->isFilterForm)
+		if (!$this->isFilterForm && $this->useModelData())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
@@ -231,12 +241,12 @@ class DC_Hybrid extends \DataContainer
 
 					// do nothing, if ajax request but not related to formhybrid
 					// otherwise a new submission will be generated and validation will fail
-					if ($this->objActiveRecord instanceof \Contao\Model)
+					if ($this->useModelData())
 					{
 						$this->setDefaults($this->dca);
 						$this->setSubmission();
 						$this->save(); // initially try to save record, as ajax requests for example require entity model
-					} elseif (!$this->isFilterForm)
+					} elseif (!$this->isFilterForm && $this->useModelData())
 					{
 						$this->invalid = true;
 						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
@@ -245,7 +255,7 @@ class DC_Hybrid extends \DataContainer
 			}
 		} else
 		{
-			if ($this->isFilterForm)
+			if ($this->isFilterForm || !$this->useModelData())
 			{
 				$this->setSubmission();
 			}
@@ -1155,7 +1165,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
-		if ($this->isFilterForm || !$this->objActiveRecord instanceof \Contao\Model)
+		if ($this->isFilterForm || !$this->useModelData())
 		{
 			return;
 		}
@@ -1415,12 +1425,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function save($varValue = '')
 	{
-		if ($this->isFilterForm)
-		{
-			return;
-		}
-
-		if (!$this->objActiveRecord instanceof \Contao\Model)
+		if ($this->isFilterForm || !$this->useModelData())
 		{
 			return;
 		}
@@ -1761,6 +1766,24 @@ class DC_Hybrid extends \DataContainer
 	{
 		$this->arrEditable = $arrEditable;
 	}
+
+	/**
+	 * @return boolean
+	 */
+	public function useModelData()
+	{
+		return $this->useModelData;
+	}
+
+	/**
+	 * @param boolean $useModelData
+	 */
+	public function setUseModelData($useModelData)
+	{
+		$this->useModelData = $useModelData;
+	}
+
+
 
 	/**
 	 * Clear inputs, set default values
