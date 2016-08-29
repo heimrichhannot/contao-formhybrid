@@ -1655,7 +1655,8 @@ class DC_Hybrid extends \DataContainer
 		foreach ($this->arrEditable as $strName)
 		{
 			$arrData  = $this->dca['fields'][$strName];
-			$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+			// treat field without any inputType as hidden
+			$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']] ?: 'FormHidden';
 
 			$reflection = new \ReflectionClass($strClass);
 
