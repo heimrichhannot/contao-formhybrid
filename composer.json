@@ -17,6 +17,7 @@
         "issues":"https://github.com/heimrichhannot/contao-formhybrid/issues"
     },
     "require": {
+        "php": ">=5.4.0, <7",
         "contao/core": ">=3.2,<4-dev",
         "html2text/html2text": "~2.0",
         "codefog/contao-haste": "~4.0",
@@ -27,7 +28,8 @@
 		"heimrichhannot/contao-inserttag_download": "~1.0",
 		"heimrichhannot/contao-multifileupload": "~1.0",
 		"heimrichhannot/contao-ajax": "~1.0",
-		"heimrichhannot/contao-request": "~1.0"
+		"heimrichhannot/contao-request": "~1.0",
+        "heimrichhannot/contao-versions": "~1.0"
 	},
     "autoload": {
         "classmap": [""]

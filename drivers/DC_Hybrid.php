@@ -138,14 +138,14 @@ class DC_Hybrid extends \DataContainer
 		}
 
 		// GET is checked for each field separately
-		$this->isSubmitted  = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
+		$this->isSubmitted = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
 		$this->setUseModelData(\Database::getInstance()->tableExists($this->strTable));
 
-		if($this->useModelData())
+		if ($this->useModelData())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 
-			if(!class_exists($strModelClass))
+			if (!class_exists($strModelClass))
 			{
 				$this->setUseModelData(false);
 			}
@@ -444,6 +444,7 @@ class DC_Hybrid extends \DataContainer
 		$this->Template->submission  = $this->objActiveRecord;
 		$this->Template->hidden      = $this->generateHiddenFields();
 		$this->Template->invalid     = $this->invalid;
+		$this->Template->config      = $this->objConfig;
 
 		$this->compile();
 
@@ -1174,7 +1175,7 @@ class DC_Hybrid extends \DataContainer
 		$objVersion = $this->modifyVersion($objVersion);
 		Version::createVersion($objVersion, $this->objActiveRecord);
 	}
-	
+
 	protected function modifyVersion($objVersion)
 	{
 		return $objVersion;
@@ -1580,7 +1581,7 @@ class DC_Hybrid extends \DataContainer
 
 		foreach ($this->arrEditable as $strName)
 		{
-			$arrData  = $this->dca['fields'][$strName];
+			$arrData = $this->dca['fields'][$strName];
 			// treat field without any inputType as hidden
 			$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']] ?: 'FormHidden';
 
@@ -1782,7 +1783,6 @@ class DC_Hybrid extends \DataContainer
 	{
 		$this->useModelData = $useModelData;
 	}
-
 
 
 	/**

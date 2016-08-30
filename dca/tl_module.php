@@ -161,7 +161,7 @@ $arrFields = array
 						'tl_form_hybrid_module',
 						'getFields',
 					),
-					'eval'             => array('style' => 'width: 150px', 'chosen' => true),
+					'eval'             => array('style' => 'width: 150px', 'chosen' => true, 'includeBlankOption' => true),
 				),
 				'value' => array(
 					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],

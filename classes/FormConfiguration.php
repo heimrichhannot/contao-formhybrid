@@ -8,16 +8,12 @@
  * @author  Dennis Patzer <d.patzer@heimrich-hannot.de>
  * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
  */
-
 namespace HeimrichHannot\FormHybrid;
-
-
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
-
 class FormConfiguration
 {
 	/**
@@ -25,18 +21,15 @@ class FormConfiguration
 	 * @varT
 	 */
 	protected $arrData = array();
-
 	/**
 	 * The raw config data
 	 * @var
 	 */
 	protected $varConfig = array();
-
 	protected $arrDefaults = array
 	(
 		''
 	);
-
 	public function __construct($varConfig)
 	{
 		if($varConfig instanceof \Module)
@@ -55,27 +48,22 @@ class FormConfiguration
 		{
 			$this->varConfig = $varConfig;
 		}
-
 		if(is_array($this->varConfig))
 		{
 			$this->transform();
 		}
 	}
-
 	protected function transform()
 	{
 		// leave non-formhybrid data inside config
 		$this->arrData = Arrays::filterOutByPrefixes($this->varConfig, array('formHybrid'));
-
 		// transform formhybrid prefixed attributes
 		$arrData = Arrays::filterByPrefixes($this->varConfig, array('formHybrid'));
-
 		foreach ($arrData as $strKey => $varValue)
 		{
 			$this->{$strKey} = $varValue;
 		}
 	}
-
 	/**
 	 * Get config value from transformed arrData and add logic to modify the value here
 	 * @param $strKey
@@ -85,7 +73,6 @@ class FormConfiguration
 	public function __get($strKey)
 	{
 		$varValue = $this->arrData[$strKey];
-
 		switch ($strKey)
 		{
 			case 'strAction':
@@ -96,20 +83,17 @@ class FormConfiguration
 				else
 				{
 					$varValue = Url::removeQueryString(array('file'), \Environment::get('uri'));
-
 					// remove all query parameters within ajax request
 					if(Ajax::isRelated(Form::FORMHYBRID_NAME) === true)
 					{
 						$varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
 					}
 				}
-
 				// async form
 				if($this->async)
 				{
 					$varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
 				}
-
 				// add hash
 				if($this->addHashToAction)
 				{
@@ -120,11 +104,8 @@ class FormConfiguration
 				$varValue = FormHelper::getAssocMultiColumnWizardList($varValue, 'field');
 			break;
 		}
-
 		return $varValue;
 	}
-
-
 	/**
 	 * Set config data and modify keys that needs to be mapped to DC_Hybrid attributes
 	 * no logic should be done here
@@ -135,7 +116,6 @@ class FormConfiguration
 	public function __set($strKey, $varValue)
 	{
 		$strKey = static::getKey($strKey);
-
 		switch ($strKey)
 		{
 			case 'action':
@@ -188,10 +168,8 @@ class FormConfiguration
 				$varValue = deserialize($varValue, true);
 			break;
 		}
-
 		$this->arrData[$strKey] = deserialize($varValue);
 	}
-
 	/**
 	 * Return the configuration data and trigger __get magic getter
 	 * to add custom logic
@@ -200,14 +178,12 @@ class FormConfiguration
 	public function getData()
 	{
 		$arrData = array();
-
 		foreach ($this->arrData as $strKey => $varValue)
 		{
 			$arrData[$strKey] = $this->{$strKey};
 		}
 		return $arrData;
 	}
-
 	/**
 	 * Fallback function that returns the module from a given id
 	 *
@@ -219,10 +195,8 @@ class FormConfiguration
 		{
 			return null;
 		}
-
 		return $objModule;
 	}
-
 	/**
 	 * Return the internal attribute key, without formHybrid prefix
 	 * @param $strKey
@@ -233,7 +207,6 @@ class FormConfiguration
 	{
 		return lcfirst(preg_replace('/formHybrid/','',$strKey, 1));
 	}
-
 	/**
 	 * Check if the key starts with 'formHybrid'
 	 *
