@@ -12,6 +12,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\StringUtil;
@@ -68,7 +69,7 @@ class FormConfiguration
 
 		// transform formhybrid prefixed attributes
 		$arrData = Arrays::filterByPrefixes($this->varConfig, array('formHybrid'));
-		
+
 		foreach ($arrData as $strKey => $varValue)
 		{
 			$this->{$strKey} = $varValue;
@@ -95,11 +96,11 @@ class FormConfiguration
 				else
 				{
 					$varValue = Url::removeQueryString(array('file'), \Environment::get('uri'));
-					
+
 					// remove all query parameters within ajax request
-					if(\Environment::get('isAjaxRequest'))
+					if(Ajax::isRelated(Form::FORMHYBRID_NAME) === true)
 					{
-						$varValue = strtok($varValue, '?');
+						$varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
 					}
 				}
 
@@ -108,7 +109,7 @@ class FormConfiguration
 				{
 					$varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
 				}
-				
+
 				// add hash
 				if($this->addHashToAction)
 				{
@@ -235,7 +236,7 @@ class FormConfiguration
 
 	/**
 	 * Check if the key starts with 'formHybrid'
-	 * 
+	 *
 	 * @param $strKey
 	 *
 	 * @return bool
