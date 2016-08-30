@@ -73,6 +73,11 @@ $arrLang['formHybridJumpToPreserveParams'] = array('Parameter beibehalten', 'Wä
 $arrLang['formHybridUseCustomFormId'] = array('FormId überschreiben', 'Wählen Sie diese Option, wenn sie die Id des Filtermodules bei der Submission überschreiben wollen.');
 $arrLang['formHybridCustomFormId'] = array('Neue FormID', 'Geben Sie hier die Id ein, die das Filtermodul bei der Submission-Überprüfung haben soll.');
 
+$arrLang['formHybridAllowIdAsGetParameter']        =
+	array('ID-Eingabe als GET-Parameter erlauben (Vorsicht!)', 'Wählen Sie diese Option, wenn über den GET-Parameter "id" der anzuzeigende Datensatz bestimmt werden darf. ACHTUNG: Nur in Verbindung mit "Bedingungen für das Bearbeiten" verwenden!');
+$arrLang['formHybridIdGetParameter']               = array('ID GET-Parameter', 'Geben Sie den GET-Parameter an, der zur Bestimmung des aktuellen Datensatzes verwendet werden soll.');
+$arrLang['formHybridAppendIdToUrlOnCreation']      = array('Neue Instanz: ID GET-Parameter an URL anhängen', 'Bei der Erstellung von neuen Instanzen, den GET-Parameter an die URL anhängen.');
+
 /**
  * References
  */

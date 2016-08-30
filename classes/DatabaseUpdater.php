@@ -32,6 +32,21 @@ class DatabaseUpdater
 				(
 					'name' => 'formHybridJumpToPreserveParams',
 					'syncValue' => false
+				),
+				'allowIdAsGetParameter' => array
+				(
+					'name' => 'formHybridAllowIdAsGetParameter',
+					'syncValue' => true
+				),
+				'idGetParameter' => array
+				(
+					'name' => 'formHybridIdGetParameter',
+					'syncValue' => true
+				),
+				'appendIdToUrlOnCreation' => array
+				(
+					'name' => 'formHybridAppendIdToUrlOnCreation',
+					'syncValue' => true
 				)
 			),
 		);

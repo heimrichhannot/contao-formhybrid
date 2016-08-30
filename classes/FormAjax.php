@@ -62,7 +62,7 @@ class FormAjax
 		$this->forceIsSubmitted = $forceIsSubmitted;
 		$this->dc->setRelatedAjaxRequest(true);
 	}
-	
+
 	/**
 	 * Reload the form without validation (TypeSelector, Concatenated TypeSelecotor, or fields with submitOnChange, but no Subpalettes/Selector
 	 * @return ResponseSuccess|void

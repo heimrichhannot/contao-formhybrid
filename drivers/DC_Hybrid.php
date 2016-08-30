@@ -192,7 +192,9 @@ class DC_Hybrid extends \DataContainer
 				if ($this->intId && is_numeric($this->intId))
 				{
 					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
-				} else
+					$this->doIdDependentRedirectToEntity();
+				}
+				else
 				{
 					if (!$this->isFilterForm && $this->useModelData())
 					{
@@ -265,6 +267,38 @@ class DC_Hybrid extends \DataContainer
 		{
 			$this->strTemplate = $this->readonlyTemplate;
 			$this->setDoNotSubmit(true);
+		}
+	}
+
+	/**
+	 * Redirect and append idGetParameter to url, depending on current configuration
+	 * @param null $intId The entity id, if null $this->intId will be used from context
+	 */
+	protected function doIdDependentRedirectToEntity($intId = null)
+	{
+		if($intId === null)
+		{
+			$intId = $this->intId;
+		}
+
+		if(!$intId)
+		{
+			return;
+		}
+
+		if($this->allowIdAsGetParameter && $this->appendIdToUrlOnCreation && \Input::get($this->idGetParameter) != $intId)
+		{
+			$strUrl = Url::addQueryString($this->idGetParameter . '=' . $this->intId);
+
+			// Use AjaxAction::generateUrl(Form::FORMHYBRID_NAME, null, array(Ajax::AJAX_ATTR_AJAXID => $this->objModule->id)) for formhybrid ajax create links
+			if(Ajax::isRelated(Form::FORMHYBRID_NAME) !== null && \HeimrichHannot\Request\Request::getGet(Ajax::AJAX_ATTR_AJAXID))
+			{
+				$objResponse = new ResponseRedirect();
+				$objResponse->setUrl($strUrl);
+				$objResponse->output();
+			}
+
+			\Controller::redirect($strUrl);
 		}
 	}
 
