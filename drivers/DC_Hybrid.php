@@ -472,6 +472,8 @@ class DC_Hybrid extends \DataContainer
 				$this->reset();
 				$blnSubmittedBeforeReset = true;
 			}
+
+			$this->redirectAfterSubmission();
 		}
 
 		$this->generateStart();
@@ -1555,8 +1557,6 @@ class DC_Hybrid extends \DataContainer
 			$this->initialize($blnCreated);
 			$this->generateFields();
 		}
-
-		$this->redirectAfterSubmission();
 	}
 
 	protected function redirectAfterSubmission()
