@@ -460,6 +460,7 @@ class DC_Hybrid extends \DataContainer
 			// process form
 			$this->processForm();
 
+			// generate messages and remove them from the session automatically
 			$this->Template->message = StatusMessage::generate($this->objModule->id);
 
 			// reset form is default. disable by $this->setReset(false)
