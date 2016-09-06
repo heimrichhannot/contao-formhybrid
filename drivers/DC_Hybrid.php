@@ -560,7 +560,15 @@ class DC_Hybrid extends \DataContainer
 			{
 				$varValue   = $this->getFieldValue($strSelector);
 				$strPalette = $this->dca['palettes'][$varValue];
-				$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true); // TODO options_callback
+				$arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true);
+
+				$arrCallback = $this->dca['fields'][$strSelector]['options_callback'];
+
+				if (is_array($arrCallback) && class_exists($arrCallback[0]))
+				{
+					$objInstance = \Controller::importStatic($arrCallback[0]);
+					$arrOptions  = $objInstance->$arrCallback[1]($this);
+				}
 
 				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions))
 				{
