@@ -523,9 +523,10 @@ $arrFields = array(
 	'formHybridResetAfterSubmission'             => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridResetAfterSubmission'],
 		'exclude'   => true,
+		'default'   => true,
 		'inputType' => 'checkbox',
 		'eval'      => array('tl_class' => 'w50'),
-		'sql'       => "char(1) NOT NULL default '1'",
+		'sql'       => "char(1) NOT NULL default ''",
 	),
 	'formHybridJumpToPreserveParams'             => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridJumpToPreserveParams'],
