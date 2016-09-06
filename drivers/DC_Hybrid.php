@@ -1563,6 +1563,13 @@ class DC_Hybrid extends \DataContainer
 	{
 		global $objPage;
 
+		// redirect filter form only, if jumpTo is given
+		if($this->isFilterForm && !$this->jumpTo)
+		{
+			return;
+		}
+
+
 		$blnRedirect = false;
 		$strUrl      = \Controller::generateFrontendUrl($objPage->row());
 
