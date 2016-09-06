@@ -167,6 +167,10 @@ class FormConfiguration
 			case 'fieldDependentRedirectConditions':
 				$varValue = deserialize($varValue, true);
 			break;
+			case 'readOnly':
+				$strKey = 'arrReadOnly';
+				$varValue = deserialize($varValue, true);
+			break;
 		}
 		$this->arrData[$strKey] = deserialize($varValue);
 	}

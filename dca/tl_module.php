@@ -11,6 +11,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridSendSubmissionAsNotification'
 $arrDca['palettes']['__selector__'][] = 'formHybridSendConfirmationViaEmail';
 $arrDca['palettes']['__selector__'][] = 'formHybridSendConfirmationAsNotification';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddEditableRequired';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddReadOnly';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddDisplayedSubPaletteFields';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddFieldDependentRedirect';
 $arrDca['palettes']['__selector__'][] = 'formHybridCustomSubmit';
@@ -26,21 +27,22 @@ array_insert($arrDca['palettes']['__selector__'], 0, array('formHybridViewMode')
  */
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT]  = 'formHybridTemplate';
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_READONLY] = 'formHybridReadonlyTemplate';
-$arrDca['subpalettes']['formHybridAddDefaultValues']       = 'formHybridDefaultValues';
-$arrDca['subpalettes']['formHybridSendSubmissionViaEmail'] =
+$arrDca['subpalettes']['formHybridAddDefaultValues']                          = 'formHybridDefaultValues';
+$arrDca['subpalettes']['formHybridSendSubmissionViaEmail']                    =
 	'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
-$arrDca['subpalettes']['formHybridSendSubmissionAsNotification'] = 'formHybridSubmissionNotification';
-$arrDca['subpalettes']['formHybridSendConfirmationViaEmail'] =
+$arrDca['subpalettes']['formHybridSendSubmissionAsNotification']              = 'formHybridSubmissionNotification';
+$arrDca['subpalettes']['formHybridSendConfirmationViaEmail']                  =
 	'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
-$arrDca['subpalettes']['formHybridSendConfirmationAsNotification'] = 'formHybridConfirmationNotification';
-$arrDca['subpalettes']['formHybridAddEditableRequired']          = 'formHybridEditableRequired';
-$arrDca['subpalettes']['formHybridAddDisplayedSubPaletteFields'] = 'formHybridDisplayedSubPaletteFields';
-$arrDca['subpalettes']['formHybridAddFieldDependentRedirect'] = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
-$arrDca['subpalettes']['formHybridCustomSubmit'] = 'formHybridSubmitLabel,formHybridSubmitClass';
-$arrDca['subpalettes']['formHybridAddSubmitValues'] = 'formHybridSubmitValues';
-$arrDca['subpalettes']['formHybridAddPermanentFields'] = 'formHybridPermanentFields';
-$arrDca['subpalettes']['formHybridUseCustomFormId'] = 'formHybridCustomFormId';
-$arrDca['subpalettes']['formHybridAllowIdAsGetParameter']     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
+$arrDca['subpalettes']['formHybridSendConfirmationAsNotification']            = 'formHybridConfirmationNotification';
+$arrDca['subpalettes']['formHybridAddEditableRequired']                       = 'formHybridEditableRequired';
+$arrDca['subpalettes']['formHybridAddReadOnly']                               = 'formHybridReadOnly';
+$arrDca['subpalettes']['formHybridAddDisplayedSubPaletteFields']              = 'formHybridDisplayedSubPaletteFields';
+$arrDca['subpalettes']['formHybridAddFieldDependentRedirect']                 = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
+$arrDca['subpalettes']['formHybridCustomSubmit']                              = 'formHybridSubmitLabel,formHybridSubmitClass';
+$arrDca['subpalettes']['formHybridAddSubmitValues']                           = 'formHybridSubmitValues';
+$arrDca['subpalettes']['formHybridAddPermanentFields']                        = 'formHybridPermanentFields';
+$arrDca['subpalettes']['formHybridUseCustomFormId']                           = 'formHybridCustomFormId';
+$arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 
 
 /**
@@ -94,6 +96,26 @@ $arrFields = array(
 	'formHybridEditableRequired'                 => array(
 		'inputType'        => 'select',
 		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditableRequired'],
+		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
+		'exclude'          => true,
+		'eval'             => array(
+			'multiple'           => true,
+			'chosen'             => true,
+			'includeBlankOption' => true,
+			'tl_class'           => 'w50 autoheight',
+		),
+		'sql'              => "blob NULL",
+	),
+	'formHybridAddReadOnly'              => array(
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddReadOnly'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
+		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridReadOnly'                 => array(
+		'inputType'        => 'select',
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridReadOnly'],
 		'options_callback' => array('tl_form_hybrid_module', 'getFields'),
 		'exclude'          => true,
 		'eval'             => array(

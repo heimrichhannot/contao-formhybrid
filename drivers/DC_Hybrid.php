@@ -54,6 +54,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $arrEditable = array();
 
+	protected $arrReadOnly = array();
+
 	protected $arrRequired = array();
 
 	protected $arrInvalidFields = array();
@@ -775,9 +777,10 @@ class DC_Hybrid extends \DataContainer
 		$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 
 		// overwrite the widget in readonly mode
-		if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY)
+		if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY || ($this->viewMode == FORMHYBRID_VIEW_MODE_DEFAULT && $this->addReadOnly && in_array($strName, $this->arrReadOnly)))
 		{
 			$strClass = 'HeimrichHannot\FormHybrid\FormReadonlyField';
+			$skipValidation = true;
 		}
 
 		$strInputMethod = $this->strInputMethod;
