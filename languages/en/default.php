@@ -21,6 +21,7 @@ $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderWithCosts'] = 'Or
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderFree'] = 'Order for free';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['order'] = 'Place an order';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['register'] = 'Submit registration';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['submitApplication'] = 'Submit application';
 
 /**
  * Messages
