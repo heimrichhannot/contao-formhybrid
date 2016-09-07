@@ -729,13 +729,18 @@ class DC_Hybrid extends \DataContainer
 						$strSubpalette       = $strSelector . '_' . $varValue;
 						$arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
 					}
-					else
+
+
+					// remove concatenated type selector sibling subpalette fields that are not active
+					foreach ($arrSubpalettes as $strSubSiblingPalette => $strSubSiblingFields)
 					{
-						// remove concatenated type selector sibling subpalette fields that are not active
-						foreach ($arrSubpalettes as $strSubSiblingPalette => $strSubSiblingFields)
+						// do not remove active concatenated type selector fields
+						if($blnActive && $strSubSiblingPalette === $strSubpalette)
 						{
-							$arrFields = array_diff($arrFields, FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubSiblingPalette]));
+							continue;
 						}
+
+						$arrFields = array_diff($arrFields, FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubSiblingPalette]));
 					}
 				}
 			}
