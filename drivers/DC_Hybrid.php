@@ -4,10 +4,8 @@ namespace HeimrichHannot\FormHybrid;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseRedirect;
-use HeimrichHannot\Haste\Security\CodeGenerator;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\FormSubmission;
-use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use HeimrichHannot\Versions\Version;
@@ -730,6 +728,14 @@ class DC_Hybrid extends \DataContainer
 					{
 						$strSubpalette       = $strSelector . '_' . $varValue;
 						$arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
+					}
+					else
+					{
+						// remove concatenated type selector sibling subpalette fields that are not active
+						foreach ($arrSubpalettes as $strSubSiblingPalette => $strSubSiblingFields)
+						{
+							$arrFields = array_diff($arrFields, FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubSiblingPalette]));
+						}
 					}
 				}
 			}
