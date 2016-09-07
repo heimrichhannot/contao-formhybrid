@@ -96,7 +96,7 @@ class FormReadonlyField extends \Widget
 			break;
 		}
 
-		$value = \StringUtil::decodeEntities(\Controller::replaceInsertTags($value));
+		$value = class_exists('Contao\StringUtil') ? \StringUtil::decodeEntities(\Controller::replaceInsertTags($value)) : \String::decodeEntities(\Controller::replaceInsertTags($value));
 
 		if(!$value)
 		{
