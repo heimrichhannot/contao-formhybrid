@@ -1652,6 +1652,11 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
+		if(!$blnRedirect)
+		{
+			return;
+		}
+
 		\Controller::redirect($strUrl);
 	}
 
