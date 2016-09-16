@@ -32,9 +32,13 @@ class FormConfiguration
 	);
 	public function __construct($varConfig)
 	{
-		if($varConfig instanceof \Module)
+		if($varConfig instanceof \Module && $varConfig->Template instanceof \FrontendTemplate)
 		{
-			$this->varConfig = Arrays::objectToArray($varConfig);
+			// Module::arrData is protected, but within generate() all data is available within FrontendTemplate data
+			foreach ($varConfig->Template->getData() as $strField => $varValue)
+			{
+				$this->varConfig[$strField] = $varConfig->{$strField};
+			}
 		}
 		else if ($varConfig instanceof \Model)
 		{
