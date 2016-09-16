@@ -77,7 +77,7 @@ abstract class Form extends DC_Hybrid
 			{
 				$blnJustCreated                = true;
 				$this->objActiveRecord->tstamp = time();
-				$this->onCreateCallback($this->objActiveRecord, $this);
+				$this->onFirstSubmitCallback($this->objActiveRecord, $this);
 			}
 
 			$blnIsModified = false;

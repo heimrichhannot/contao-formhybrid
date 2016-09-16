@@ -192,6 +192,26 @@ class DC_Hybrid extends \DataContainer
 				if ($this->intId && is_numeric($this->intId))
 				{
 					FormSession::addSubmissionId($this->getFormId(false), $this->getId());
+
+					// Call the oncreate_callback
+					if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback']))
+					{
+						foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback'] as $callback)
+						{
+							if (is_array($callback))
+							{
+								$this->import($callback[0]);
+								$this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
+							}
+							elseif (is_callable($callback))
+							{
+								$callback($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
+							}
+
+							$this->objActiveRecord->refresh();
+						}
+					}
+
 					$this->doIdDependentRedirectToEntity();
 				}
 				else
@@ -1697,7 +1717,11 @@ class DC_Hybrid extends \DataContainer
 		return \Environment::get('isAjaxRequest') && \Input::post('scope') == FORMHYBRID_ACTION_SCOPE;
 	}
 
-	public function onCreateCallback($objItem, \DataContainer $objDc)
+	/**
+	 * @param                $objItem
+	 * @param \DataContainer $objDc
+	 */
+	public function onFirstSubmitCallback($objItem, \DataContainer $objDc)
 	{
 	}
 
