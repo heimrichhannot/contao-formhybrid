@@ -62,8 +62,17 @@ class FormConfiguration
 	{
 		// leave non-formhybrid data inside config
 		$this->arrData = Arrays::filterOutByPrefixes($this->varConfig, array('formHybrid'));
+
+		// never set context id from module id
+		if(isset($this->arrData['id']))
+		{
+			$this->arrData['moduleId'] = $this->arrData['id'];
+			unset($this->arrData['id']);
+		}
+
 		// transform formhybrid prefixed attributes
 		$arrData = Arrays::filterByPrefixes($this->varConfig, array('formHybrid'));
+
 		foreach ($arrData as $strKey => $varValue)
 		{
 			$this->{$strKey} = $varValue;
@@ -123,6 +132,9 @@ class FormConfiguration
 		$strKey = static::getKey($strKey);
 		switch ($strKey)
 		{
+			case 'id':
+				$strKey = 'moduleId';
+			break;
 			case 'action':
 				$strKey = 'strAction';
 			break;
@@ -177,6 +189,7 @@ class FormConfiguration
 				$varValue = deserialize($varValue, true);
 			break;
 		}
+
 		$this->arrData[$strKey] = deserialize($varValue);
 	}
 	/**
@@ -200,7 +213,7 @@ class FormConfiguration
 	 */
 	public function getModule()
 	{
-		if(!$this->id || ($objModule = \ModuleModel::findByPk($this->id)) === null)
+		if(!$this->moduleId || ($objModule = \ModuleModel::findByPk($this->moduleId)) === null)
 		{
 			return null;
 		}

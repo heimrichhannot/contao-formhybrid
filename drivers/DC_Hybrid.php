@@ -121,7 +121,7 @@ class DC_Hybrid extends \DataContainer
 			$this->strTable = $strTable;
 		}
 
-		$this->intId       = $intId;
+		$this->intId       = $this->intId ?: $intId;
 		$this->strFormId   = $this->getFormId();
 		$this->strFormName = $this->getFormName();
 
@@ -139,7 +139,7 @@ class DC_Hybrid extends \DataContainer
 
 		// GET is checked for each field separately
 		$this->isSubmitted = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
-		$this->setUseModelData($this->useModelData !== null ? $this->useModelData : \Database::getInstance()->tableExists($this->strTable));
+		$this->setUseModelData(\Database::getInstance()->tableExists($this->strTable));
 
 		if ($this->useModelData())
 		{
@@ -157,7 +157,6 @@ class DC_Hybrid extends \DataContainer
 		\System::loadLanguageFile($this->strTable);
 
 		$this->objModule = $this->objConfig->getModule();
-		$this->intId     = $this->intId ?: $intId;
 
 		$blnCreated = $this->create();
 
