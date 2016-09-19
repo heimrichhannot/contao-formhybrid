@@ -52,6 +52,7 @@ class FormConfiguration
 		{
 			$this->varConfig = $varConfig;
 		}
+
 		if(is_array($this->varConfig))
 		{
 			$this->transform();

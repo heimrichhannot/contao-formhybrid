@@ -80,7 +80,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
-	protected $useModelData = false;
+	protected $useModelData = null;
 
 	protected $blnSilentMode = false;
 
@@ -139,7 +139,7 @@ class DC_Hybrid extends \DataContainer
 
 		// GET is checked for each field separately
 		$this->isSubmitted = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
-		$this->setUseModelData(\Database::getInstance()->tableExists($this->strTable));
+		$this->setUseModelData($this->useModelData !== null ? $this->useModelData : \Database::getInstance()->tableExists($this->strTable));
 
 		if ($this->useModelData())
 		{
