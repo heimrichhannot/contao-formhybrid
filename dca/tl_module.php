@@ -15,7 +15,6 @@ $arrDca['palettes']['__selector__'][] = 'formHybridAddReadOnly';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddDisplayedSubPaletteFields';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddFieldDependentRedirect';
 $arrDca['palettes']['__selector__'][] = 'formHybridCustomSubmit';
-$arrDca['palettes']['__selector__'][] = 'formHybridAddSubmitValues';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddPermanentFields';
 $arrDca['palettes']['__selector__'][] = 'formHybridUseCustomFormId';
 $arrDca['palettes']['__selector__'][] = 'formHybridAllowIdAsGetParameter';
@@ -39,7 +38,6 @@ $arrDca['subpalettes']['formHybridAddReadOnly']                               = 
 $arrDca['subpalettes']['formHybridAddDisplayedSubPaletteFields']              = 'formHybridDisplayedSubPaletteFields';
 $arrDca['subpalettes']['formHybridAddFieldDependentRedirect']                 = 'formHybridFieldDependentRedirectConditions,formHybridFieldDependentRedirectJumpTo,formHybridFieldDependentRedirectKeepParams';
 $arrDca['subpalettes']['formHybridCustomSubmit']                              = 'formHybridSubmitLabel,formHybridSubmitClass';
-$arrDca['subpalettes']['formHybridAddSubmitValues']                           = 'formHybridSubmitValues';
 $arrDca['subpalettes']['formHybridAddPermanentFields']                        = 'formHybridPermanentFields';
 $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 'formHybridCustomFormId';
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
@@ -183,40 +181,6 @@ $arrFields = array(
 					'exclude'   => true,
 					'inputType' => 'text',
 					'eval'      => array('style' => 'width: 350px', 'allowHtml' => true),
-				),
-			),
-			'tl_class'     => 'clr long',
-		),
-		'sql'       => "blob NULL",
-	),
-	'formHybridAddSubmitValues'                  => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddSubmitValues'],
-		'exclude'   => true,
-		'inputType' => 'checkbox',
-		'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
-		'sql'       => "char(1) NOT NULL default ''",
-	),
-	'formHybridSubmitValues'                     => array(
-		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmitValues'],
-		'exclude'   => true,
-		'inputType' => 'multiColumnWizard',
-		'eval'      => array(
-			'columnFields' => array(
-				'field' => array(
-					'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['field'],
-					'exclude'          => true,
-					'inputType'        => 'select',
-					'options_callback' => array(
-						'tl_form_hybrid_module',
-						'getFields',
-					),
-					'eval'             => array('style' => 'width: 150px', 'chosen' => true),
-				),
-				'value' => array(
-					'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridDefaultValues']['value'],
-					'exclude'   => true,
-					'inputType' => 'text',
-					'eval'      => array('style' => 'width: 100px'),
 				),
 			),
 			'tl_class'     => 'clr long',

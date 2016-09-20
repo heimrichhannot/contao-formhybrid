@@ -224,7 +224,10 @@ class DC_Hybrid extends \DataContainer
 								$callback($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
 							}
 
-							$this->objActiveRecord->refresh();
+							if (!$this->saveToBlob)
+							{
+								$this->objActiveRecord->refresh();
+							}
 						}
 					}
 
@@ -270,7 +273,7 @@ class DC_Hybrid extends \DataContainer
 				}
 
 				// redirect on specific field value
-				static::doFieldDependentRedirect($this, $this->objActiveRecord);
+				static::doFieldDependentRedirect();
 			} // we require a module context for entity creation
 			else
 			{

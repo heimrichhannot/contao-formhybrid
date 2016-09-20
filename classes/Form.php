@@ -31,151 +31,139 @@ abstract class Form extends DC_Hybrid
 	}
 
 
+
 	protected function processForm()
 	{
-		if ($this->isSubmitted && !$this->doNotSubmit)
+		$this->onSubmitCallback($this);
+
+		if (!$this->isSkipValidation())
 		{
-			if ($this->addSubmitValues && !empty($this->arrSubmitValues))
+			if (is_array($this->dca['config']['onsubmit_callback']))
 			{
-				foreach ($this->arrSubmitValues as $arrSubmitValue)
+				foreach ($this->dca['config']['onsubmit_callback'] as $callback)
 				{
-					$this->objActiveRecord->{$arrSubmitValue['field']} = $arrSubmitValue['value'];
-				}
+					$this->import($callback[0]);
+					$this->$callback[0]->$callback[1]($this);
 
-				if ($this->saveToBlob)
-				{
-					$this->saveToBlob();
-				} else
-				{
-					$this->objActiveRecord->save();
-				}
-			}
-
-			$this->onSubmitCallback($this);
-
-			if (!$this->isSkipValidation())
-			{
-				if (is_array($this->dca['config']['onsubmit_callback']))
-				{
-					foreach ($this->dca['config']['onsubmit_callback'] as $callback)
+					// reload model from database, maybe something has changed in callback
+					if (!$this->saveToBlob)
 					{
-						$this->import($callback[0]);
-						$this->$callback[0]->$callback[1]($this);
-
-						// reload model from database, maybe something has changed in callback
 						$this->objActiveRecord->refresh();
 					}
 				}
 			}
-
-			// reload model from database, maybe something has changed in callback
-			$this->objActiveRecord->refresh();
-
-			// just created?
-			$blnJustCreated = false;
-			if (!$this->objActiveRecord->tstamp)
-			{
-				$blnJustCreated                = true;
-				$this->objActiveRecord->tstamp = time();
-				$this->onFirstSubmitCallback($this->objActiveRecord, $this);
-			}
-
-			$blnIsModified = false;
-			foreach ($this->objActiveRecord->row() as $strField => $varValue)
-			{
-				if ($this->arrOriginalRow[$strField] != $varValue)
-				{
-					$blnIsModified = true;
-					break;
-				}
-			}
-
-			// run callback after update after submit_callbacks since these could do important updates
-			if ($blnIsModified)
-			{
-				// update tstamp
-				$this->objActiveRecord->tstamp = time();
-
-				if ($this->saveToBlob)
-				{
-					$this->saveToBlob();
-				} else
-				{
-					$this->objActiveRecord->save();
-
-					// create new version - only if modified
-					$this->createVersion();
-				}
-
-				$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated, $this->arrOriginalRow);
-			}
-
-			$arrSubmissionData = $this->prepareSubmissionData();
-
-			if ($this->sendSubmissionAsNotification || $this->submissionNotification)
-			{
-				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null)
-				{
-					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
-
-					if ($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken))
-					{
-						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
-					}
-				}
-			}
-
-			if ($this->sendSubmissionViaEmail)
-			{
-				if ($this->submissionAvisotaMessage)
-				{
-					$this->createSubmissionAvisotaEmail(
-						$this->submissionAvisotaMessage,
-						$this->submissionAvisotaSalutationGroup,
-						$arrSubmissionData
-					);
-				} else
-				{
-					$this->createSubmissionEmail($arrSubmissionData);
-				}
-			}
-
-
-			if ($this->confirmationAsNotification || $this->confirmationNotification)
-			{
-				if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->confirmationNotification)) !== null)
-				{
-					$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
-
-					if ($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken))
-					{
-						$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
-					}
-				}
-			}
-
-			if ($this->sendConfirmationViaEmail)
-			{
-				if ($this->confirmationAvisotaMessage)
-				{
-					$this->createConfirmationAvisotaEmail(
-						$this->confirmationAvisotaMessage,
-						$this->confirmationAvisotaSalutationGroup,
-						$arrSubmissionData
-					);
-				} else
-				{
-					$this->createConfirmationEmail($arrSubmissionData);
-				}
-			}
-
-			if (!$this->isSilentMode())
-			{
-				$this->createSuccessMessage($arrSubmissionData);
-			}
-
-			$this->afterSubmitCallback($this);
 		}
+
+		// reload model from database, maybe something has changed in callback
+		if (!$this->saveToBlob)
+		{
+			$this->objActiveRecord->refresh();
+		}
+
+		// just created?
+		$blnJustCreated = false;
+		if (!$this->objActiveRecord->tstamp)
+		{
+			$blnJustCreated                = true;
+			$this->objActiveRecord->tstamp = time();
+			$this->onFirstSubmitCallback($this->objActiveRecord, $this);
+		}
+
+		$blnIsModified = false;
+		foreach ($this->objActiveRecord->row() as $strField => $varValue)
+		{
+			if ($this->arrOriginalRow[$strField] != $varValue)
+			{
+				$blnIsModified = true;
+				break;
+			}
+		}
+
+		// run callback after update after submit_callbacks since these could do important updates
+		if ($blnIsModified)
+		{
+			// update tstamp
+			$this->objActiveRecord->tstamp = time();
+
+			if ($this->saveToBlob)
+			{
+				$this->saveToBlob();
+			} else
+			{
+				$this->objActiveRecord->save();
+
+				// create new version - only if modified
+				$this->createVersion();
+			}
+
+			$this->onUpdateCallback($this->objActiveRecord, $this, $blnJustCreated, $this->arrOriginalRow);
+		}
+
+		$arrSubmissionData = $this->prepareSubmissionData();
+
+		if ($this->sendSubmissionAsNotification || $this->submissionNotification)
+		{
+			if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null)
+			{
+				$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
+
+				if ($this->sendSubmissionNotification($objMessage, $arrSubmissionData, $arrToken))
+				{
+					$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
+				}
+			}
+		}
+
+		if ($this->sendSubmissionViaEmail)
+		{
+			if ($this->submissionAvisotaMessage)
+			{
+				$this->createSubmissionAvisotaEmail(
+					$this->submissionAvisotaMessage,
+					$this->submissionAvisotaSalutationGroup,
+					$arrSubmissionData
+				);
+			} else
+			{
+				$this->createSubmissionEmail($arrSubmissionData);
+			}
+		}
+
+
+		if ($this->confirmationAsNotification || $this->confirmationNotification)
+		{
+			if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->confirmationNotification)) !== null)
+			{
+				$arrToken = FormSubmission::tokenizeData($arrSubmissionData);
+
+				if ($this->sendConfirmationNotification($objMessage, $arrSubmissionData, $arrToken))
+				{
+					$objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
+				}
+			}
+		}
+
+		if ($this->sendConfirmationViaEmail)
+		{
+			if ($this->confirmationAvisotaMessage)
+			{
+				$this->createConfirmationAvisotaEmail(
+					$this->confirmationAvisotaMessage,
+					$this->confirmationAvisotaSalutationGroup,
+					$arrSubmissionData
+				);
+			} else
+			{
+				$this->createConfirmationEmail($arrSubmissionData);
+			}
+		}
+
+		if (!$this->isSilentMode())
+		{
+			$this->createSuccessMessage($arrSubmissionData);
+		}
+
+		$this->afterSubmitCallback($this);
 	}
 
 	protected function prepareSubmissionData()
