@@ -10,7 +10,7 @@ $arrLang['formHybridEditable'] = array('Felder', 'Wählen Sie hier die gewünsch
 $arrLang['formHybridAddEditableRequired'] = array('Pflichtfelder überschreiben', 'Legen Sie die Pflichtfelder unabhängig von der DCA-Konfiguration fest.');
 $arrLang['formHybridEditableRequired'] = array('Pflichtfelder', 'Wählen Sie hier die gewünschten Pflichtfelder aus.');
 $arrLang['formHybridAddReadOnly'] = array('Nurlese-Felder hinzufügen ', 'Legen Sie Felder fest, die nur gelesen werden dürfen.');
-$arrLang['formHybridEditableRequired'] = array('Nurlese-Felder', 'Wählen Sie hier die gewünschten Nurlese-Felder aus.');
+$arrLang['formHybridReadOnly'] = array('Nurlese-Felder', 'Wählen Sie hier die gewünschten Nurlese-Felder aus.');
 $arrLang['formHybridAddDisplayedSubPaletteFields'] = array('Immer anzuzeigende Sub-Paletten-Felder hinzufügen', 'Legen Sie die Felder fest, welche sich in Sub-Paletten befinden, aber immer angezeigt werden sollen.');
 $arrLang['formHybridDisplayedSubPaletteFields'] = array('Immer anzuzeigende Sub-Paletten-Felder', 'Wählen Sie hier die gewünschten Felder aus.');
 $arrLang['formHybridEditableSkip'] = array('Zu überspringende Felder', 'Wählen Sie hier die Felder aus, die vom Modell nicht zur Filterung genutzt werden sollen (abhängig von der Programmlogik).');
@@ -84,4 +84,4 @@ $arrLang['formHybridAppendIdToUrlOnCreation']      = array('Neue Instanz: ID GET
  * References
  */
 $arrLang['reference'][FORMHYBRID_VIEW_MODE_DEFAULT] = 'Standard (bearbeiten)';
-$arrLang['reference'][FORMHYBRID_VIEW_MODE_READ] = 'Nur lesen';
+$arrLang['reference'][FORMHYBRID_VIEW_MODE_READONLY] = 'Nur lesen';

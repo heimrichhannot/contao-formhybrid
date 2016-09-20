@@ -80,7 +80,9 @@ class DC_Hybrid extends \DataContainer
 
 	protected $mode = FORMHYBRID_MODE_CREATE;
 
-	protected $useModelData = null;
+	private $hasDatabaseTable;
+
+	protected $noEntity = false;
 
 	protected $blnSilentMode = false;
 
@@ -110,7 +112,13 @@ class DC_Hybrid extends \DataContainer
 
 	public function __construct($strTable = '', $varConfig = null, $intId = 0)
 	{
-		$this->objConfig = new FormConfiguration($varConfig);
+		$this->objConfig = $varConfig;
+
+		if(!($varConfig instanceof FormConfiguration))
+		{
+			$this->objConfig = new FormConfiguration($varConfig);
+		}
+
 		$this->arrConfig = $this->objConfig->getData();
 		$this->setData($this->objConfig->getData());
 		$this->objModule = $this->objConfig->getModule();
@@ -139,16 +147,25 @@ class DC_Hybrid extends \DataContainer
 
 		// GET is checked for each field separately
 		$this->isSubmitted = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
-		$this->setUseModelData(\Database::getInstance()->tableExists($this->strTable));
+		$this->hasDatabaseTable = \Database::getInstance()->tableExists($this->strTable);
 
-		if ($this->useModelData())
+		if ($this->hasDatabaseTable())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 
 			if (!class_exists($strModelClass))
 			{
-				$this->setUseModelData(false);
+				throw new \Exception(sprintf('Database table %s exists, but no model found, please create one.', $this->strTable));
 			}
+		}
+
+		// transform filterForm flag for internal usage
+		if($this->isFilterForm)
+		{
+			$this->setSkipValidation(true);
+			$this->setNoEntity(true);
+			$this->setReset(false);
+			$this->setSilentMode(true);
 		}
 
 		$this->import('Database');
@@ -172,7 +189,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function create()
 	{
-		if (!$this->isFilterForm && $this->useModelData())
+		if ($this->hasDatabaseTable() && !$this->hasNoEntity())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
@@ -215,7 +232,7 @@ class DC_Hybrid extends \DataContainer
 				}
 				else
 				{
-					if (!$this->isFilterForm && $this->useModelData())
+					if ($this->hasDatabaseTable() && !$this->hasNoEntity())
 					{
 						$this->invalid = true;
 						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
@@ -235,7 +252,7 @@ class DC_Hybrid extends \DataContainer
 	{
 		// load the model
 		// don't load any class if the form's a filter form -> submission should be used instead
-		if (!$this->isFilterForm && $this->useModelData())
+		if ($this->hasDatabaseTable() && !$this->hasNoEntity())
 		{
 			$strModelClass = \Model::getClassFromTable($this->strTable);
 		}
@@ -262,12 +279,12 @@ class DC_Hybrid extends \DataContainer
 
 					// do nothing, if ajax request but not related to formhybrid
 					// otherwise a new submission will be generated and validation will fail
-					if ($this->useModelData())
+					if ($this->hasDatabaseTable())
 					{
 						$this->setDefaults($this->dca);
 						$this->setSubmission();
 						$this->save(); // initially try to save record, as ajax requests for example require entity model
-					} elseif (!$this->isFilterForm && $this->useModelData())
+					} elseif ($this->hasDatabaseTable() && !$this->hasNoEntity())
 					{
 						$this->invalid = true;
 						StatusMessage::addError($GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'], $this->objModule->id, 'alert alert-danger');
@@ -276,7 +293,7 @@ class DC_Hybrid extends \DataContainer
 			}
 		} else
 		{
-			if ($this->isFilterForm || !$this->useModelData())
+			if (!$this->hasDatabaseTable() || $this->hasNoEntity())
 			{
 				$this->setSubmission();
 			}
@@ -484,7 +501,7 @@ class DC_Hybrid extends \DataContainer
 
 			// reset form is default. disable by $this->setReset(false)
 			// Exception: filter forms should never been reset after submit
-			if ($this->getReset() && !$this->isFilterForm)
+			if ($this->getReset())
 			{
 				$this->reset();
 				$blnSubmittedBeforeReset = true;
@@ -595,7 +612,7 @@ class DC_Hybrid extends \DataContainer
 				if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions))
 				{
 					// no messages
-					$this->blnSilentMode                                                 = $this->isSkipValidation();
+					$this->setSilentMode($this->isSkipValidation());
 					$this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
 
 					// remove fields not existing in the current palette
@@ -1244,7 +1261,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function createVersion()
 	{
-		if ($this->isFilterForm || !$this->useModelData())
+		if (!$this->hasDatabaseTable() || $this->hasNoEntity())
 		{
 			return;
 		}
@@ -1286,12 +1303,12 @@ class DC_Hybrid extends \DataContainer
 	 */
 	protected function setDefaults($arrDca = array())
 	{
-		if (\Database::getInstance()->tableExists($this->strTable))
+		if ($this->hasDatabaseTable())
 		{
 			$arrFields = \Database::getInstance()->listFields($this->strTable);
 		} else
 		{
-			$arrFields = $arrDca;
+			$arrFields = $arrDca['fields'];
 		}
 
 		foreach ($arrFields as $strName => $arrField)
@@ -1504,7 +1521,7 @@ class DC_Hybrid extends \DataContainer
 
 	protected function save($varValue = '')
 	{
-		if ($this->isFilterForm || !$this->useModelData())
+		if (!$this->hasDatabaseTable() || $this->hasNoEntity())
 		{
 			return;
 		}
@@ -1592,13 +1609,6 @@ class DC_Hybrid extends \DataContainer
 	protected function redirectAfterSubmission()
 	{
 		global $objPage;
-
-		// redirect filter form only, if jumpTo is given
-		if($this->isFilterForm && !$this->jumpTo)
-		{
-			return;
-		}
-
 
 		$blnRedirect = false;
 		$strUrl      = \Controller::generateFrontendUrl($objPage->row());
@@ -1863,19 +1873,10 @@ class DC_Hybrid extends \DataContainer
 	/**
 	 * @return boolean
 	 */
-	public function useModelData()
+	public function hasDatabaseTable()
 	{
-		return $this->useModelData;
+		return $this->hasDatabaseTable;
 	}
-
-	/**
-	 * @param boolean $useModelData
-	 */
-	public function setUseModelData($useModelData)
-	{
-		$this->useModelData = $useModelData;
-	}
-
 
 	/**
 	 * Clear inputs, set default values
@@ -1999,4 +2000,36 @@ class DC_Hybrid extends \DataContainer
 	{
 	}
 
+	/**
+	 * @return boolean
+	 */
+	public function hasNoEntity()
+	{
+		return $this->noEntity;
+	}
+
+	/**
+	 * @param boolean $noEntity
+	 */
+	public function setNoEntity($noEntity)
+	{
+		$this->noEntity = $noEntity;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function isSilentMode()
+	{
+		return $this->blnSilentMode;
+	}
+
+	/**
+	 * @param boolean $blnSilentMode
+	 */
+	public function setSilentMode($blnSilentMode)
+	{
+		$this->blnSilentMode = $blnSilentMode;
+	}
 }

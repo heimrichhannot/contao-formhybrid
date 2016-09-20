@@ -169,7 +169,7 @@ abstract class Form extends DC_Hybrid
 				}
 			}
 
-			if (!$this->isFilterForm && !$this->blnSilentMode)
+			if (!$this->isSilentMode())
 			{
 				$this->createSuccessMessage($arrSubmissionData);
 			}
@@ -527,7 +527,7 @@ abstract class Form extends DC_Hybrid
 			$arrSubmission = $blnSkipDefaults ? array() : $this->getDefaults();
 		}
 
-		if (($this->isFilterForm || !$this->useModelData()) && is_array($arrSubmission))
+		if (($this->hasNoEntity() || !$this->hasDatabaseTable()) && is_array($arrSubmission))
 		{
 			$arrDca = $this->getDca();
 
@@ -557,7 +557,7 @@ abstract class Form extends DC_Hybrid
 			}
 		}
 
-		return ($this->isFilterForm || !$this->useModelData()) ? $objSubmission : $this->objActiveRecord;
+		return (!$this->hasDatabaseTable() || $this->hasNoEntity()) ? $objSubmission : $this->objActiveRecord;
 	}
 
 	public function setSubmitCallbacks(array $callbacks)
