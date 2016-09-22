@@ -1475,6 +1475,21 @@ class DC_Hybrid extends \DataContainer
 
 		$strBuffer = '';
 
+		if ($this->formHybridTransformGetParamsToHiddenFields)
+		{
+			foreach ($_GET as $strField => $varValue)
+			{
+				$arrData = array(
+					'inputType' => 'hidden',
+					'value'     => $varValue
+				);
+
+				$objWidget = $this->generateField($strField, $arrData);
+				$objWidget->value = $varValue;
+				$this->arrHiddenFields[$strField] = $objWidget;
+			}
+		}
+
 		foreach ($this->arrHiddenFields as $strName => $objWidget)
 		{
 			$strBuffer .= $objWidget->parse();
