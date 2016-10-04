@@ -1010,6 +1010,22 @@ class DC_Hybrid extends \DataContainer
 				$objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
 			}
 
+			// trigger save_callbacks before assertion of the new value to objActiveRecord
+			if (is_array($arrData['save_callback']))
+			{
+				foreach ($arrData['save_callback'] as $callback)
+				{
+					if (is_array($callback))
+					{
+						$this->import($callback[0]);
+						$varValue = $this->$callback[0]->$callback[1]($varValue, $this);
+					} elseif (is_callable($callback))
+					{
+						$varValue = $callback($varValue, $this);
+					}
+				}
+			}
+
 			if ($objWidget->hasErrors())
 			{
 				$this->doNotSubmit        = true;
@@ -1228,22 +1244,6 @@ class DC_Hybrid extends \DataContainer
 			$arrData = $this->dca['fields'][$strName];
 
 			$varValue = $this->objActiveRecord->{$strName};
-
-			// Trigger the save_callback
-			if (is_array($arrData['save_callback']))
-			{
-				foreach ($arrData['save_callback'] as $callback)
-				{
-					if (is_array($callback))
-					{
-						$this->import($callback[0]);
-						$varValue = $this->$callback[0]->$callback[1]($varValue, $this);
-					} elseif (is_callable($callback))
-					{
-						$varValue = $callback($varValue, $this);
-					}
-				}
-			}
 
 			// Set the correct empty value (see #6284, #6373)
 			if ($varValue === '')
