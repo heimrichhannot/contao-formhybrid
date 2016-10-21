@@ -16,9 +16,9 @@ $arrLang['formHybridDisplayedSubPaletteFields'] = array('Immer anzuzeigende Sub-
 $arrLang['formHybridEditableSkip'] = array('Zu überspringende Felder', 'Wählen Sie hier die Felder aus, die vom Modell nicht zur Filterung genutzt werden sollen (abhängig von der Programmlogik).');
 $arrLang['formHybridAddDefaultValues'] = array('Standardwerte hinzufügen', 'Wählen Sie diese Option, um Standardwerte für das Modul hinzuzufügen.');
 $arrLang['formHybridDefaultValues'] = array('Standardwerte', 'Definieren Sie hier Standardwerte für das Modul.');
-$arrLang['formHybridDefaultValues']['field'] = array('Feld', 'Wählen Sie hier das gewünschte Feld aus. ACHTUNG: Bitte wählen Sie nur Felder aus, die sich auch tatsächlich im Formular befinden.');
+$arrLang['formHybridDefaultValues']['field'] = array('Feld', 'Wählen Sie hier das gewünschte Feld aus.');
 $arrLang['formHybridDefaultValues']['value'] = array('Wert', 'Geben Sie hier den gewünschten Standardwert ein. Arrays bitte serialisiert eingeben.');
-$arrLang['formHybridDefaultValues']['label'] = array('Label', 'Geben Sie eine alternative Bezeichnung/Label an?');
+$arrLang['formHybridDefaultValues']['label'] = array('Label', 'Geben Sie optional eine alternative Bezeichnung/Label');
 
 $arrLang['formHybridAsync'] = array('Formular asynchron absenden', 'Wählen Sie diese Option, wenn Sie das Formular asynchron versenden wollen.');
 

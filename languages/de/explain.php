@@ -12,11 +12,11 @@
 
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][10][0] = '{{form::FELDNAME}}';
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][10][1] =
-	'Liefert den <strong>formatierten Eingabewert</strong> des Formularfeldes zurück. Für Select-Felder, Radio-Buttons und Checkboxen wird die Eingabebezeichnung ausgegeben.';
+	'Liefert den <strong>formatierten Eingabewert</strong> des Formularfeldes zurück. Dies betrifft u.a. Übersetzungen, Optionswerte, spezielle Felder wie ein Datum, ...';
 
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][11][0] = '{{form_value::FELDNAME}}';
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][11][1] =
-	'Liefert den <strong>tatsächlichen Eingabewert</strong> des Formularfeldes zurück. Für Select-Felder, Radio-Buttons und Checkboxen wird der Eingabewert ausgegeben';
+	'Liefert den <strong>tatsächlichen Eingabewert</strong> des Formularfeldes zurück. Dies betrifft u.a. Übersetzungen, Optionswerte, spezielle Felder wie ein Datum, ...';
 
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][12][0] = '{{form_submission::FELDNAME}}';
 $GLOBALS['TL_LANG']['XPL']['formhybrid_inserttags'][12][1] =
