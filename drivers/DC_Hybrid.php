@@ -2066,4 +2066,22 @@ class DC_Hybrid extends \DataContainer
 	{
 		$this->blnSilentMode = $blnSilentMode;
 	}
+
+    /**
+     * @return FormConfiguration|null
+     */
+    public function getConfig()
+    {
+        return $this->objConfig;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigData()
+    {
+        return $this->arrConfig;
+    }
+
+
 }
