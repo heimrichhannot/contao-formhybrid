@@ -667,13 +667,13 @@ class tl_form_hybrid_module extends \Backend
 	 *
 	 * @return array
 	 */
-	public function getEmailFormFields(\DataContainer $arrDca)
+	public function getEmailFormFields(\DataContainer $dc)
 	{
 		$arrOptions = array();
 
-		$arrDca = $GLOBALS['TL_DCA'][$arrDca->activeRecord->formHybridDataContainer];
+		$arrDca = $GLOBALS['TL_DCA'][$dc->activeRecord->formHybridDataContainer];
 
-		if ($arrDca->activeRecord === null || empty($arrDca))
+		if ($dc->activeRecord === null || empty($arrDca))
 		{
 			return $arrOptions;
 		}
