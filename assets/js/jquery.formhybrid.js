@@ -186,6 +186,7 @@
     });
 
     $(document).ajaxComplete(function (event, jqXHR, ajaxOptions) {
+        if(typeof ajaxOptions == 'undefined') return false;
         FormhybridPlugins.init(FormHybridHelper.getParameterByName('action', ajaxOptions.data));
     });
 
