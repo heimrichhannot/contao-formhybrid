@@ -98,7 +98,7 @@ class FormConfiguration
 				{
 					$varValue = Url::removeQueryString(array('file'), \Environment::get('uri'));
 					// remove all query parameters within ajax request
-					if(Ajax::isRelated(Form::FORMHYBRID_NAME) === true)
+					if(Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
 					{
 						$varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
 					}

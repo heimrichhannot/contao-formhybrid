@@ -36,7 +36,7 @@
                 return false;
             }
 
-            $('body').on('submit', '.formhybrid form[data-async]', function (e) {
+            $(document).on('submit', '.formhybrid form[data-async]', function (e) {
                 var $form = $(this);
                 e.preventDefault();
                 FormhybridAjaxRequest._asyncFormSubmit($form);

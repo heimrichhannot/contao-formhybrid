@@ -196,11 +196,16 @@ class DC_Hybrid extends \DataContainer
 
 		if (!$this->intId || !is_numeric($this->intId))
 		{
-			// do nothing, if ajax request but not related to formhybrid
-			// otherwise a new submission will be generated and validation will fail
-			if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+			if ($this->objModule !== null && !$this->isSubmitted())
 			{
 				$this->objActiveRecord = $this->createSubmission($strModelClass);
+
+                // set tstamp by default to 0
+                if($this->hasDatabaseTable() && !$this->hasNoEntity() && \Database::getInstance()->fieldExists('tstamp', $this->strTable))
+                {
+                    $this->objActiveRecord->tstamp = 0;
+                }
+
 				$this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]);
 				$this->save(); // initially try to save record, as ajax requests for example require entity model
 
