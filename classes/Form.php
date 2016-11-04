@@ -24,13 +24,10 @@ abstract class Form extends DC_Hybrid
 		parent::__construct($this->strTable, $varConfig, $intId);
 	}
 
-
 	public function generate()
 	{
 		return parent::edit();
 	}
-
-
 
 	protected function processForm()
 	{

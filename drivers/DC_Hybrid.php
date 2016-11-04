@@ -196,7 +196,7 @@ class DC_Hybrid extends \DataContainer
 
 		if (!$this->intId || !is_numeric($this->intId))
 		{
-			if ($this->objModule !== null && !$this->isSubmitted())
+			if ($this->objModule !== null && (!$this->isSubmitted() || $this->hasNoEntity()))
 			{
 				$this->objActiveRecord = $this->createSubmission($strModelClass);
 
@@ -999,144 +999,148 @@ class DC_Hybrid extends \DataContainer
 		// FrontendWidget::validateGetAndPost() in
 		$objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
-		// do not validate fields if not submitted or skipvalidation issset
-		// do not submit if ajax request and group is not formhybrid, for example multifileupload (otherwise captcha fields will be validated does not match visible one)
-		if ($this->isSubmitted && !($this->isSkipValidation() || $skipValidation) && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+		if ($this->isSubmitted)
 		{
-			FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->getFormId(), $arrData);
-
-			if (is_array($arrWidgetErrors))
-			{
-				foreach ($arrWidgetErrors as $strError)
-				{
-					$objWidget->addError($strError);
-				}
-			}
-
-			if ($objWidget->value && $this->strMethod == FORMHYBRID_METHOD_GET)
+			// add filter class if filter is active
+			if ($objWidget->value && $this->isFilterForm)
 			{
 				$objWidget->class = 'filtered';
 			}
 
-			// Make sure unique fields are unique
-			if ($arrData['eval']['unique'] && $varValue != ''
-				&& !\Database::getInstance()->isUniqueValue(
-					$this->strTable,
-					$strName,
-					$varValue,
-					$this->intId > 0 ? $this->intId : null
-				)
-			)
+			// do not validate fields if not submitted or skipvalidation issset
+			// do not submit if ajax request and group is not formhybrid, for example multifileupload (otherwise captcha fields will be validated does not match visible one)
+			if (!($this->isSkipValidation() || $skipValidation) && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
 			{
-				$objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
-			}
+				FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->getFormId(), $arrData);
 
-			// trigger save_callbacks before assertion of the new value to objActiveRecord
-			if (is_array($arrData['save_callback']))
-			{
-				foreach ($arrData['save_callback'] as $callback)
+				if (is_array($arrWidgetErrors))
 				{
-					if (is_array($callback))
+					foreach ($arrWidgetErrors as $strError)
 					{
-						$this->import($callback[0]);
-						$varValue = $this->$callback[0]->$callback[1]($varValue, $this);
-					} elseif (is_callable($callback))
-					{
-						$varValue = $callback($varValue, $this);
+						$objWidget->addError($strError);
 					}
 				}
-			}
 
-			if ($objWidget->hasErrors())
-			{
-				$this->doNotSubmit        = true;
-				$this->arrInvalidFields[] = $strName;
-			} elseif ($arrData['inputType'] == 'tag' && in_array('tags_plus', \ModuleLoader::getActive()))
-			{
-				$varValue = deserialize($objWidget->value);
-
-				if (!is_array($varValue))
+				// Make sure unique fields are unique
+				if ($arrData['eval']['unique'] && $varValue != ''
+					&& !\Database::getInstance()->isUniqueValue(
+						$this->strTable,
+						$strName,
+						$varValue,
+						$this->intId > 0 ? $this->intId : null
+					)
+				)
 				{
-					$varValue = array($varValue);
+					$objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
 				}
 
-				if ($this->intId)
+				// trigger save_callbacks before assertion of the new value to objActiveRecord
+				if (is_array($arrData['save_callback']))
 				{
-					\HeimrichHannot\TagsPlus\TagsPlus::saveTags($this->strTable, $this->intId, array_map('urldecode', $varValue));
-				}
-			} elseif ($objWidget->submitInput())
-			{
-				// save non escaped to database
-				if (is_array($objWidget->value))
-				{
-					$this->objActiveRecord->{$strName} = array_map(
-						function ($varVal) use ($arrData)
+					foreach ($arrData['save_callback'] as $callback)
+					{
+						if (is_array($callback))
 						{
-							$varVal = FormSubmission::prepareSpecialValueForSave(
-								$varVal,
+							$this->import($callback[0]);
+							$varValue = $this->$callback[0]->$callback[1]($varValue, $this);
+						} elseif (is_callable($callback))
+						{
+							$varValue = $callback($varValue, $this);
+						}
+					}
+				}
+
+				if ($objWidget->hasErrors())
+				{
+					$this->doNotSubmit        = true;
+					$this->arrInvalidFields[] = $strName;
+				} elseif ($arrData['inputType'] == 'tag' && in_array('tags_plus', \ModuleLoader::getActive()))
+				{
+					$varValue = deserialize($objWidget->value);
+
+					if (!is_array($varValue))
+					{
+						$varValue = array($varValue);
+					}
+
+					if ($this->intId)
+					{
+						\HeimrichHannot\TagsPlus\TagsPlus::saveTags($this->strTable, $this->intId, array_map('urldecode', $varValue));
+					}
+				} elseif ($objWidget->submitInput())
+				{
+					// save non escaped to database
+					if (is_array($objWidget->value))
+					{
+						$this->objActiveRecord->{$strName} = array_map(
+							function ($varVal) use ($arrData)
+							{
+								$varVal = FormSubmission::prepareSpecialValueForSave(
+									$varVal,
+									$arrData,
+									$this->strTable,
+									$this->intId
+								);
+
+								if (is_array($varVal))
+								{
+									foreach ($varVal as $key => $val)
+									{
+										$varVal[$key] = html_entity_decode($val);
+									}
+								} else
+								{
+									$varVal = html_entity_decode($varVal);
+								}
+
+								return $varVal;
+							},
+							$objWidget->value
+						);
+					} else
+					{
+						$this->objActiveRecord->{$strName} = html_entity_decode(
+							FormSubmission::prepareSpecialValueForSave(
+								$objWidget->value,
 								$arrData,
 								$this->strTable,
 								$this->intId
+							)
+						);
+					}
+				} // support file uploads
+				elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload')
+				{
+					$strMethod = strtolower($this->strMethod);
+					if (\Input::$strMethod($strName))
+					{
+						$arrValue = json_decode(\Input::$strMethod($strName));
+
+						if (!empty($arrValue))
+						{
+							$arrValue = array_map(
+								function ($val)
+								{
+									return \String::uuidToBin($val);
+								},
+								$arrValue
 							);
 
-							if (is_array($varVal))
-							{
-								foreach ($varVal as $key => $val)
-								{
-									$varVal[$key] = html_entity_decode($val);
-								}
-							} else
-							{
-								$varVal = html_entity_decode($varVal);
-							}
-
-							return $varVal;
-						},
-						$objWidget->value
-					);
-				} else
-				{
-					$this->objActiveRecord->{$strName} = html_entity_decode(
-						FormSubmission::prepareSpecialValueForSave(
-							$objWidget->value,
-							$arrData,
-							$this->strTable,
-							$this->intId
-						)
-					);
-				}
-			} // support file uploads
-			elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload')
-			{
-				$strMethod = strtolower($this->strMethod);
-				if (\Input::$strMethod($strName))
-				{
-					$arrValue = json_decode(\Input::$strMethod($strName));
-
-					if (!empty($arrValue))
-					{
-						$arrValue = array_map(
-							function ($val)
-							{
-								return \String::uuidToBin($val);
-							},
-							$arrValue
-						);
-
-						$this->objActiveRecord->{$strName} = serialize($arrValue);
-					} else
-					{
-						$this->objActiveRecord->{$strName} = serialize($arrValue);
+							$this->objActiveRecord->{$strName} = serialize($arrValue);
+						} else
+						{
+							$this->objActiveRecord->{$strName} = serialize($arrValue);
+						}
 					}
-				}
 
-				// delete the files scheduled for deletion
-				$objWidget->deleteScheduledFiles(json_decode(\Input::$strMethod('deleted_' . $strName)));
-			} elseif ($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName])
-					  && \Validator::isUuid($_SESSION['FILES'][$strName]['uuid'])
-			)
-			{
-				$this->objActiveRecord->{$strName} = $_SESSION['FILES'][$strName]['uuid'];
+					// delete the files scheduled for deletion
+					$objWidget->deleteScheduledFiles(json_decode(\Input::$strMethod('deleted_' . $strName)));
+				} elseif ($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName])
+					&& \Validator::isUuid($_SESSION['FILES'][$strName]['uuid'])
+				)
+				{
+					$this->objActiveRecord->{$strName} = $_SESSION['FILES'][$strName]['uuid'];
+				}
 			}
 		}
 

@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.53] - 2016-11-04
+
+### Fixed
+- no objActiveRecord had been created for no entity forms
+- "filtered" class was not correctly set
+
 ## [2.5.52] - 2016-11-03
 
 ### Added
