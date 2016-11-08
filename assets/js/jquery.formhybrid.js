@@ -5,7 +5,6 @@
             this.scrollToMessages();
         },
         scrollToMessages: function ($container) {
-
             if(typeof $container === 'undefined'){
                 $container = $('.formhybrid:first');
             }
@@ -17,11 +16,11 @@
                 var alertOffset = alert.offset();
 
                 $('html,body').animate({
-                    scrollTop: (parseInt(alertOffset.top) - 30) + 'px'
+                    scrollTop: (parseInt(alertOffset.top) - 100) + 'px'
                 }, 500);
             }
         }
-    }
+    };
 
     FormhybridAjaxRequest = {
         registerEvents: function () {
@@ -81,7 +80,6 @@
                     }
                 },
                 success: function (response, textStatus, jqXHR) {
-
                     if (typeof response == 'undefined') {
                         return;
                     }
@@ -95,7 +93,7 @@
                             $form.replaceWith($replace);
                         }
 
-                        FormhybridPlugins.scrollToMessages($(response.result.html));
+                        FormhybridPlugins.scrollToMessages($replace);
 
                         closeModal(response, $form);
                     }
@@ -159,7 +157,7 @@
         reload: function (id, url) {
             var $form = $('#' + id);
             this._asyncFormSubmit($form, url);
-        },
+        }
     };
 
     var FormHybridHelper = {

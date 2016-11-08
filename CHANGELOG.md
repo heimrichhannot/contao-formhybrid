@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.54] - 2016-11-08
+
+### Fixed
+- moved messages in template for css reasons
+- scrolling behavior
+
 ## [2.5.53] - 2016-11-04
 
 ### Fixed
