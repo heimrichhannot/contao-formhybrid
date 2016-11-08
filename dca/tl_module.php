@@ -18,6 +18,8 @@ $arrDca['palettes']['__selector__'][] = 'formHybridCustomSubmit';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddPermanentFields';
 $arrDca['palettes']['__selector__'][] = 'formHybridUseCustomFormId';
 $arrDca['palettes']['__selector__'][] = 'formHybridAllowIdAsGetParameter';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddHashToAction';
+
 array_insert($arrDca['palettes']['__selector__'], 0, array('formHybridViewMode')); // bug??  must be indexed before "type"
 
 
@@ -41,6 +43,7 @@ $arrDca['subpalettes']['formHybridCustomSubmit']                              = 
 $arrDca['subpalettes']['formHybridAddPermanentFields']                        = 'formHybridPermanentFields';
 $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 'formHybridCustomFormId';
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
+$arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 
 
 /**
@@ -225,8 +228,15 @@ $arrFields = array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddHashToAction'],
 		'exclude'   => true,
 		'inputType' => 'checkbox',
-		'eval'      => array('tl_class' => 'w50'),
+		'eval'      => array('tl_class' => 'w50', 'submitOnChange' => true),
 		'sql'       => "char(1) NOT NULL default ''",
+	),
+	'formHybridCustomHash' => array(
+		'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridCustomHash'],
+		'exclude'                 => true,
+		'inputType'               => 'text',
+		'eval'                    => array('maxlength' => 255, 'tl_class' => 'w50'),
+		'sql'                     => "varchar(255) NOT NULL default ''"
 	),
 	'formHybridCssClass'                         => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],

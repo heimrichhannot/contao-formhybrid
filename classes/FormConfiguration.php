@@ -111,7 +111,7 @@ class FormConfiguration
 				// add hash
 				if($this->addHashToAction)
 				{
-					$varValue .= '#' . $this->strFormId;
+					$varValue .= '#' . ($this->customHash ?: $this->strFormId);
 				}
 			break;
 			case 'arrDefaultValues':

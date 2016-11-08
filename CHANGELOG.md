@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.55] - 2016-11-08
+
+### Added
+- custom hash
+
 ## [2.5.54] - 2016-11-08
 
 ### Fixed
