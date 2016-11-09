@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.56] - 2016-11-09
+
+### Added
+- fixed scrolling issues
+
 ## [2.5.55] - 2016-11-08
 
 ### Added
