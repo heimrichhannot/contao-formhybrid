@@ -72,7 +72,6 @@
                 data: $formData,
                 method: $form.attr('method'),
                 error: function(jqXHR, textStatus, errorThrown){
-                    console.log(errorThrown);
                     if (jqXHR.status == 300) {
                         location.href = jqXHR.responseJSON.result.data.url;
                         closeModal(jqXHR.responseJSON, $form);
