@@ -2,11 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [2.5.56] - 2016-11-11
+
+### Fixed
+- fixed scrolling issues
 - Check entity create() against Ajax::isRelated(Form::FORMHYBRID_NAME) !== false instead of $this->isSubmitted() 
 and added forceCreate attribute to force entity creation for non related ajax request
 
-### Added
-- custom hash
 
 ## [2.5.55] - 2016-11-08
 
