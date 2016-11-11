@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.57] - 2016-11-11
+
+### Added
+- formHybridSingleSubmission flag, that will achieve that after successful submission only messages will get rendered, and no inputs or new entity
+ will be generated
+
 ## [2.5.56] - 2016-11-11
 
 ### Fixed

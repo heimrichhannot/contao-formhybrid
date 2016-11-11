@@ -68,6 +68,8 @@ $arrLang['formHybridAddPermanentFields'] = array('Add permanently displayed fiel
 $arrLang['formHybridPermanentFields'] = array('Permanently displayed fields', 'Choose the fields to be displayed permanently.');
 
 $arrLang['formHybridResetAfterSubmission'] = array('Reset form after submission', 'Deactivate this if the form shouldn\'t be reset after submission.');
+$arrLang['formHybridSingleSubmission'] = array('Form submission only once', 'After the form has been submitted successfully, no new entity is created and only messages are displayed.');
+
 $arrLang['formHybridJumpToPreserveParams'] = array('Keep parameters after redirect', 'Choose the parameters to be kept after redirect.');
 
 $arrLang['formHybridUseCustomFormId'] = array('Override FormId', 'Choose this option if the ID of the filter module should be overridden.');

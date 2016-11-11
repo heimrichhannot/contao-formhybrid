@@ -529,9 +529,14 @@ class DC_Hybrid extends \DataContainer
 			// generate messages and remove them from the session automatically
 			$this->Template->message = StatusMessage::generate($this->objModule->id);
 
-			// reset form is default. disable by $this->setReset(false)
-			// Exception: filter forms should never been reset after submit
-			if ($this->getReset())
+            // single submission will not render form again after submission
+            if($this->singleSubmission)
+            {
+                $this->invalid = true;
+            }
+            // reset form is default. disable by $this->setReset(false)
+            // Exception: filter forms should never been reset after submit
+            else if ($this->getReset())
 			{
 				$this->reset();
 				$blnSubmittedBeforeReset = true;

@@ -516,6 +516,14 @@ $arrFields = array(
 		),
 		'sql'              => "blob NULL",
 	),
+    'formHybridSingleSubmission'             => array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSingleSubmission'],
+        'exclude'   => true,
+        'default'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array('tl_class' => 'w50'),
+        'sql'       => "char(1) NOT NULL default ''",
+    ),
 	'formHybridResetAfterSubmission'             => array(
 		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridResetAfterSubmission'],
 		'exclude'   => true,

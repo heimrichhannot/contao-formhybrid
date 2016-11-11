@@ -69,6 +69,7 @@ $arrLang['formHybridAddPermanentFields'] = array('Immer auszugebende Felder hinz
 $arrLang['formHybridPermanentFields'] = array('Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.');
 
 $arrLang['formHybridResetAfterSubmission'] = array('Formular nach absenden zurücksetzen', 'Deaktivieren um nach Absenden, das Formular mit den Daten erneut zu laden. (Achtung: Nur einmaliges Absenden möglich!)');
+$arrLang['formHybridSingleSubmission'] = array('Formular nur einmal erzeugen', 'Nachdem das Formular erfolgreich abgeschickt wurde, wird keine neue Entität erzeugt und nur Meldungen werden ausgegeben.');
 $arrLang['formHybridJumpToPreserveParams'] = array('Parameter beibehalten', 'Wählen Sie diese Option, wenn die Weiterleitungsseite (nach dem Speichern) wieder ein Frontendedit-Leser-Modul enthält. Dadurch werden die aktuelle Action sowie die ID beibehalten.');
 
 $arrLang['formHybridUseCustomFormId'] = array('FormId überschreiben', 'Wählen Sie diese Option, wenn sie die Id des Filtermodules bei der Submission überschreiben wollen.');
