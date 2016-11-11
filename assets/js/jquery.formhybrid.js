@@ -13,7 +13,11 @@
             var alert = $container.find('.alert:first, .error:first');
 
             if (alert.length > 0 && !$container.hasClass('noscroll')) {
-                HASTE_PLUS.scrollTo(alert, 100, 500);
+                var alertOffset = alert.offset();
+
+                $('html,body').animate({
+                    scrollTop: (parseInt(alertOffset.top) - 100) + 'px'
+                }, 500);
             }
         }
     };

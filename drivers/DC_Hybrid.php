@@ -98,6 +98,12 @@ class DC_Hybrid extends \DataContainer
 
 	private $invalid = false;
 
+    /**
+     * Force entity creation, also if ajax scope does not match with formhybrid scope
+     * @var bool
+     */
+    protected $forceCreate = false;
+
 	protected static $arrPermanentFieldClasses = array(
 		'Contao\FormCaptcha',
 	);
@@ -196,7 +202,7 @@ class DC_Hybrid extends \DataContainer
 
 		if (!$this->intId || !is_numeric($this->intId))
 		{
-			if ($this->objModule !== null && (!$this->isSubmitted() || $this->hasNoEntity()))
+            if ($this->objModule !== null && (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false || $this->isForceCreate()))
 			{
 				$this->objActiveRecord = $this->createSubmission($strModelClass);
 
@@ -537,7 +543,8 @@ class DC_Hybrid extends \DataContainer
 		$this->generateStart();
 
 		$this->Template->fields      = $this->arrFields;
-		$this->Template->isSubmitted = $this->isSubmitted;
+		$this->Template->isSubmitted = $this->isSubmitted();
+        $this->Template->doNotSubmit = $this->isDoNotSubmit();
 		$this->Template->submission  = $this->objActiveRecord;
 		$this->Template->hidden      = $this->generateHiddenFields();
 		$this->Template->invalid     = $this->invalid;
@@ -2092,5 +2099,20 @@ class DC_Hybrid extends \DataContainer
         return $this->arrConfig;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isForceCreate()
+    {
+        return $this->forceCreate;
+    }
+
+    /**
+     * @param boolean $forceCreate
+     */
+    public function setForceCreate($forceCreate)
+    {
+        $this->forceCreate = $forceCreate;
+    }
 
 }
