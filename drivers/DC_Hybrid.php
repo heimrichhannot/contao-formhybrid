@@ -1307,9 +1307,11 @@ class DC_Hybrid extends \DataContainer
 			return;
 		}
 
-		$objVersion = Version::setFromModel($this->objActiveRecord);
-		$objVersion = $this->modifyVersion($objVersion);
-		Version::createVersion($objVersion, $this->objActiveRecord);
+        if(($objVersion = Version::setFromModel($this->objActiveRecord)) !== null)
+        {
+            $objVersion = $this->modifyVersion($objVersion);
+            Version::createVersion($objVersion, $this->objActiveRecord);
+        }
 	}
 
 	protected function modifyVersion($objVersion)

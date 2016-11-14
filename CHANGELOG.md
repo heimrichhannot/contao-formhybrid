@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.59] - 2016-11-14
+
+### Fixed
+- catch DC_Hybrid::createVersion(), if Version::setFromModel returns null when for example `enableVersioning` for the DCA is not set true
+
 ## [2.5.58] - 2016-11-14
 
 ### Fixed
