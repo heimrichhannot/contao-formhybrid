@@ -295,6 +295,7 @@ class DC_Hybrid extends \DataContainer
 					// otherwise a new submission will be generated and validation will fail
 					if ($this->hasDatabaseTable())
 					{
+                        $this->setDefaults($GLOBALS['TL_DCA'][$this->strTable]); // set defaults again, as they might has been overwritten within loadDC/modifyDC
 						$this->setSubmission();
 						$this->save(); // initially try to save record, as ajax requests for example require entity model
 					} elseif ($this->hasDatabaseTable() && !$this->hasNoEntity())

@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.58] - 2016-11-14
+
+### Fixed
+- set defaults from dca, also within FormHybrid::initialize(), when new entity was created within FormHybrid::create(), otherwise modifyDC/loadDC manipulation will not be considered
+
 ## [2.5.57] - 2016-11-11
 
 ### Added
