@@ -56,6 +56,8 @@ class DC_Hybrid extends \DataContainer
 
 	protected $arrRequired = array();
 
+    protected $arrPermanentFields = array();
+
 	protected $arrInvalidFields = array();
 
 	protected $overwriteRequired = false;
@@ -1769,10 +1771,21 @@ class DC_Hybrid extends \DataContainer
 	{
 	}
 
-	public function addEditableField($strName, array $arrData)
+    /**
+     * @param       $strName The name of the field
+     * @param array $arrData Field DCA config
+     * @param bool  $blnForce Force field addin, regardless of existence in active palette
+     */
+	public function addEditableField($strName, array $arrData, $blnForce = false)
 	{
 		$this->dca['fields'][$strName] = $arrData;
 		$this->arrEditable[]           = $strName;
+
+        if($blnForce)
+        {
+            $this->addPermanentFields = true;
+            $this->arrPermanentFields[] = $strName;
+        }
 	}
 
 	public function getDca()

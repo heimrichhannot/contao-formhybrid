@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.5.60] - 2016-11-15
+
+### Changed
+- added 3rd parameter to addEditableField that will force field add, regardless of existence in active palette
+
 ## [2.5.59] - 2016-11-14
 
 ### Fixed
