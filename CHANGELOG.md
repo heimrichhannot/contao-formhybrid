@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [2.5.61] - 2016-11-15
+## [2.6.0] - 2016-11-21
 - added support for exporter
 
 ## [2.5.60] - 2016-11-15
