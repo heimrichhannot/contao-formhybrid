@@ -1,38 +1,48 @@
 {
     "name": "heimrichhannot/contao-formhybrid",
-    "description":"Contains functionality for handling form submissions in the contao frontend.",
-    "keywords":["contao", "form", "module", "developer"],
+    "description": "Contains functionality for handling form submissions in the contao frontend.",
+    "keywords": [
+        "contao",
+        "form",
+        "module",
+        "developer"
+    ],
     "type": "contao-module",
-    "homepage":"https://github.com/heimrichhannot/contao-formhybrid",
-    "license":"LGPL-3.0+",
-    "authors":[
+    "homepage": "https://github.com/heimrichhannot/contao-formhybrid",
+    "license": "LGPL-3.0+",
+    "authors": [
         {
-            "name":"Heimrich & Hannot",
-            "email":"digitales@heimrich-hannot.de",
-            "homepage":"http://www.heimrich-hannot.de",
-            "role":"Developer"
+            "name": "Heimrich & Hannot",
+            "email": "digitales@heimrich-hannot.de",
+            "homepage": "http://www.heimrich-hannot.de",
+            "role": "Developer"
         }
     ],
-    "support":{
-        "issues":"https://github.com/heimrichhannot/contao-formhybrid/issues"
+    "support": {
+        "issues": "https://github.com/heimrichhannot/contao-formhybrid/issues"
     },
     "require": {
         "php": ">=5.4.0, <7",
         "contao/core": ">=3.2,<4-dev",
         "html2text/html2text": "~2.0",
         "codefog/contao-haste": "~4.0",
-        "heimrichhannot/contao-haste_plus": "~1.4",
+        "heimrichhannot/contao-haste_plus": "~1.5",
         "heimrichhannot/contao-status_messages": "~1.0",
-		"heimrichhannot/contao-notification_center_plus": "~1.0",
-		"heimrichhannot/contao-submissions": ">=1.0.14,<2.0.0-dev",
-		"heimrichhannot/contao-inserttag_download": "~1.0",
-		"heimrichhannot/contao-multifileupload": "~1.0",
-		"heimrichhannot/contao-ajax": "~1.0",
-		"heimrichhannot/contao-request": "~1.0",
+        "heimrichhannot/contao-notification_center_plus": "~1.0",
+        "heimrichhannot/contao-submissions": ">=1.0.14,<2.0.0-dev",
+        "heimrichhannot/contao-inserttag_download": "~1.0",
+        "heimrichhannot/contao-multifileupload": "~1.0",
+        "heimrichhannot/contao-ajax": "~1.0",
+        "heimrichhannot/contao-request": "~1.0",
         "heimrichhannot/contao-versions": "~1.0"
-	},
+    },
+    "suggest": {
+        "heimrichhannot/contao-exporter": "Export entities to pdf"
+    },
     "autoload": {
-        "classmap": [""]
+        "classmap": [
+            ""
+        ]
     },
     "extra": {
         "contao": {

@@ -68,7 +68,7 @@ $arrLang['formHybridCustomHash'] = array('Standard-Hash überschreiben', 'Geben 
 $arrLang['formHybridAddPermanentFields'] = array('Immer auszugebende Felder hinzufügen', 'Wählen Sie diese Option, um dem Formular bestimmte Felder unter allen Umständen hinzuzufügen. Diese Felder sind in aller Regel Subpalettenfelder, die auch dann ausgegeben werden, wenn deren Selektor nicht aktiv ist. Sinnvoll etwa, wenn Felder im Kontext mehrerer Type-Selektoren vorkommen.');
 $arrLang['formHybridPermanentFields'] = array('Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.');
 
-$arrLang['formHybridResetAfterSubmission'] = array('Formular nach absenden zurücksetzen', 'Deaktivieren um nach Absenden, das Formular mit den Daten erneut zu laden. (Achtung: Nur einmaliges Absenden möglich!)');
+$arrLang['formHybridResetAfterSubmission'] = array('Formular nach dem Abschicken zurücksetzen', 'Deaktivieren um nach Absenden, das Formular mit den Daten erneut zu laden. (Achtung: Nur einmaliges Absenden möglich!)');
 $arrLang['formHybridSingleSubmission'] = array('Formular nur einmal erzeugen', 'Nachdem das Formular erfolgreich abgeschickt wurde, wird keine neue Entität erzeugt und nur Meldungen werden ausgegeben.');
 $arrLang['formHybridJumpToPreserveParams'] = array('Parameter beibehalten', 'Wählen Sie diese Option, wenn die Weiterleitungsseite (nach dem Speichern) wieder ein Frontendedit-Leser-Modul enthält. Dadurch werden die aktuelle Action sowie die ID beibehalten.');
 
@@ -80,6 +80,10 @@ $arrLang['formHybridAllowIdAsGetParameter']        =
 $arrLang['formHybridIdGetParameter']               = array('ID GET-Parameter', 'Geben Sie den GET-Parameter an, der zur Bestimmung des aktuellen Datensatzes verwendet werden soll.');
 $arrLang['formHybridAppendIdToUrlOnCreation']      = array('Neue Instanz: ID GET-Parameter an URL anhängen', 'Bei der Erstellung von neuen Instanzen, den GET-Parameter an die URL anhängen.');
 $arrLang['formHybridTransformGetParamsToHiddenFields']      = array('GET-Parameter in Hidden-Felder umwandeln', 'Sinnvoll bspw. bei Filterformularen im GET-Modus.');
+
+$arrLang['formHybridExportAfterSubmission'] = array('Datensatz nach dem Abschicken exportieren', 'Wählen Sie diese Option, wenn der Datensatz nach validem Abschicken exportiert werden soll.');
+$arrLang['formHybridExportConfig'] = array('Exporter-Konfiguration', 'Wählen Sie hier die gewünschte Exporter-Konfiguration aus.');
+$arrLang['formHybridAddExportFileToEntityField'] = array('Exportdatei in Feld speichern', 'Wählen Sie diese Option, um eine Referenz zur Exportdatei in einem Feld des Datensatzes speichern.');
 
 /**
  * References
