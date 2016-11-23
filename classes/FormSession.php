@@ -16,6 +16,8 @@ use HeimrichHannot\Haste\Util\Arrays;
 class FormSession
 {
 	const FORMHYBRID_FORMSESSION_SUBMISSION_KEY = 'formhybrid_formsession_submission_key';
+
+    const FORMHYBRID_FORMSESSION_START_KEY = 'formhybrid_formsession_start_module';
 	
 	/**
 	 * Add submission id into user session

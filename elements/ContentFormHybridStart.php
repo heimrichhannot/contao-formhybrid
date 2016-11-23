@@ -65,9 +65,12 @@ class ContentFormHybridStart extends \ContentElement
 
 		if($objArticle === null) return;
 
-        $objModule->renderStart = true;
+        global $objPage;
 
         $objModule = new $strClass($objModule, $objArticle->inColumn);
+        $objModule->renderStart = true;
+
+        $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer] = $objModule->id;
 
 		$this->Template->content = $objModule->generate();
 	}

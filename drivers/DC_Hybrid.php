@@ -143,6 +143,21 @@ class DC_Hybrid extends \DataContainer
             $this->strTable = $strTable;
         }
 
+        if($this->renderStart && $_POST && !$intId)
+        {
+            // get id from FormSession
+            $this->intId = FormSession::getSubmissionId(FormHelper::getFormId($this->strTable, $this->objModule->id));
+        }
+        else if($this->renderStop)
+        {
+            if(!$this->startModule)
+            {
+                throw new \Exception('Start module/content element is missing.');
+            }
+
+            $this->intId = FormSession::getSubmissionId(FormHelper::getFormId($this->strTable, $this->startModule));
+        }
+
         $this->intId       = $this->intId ?: $intId;
         $this->strFormId   = $this->getFormId();
         $this->strFormName = $this->getFormName();
@@ -1704,9 +1719,9 @@ class DC_Hybrid extends \DataContainer
         return implode(' ', $arrClasses);
     }
 
-    protected function reset()
+    protected function reset($blnForce = false)
     {
-        if ($this->async && $this->isRelatedAjaxRequest())
+        if (($this->async && $this->isRelatedAjaxRequest()) || $blnForce)
         {
             // on reset, reset submission id within session
             FormSession::freeSubmissionId($this->getFormId(false));
@@ -1854,6 +1869,11 @@ class DC_Hybrid extends \DataContainer
 
         if (!$blnRedirect)
         {
+            if($this->getReset())
+            {
+                $this->reset(true);
+            }
+
             return;
         }
 
