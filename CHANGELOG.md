@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.2] - 2016-11-24
+- added opportunity to export multiple files
+
 ## [2.6.1] - 2016-11-23
 - restore renderStart, renderStop functionality
 - redirectAfterSubmission, reset form if resetAfterSubmission was enabled but no redirect was initiated after submission 

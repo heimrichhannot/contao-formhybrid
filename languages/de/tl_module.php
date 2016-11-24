@@ -82,8 +82,9 @@ $arrLang['formHybridAppendIdToUrlOnCreation']      = array('Neue Instanz: ID GET
 $arrLang['formHybridTransformGetParamsToHiddenFields']      = array('GET-Parameter in Hidden-Felder umwandeln', 'Sinnvoll bspw. bei Filterformularen im GET-Modus.');
 
 $arrLang['formHybridExportAfterSubmission'] = array('Datensatz nach dem Abschicken exportieren', 'Wählen Sie diese Option, wenn der Datensatz nach validem Abschicken exportiert werden soll.');
-$arrLang['formHybridExportConfig'] = array('Exporter-Konfiguration', 'Wählen Sie hier die gewünschte Exporter-Konfiguration aus.');
-$arrLang['formHybridAddExportFileToEntityField'] = array('Exportdatei in Feld speichern', 'Wählen Sie diese Option, um eine Referenz zur Exportdatei in einem Feld des Datensatzes speichern.');
+$arrLang['formHybridExportConfigs'] = array('Konfiguration', 'Fügen Sie hier neue Konfigurationen für den Export hinzu.');
+$arrLang['formhybrid_formHybridExportConfigs_config'] = array('Exporter-Konfiguration', 'Wählen Sie hier die gewünschte Exporter-Konfiguration aus.');
+$arrLang['formhybrid_formHybridExportConfigs_entityField'] = array('Exportdatei in Feld speichern', 'Wählen Sie hier das Feld aus, in das eine Referenz zur Exportdatei gespeichert werden soll.');
 
 /**
  * References

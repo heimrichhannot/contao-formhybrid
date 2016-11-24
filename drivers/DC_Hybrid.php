@@ -7,6 +7,7 @@ use HeimrichHannot\Ajax\Response\ResponseRedirect;
 use HeimrichHannot\Exporter\Exporter;
 use HeimrichHannot\Exporter\ExporterModel;
 use HeimrichHannot\Exporter\ModuleExporter;
+use HeimrichHannot\FieldPalette\FieldPaletteModel;
 use HeimrichHannot\FileCredit\FilesModel;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Files;
@@ -1746,47 +1747,31 @@ class DC_Hybrid extends \DataContainer
 
     protected function exportAfterSubmission()
     {
-        $objConfig = ExporterModel::findByPk($this->formHybridExportConfig);
+        $objExportConfigs = FieldPaletteModel::findPublishedByPidAndTableAndField($this->objModule->id, 'tl_module', 'formHybridExportConfigs');
 
-        if ($objConfig !== null)
+        if ($objExportConfigs  !== null)
         {
-            $objConfig->type        = Exporter::TYPE_ITEM;
-            $objConfig->linkedTable = $this->strTable;
-
-            // prepare fields for exporter
-            $arrExportFields = array();
-
-            foreach ($this->arrFields as $objWidget)
+            while ($objExportConfigs ->next())
             {
-                $arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$objWidget->name];
+                $objConfig = ExporterModel::findByPk($objExportConfigs->formhybrid_formHybridExportConfigs_config);
 
-                $arrExportFields[$objWidget->name] = array(
-                    'raw' => $this->objActiveRecord->{$objWidget->name},
-                    'inputType' => $arrData['inputType'],
-                    'formatted' => FormSubmission::prepareSpecialValueForPrint(
-                        $this->objActiveRecord->{$objWidget->name},
-                        $arrData,
-                        $this->strTable,
-                        $this
-                    )
-                );
-
-                if ($arrData['inputType'] != 'explanation')
+                if ($objConfig !== null)
                 {
-                    $arrExportFields[$objWidget->name]['label'] = $this->dca['fields'][$objWidget->name]['label'][0] ?: $objWidget->name;
-                }
+                    $objConfig->type        = Exporter::TYPE_ITEM;
+                    $objConfig->linkedTable = $this->strTable;
 
-                if ($objWidget->subName)
-                {
-                    foreach ($this->arrSubFields[$objWidget->subName] as $objSubWidget)
+                    // prepare fields for exporter
+                    $arrExportFields = array();
+
+                    foreach ($this->arrFields as $objWidget)
                     {
-                        $arrData = $GLOBALS['TL_DCA'][$this->strTable][$objSubWidget->name];
+                        $arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$objWidget->name];
 
-                        $arrExportFields[$objSubWidget->name] = array(
-                            'raw' => $this->objActiveRecord->{$objSubWidget->name},
+                        $arrExportFields[$objWidget->name] = array(
+                            'raw' => $this->objActiveRecord->{$objWidget->name},
                             'inputType' => $arrData['inputType'],
                             'formatted' => FormSubmission::prepareSpecialValueForPrint(
-                                $this->objActiveRecord->{$objSubWidget->name},
+                                $this->objActiveRecord->{$objWidget->name},
                                 $arrData,
                                 $this->strTable,
                                 $this
@@ -1795,19 +1780,43 @@ class DC_Hybrid extends \DataContainer
 
                         if ($arrData['inputType'] != 'explanation')
                         {
-                            $arrExportFields[$objSubWidget->name]['label'] = $this->dca['fields'][$objSubWidget->name]['label'][0] ?: $objSubWidget->name;
+                            $arrExportFields[$objWidget->name]['label'] = $this->dca['fields'][$objWidget->name]['label'][0] ?: $objWidget->name;
+                        }
+
+                        if ($objWidget->subName)
+                        {
+                            foreach ($this->arrSubFields[$objWidget->subName] as $objSubWidget)
+                            {
+                                $arrData = $GLOBALS['TL_DCA'][$this->strTable][$objSubWidget->name];
+
+                                $arrExportFields[$objSubWidget->name] = array(
+                                    'raw' => $this->objActiveRecord->{$objSubWidget->name},
+                                    'inputType' => $arrData['inputType'],
+                                    'formatted' => FormSubmission::prepareSpecialValueForPrint(
+                                        $this->objActiveRecord->{$objSubWidget->name},
+                                        $arrData,
+                                        $this->strTable,
+                                        $this
+                                    )
+                                );
+
+                                if ($arrData['inputType'] != 'explanation')
+                                {
+                                    $arrExportFields[$objSubWidget->name]['label'] = $this->dca['fields'][$objSubWidget->name]['label'][0] ?: $objSubWidget->name;
+                                }
+                            }
                         }
                     }
+
+                    $objExporter = ModuleExporter::export($objConfig, $this->objActiveRecord, $arrExportFields);
+
+                    if ($this->formhybrid_formHybridExportConfigs_entityField)
+                    {
+                        $objFile = FilesModel::findByPath($objExporter->getFileDir() . '/' . $objExporter->getFilename());
+                        $this->objActiveRecord->{$this->formhybrid_formHybridExportConfigs_entityField} = $objFile->uuid;
+                        $this->objActiveRecord->save();
+                    }
                 }
-            }
-
-            $objExporter = ModuleExporter::export($objConfig, $this->objActiveRecord, $arrExportFields);
-
-            if ($this->formHybridAddExportFileToEntityField)
-            {
-                $objFile = FilesModel::findByPath($objExporter->getFileDir() . '/' . $objExporter->getFilename());
-                $this->objActiveRecord->{$this->formHybridAddExportFileToEntityField} = $objFile->uuid;
-                $this->objActiveRecord->save();
             }
         }
     }

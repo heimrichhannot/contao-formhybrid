@@ -30,7 +30,7 @@ array_insert($arrDca['palettes']['__selector__'], 0, array('formHybridViewMode')
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT]  = 'formHybridTemplate';
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_READONLY] = 'formHybridReadonlyTemplate';
 $arrDca['subpalettes']['formHybridAddDefaultValues']                          = 'formHybridDefaultValues';
-$arrDca['subpalettes']['formHybridExportAfterSubmission']                     = 'formHybridExportConfig,formHybridAddExportFileToEntityField';
+$arrDca['subpalettes']['formHybridExportAfterSubmission']                     = 'formHybridExportConfigs';
 $arrDca['subpalettes']['formHybridSendSubmissionViaEmail']                    =
     'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 $arrDca['subpalettes']['formHybridSendSubmissionAsNotification']              = 'formHybridSubmissionNotification';
@@ -678,23 +678,50 @@ if (in_array('exporter', \ModuleLoader::getActive()))
         'sql'       => "char(1) NOT NULL default ''",
     );
 
-    $arrFields['formHybridExportConfig'] = array(
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridExportConfig'],
-        'exclude'          => true,
-        'filter'           => true,
-        'inputType'        => 'select',
-        'options_callback' => array('tl_form_hybrid_module', 'getFormHybridExportConfigsAsOptions'),
-        'eval'             => array('tl_class' => 'long clr', 'chosen' => true, 'mandatory' => true, 'includeBlankOption' => true),
-        'sql'              => "int(10) unsigned NOT NULL default '0'",
-    );
-
-    $arrFields['formHybridAddExportFileToEntityField'] = array(
-        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddExportFileToEntityField'],
-        'exclude'                 => true,
-        'inputType'               => 'select',
-        'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
-        'eval'                    => array('tl_class' => 'w50', 'chosen' => true, 'includeBlankOption' => true),
-        'sql'                     => "varchar(64) NOT NULL default ''"
+    $arrFields['formHybridExportConfigs'] = array(
+        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridExportConfigs'],
+        'exclude'    => true,
+        'inputType'  => 'fieldpalette',
+        'foreignKey' => 'tl_fieldpalette.id',
+        'relation'   => array('type' => 'hasMany', 'load' => 'eager'),
+        'sql'        => "blob NULL",
+        'eval'       => array('tl_class' => 'clr'),
+        'fieldpalette'      => array(
+            'config' => array(
+                'hidePublished' => true
+            ),
+            'list'     => array
+            (
+                'label' => array
+                (
+                    'fields' => array('formhybrid_formHybridExportConfigs_config'),
+                    'format' => '%s',
+                ),
+            ),
+            'palettes' => array
+            (
+                'default' => 'formhybrid_formHybridExportConfigs_config,formhybrid_formHybridExportConfigs_entityField',
+            ),
+            'fields'   => array(
+                'formhybrid_formHybridExportConfigs_config' => array(
+                    'label'            => &$GLOBALS['TL_LANG']['tl_module']['formhybrid_formHybridExportConfigs_config'],
+                    'exclude'          => true,
+                    'filter'           => true,
+                    'inputType'        => 'select',
+                    'options_callback' => array('tl_form_hybrid_module', 'getFormHybridExportConfigsAsOptions'),
+                    'eval'             => array('tl_class' => 'long clr', 'chosen' => true, 'mandatory' => true, 'includeBlankOption' => true),
+                    'sql'              => "int(10) unsigned NOT NULL default '0'",
+                ),
+                'formhybrid_formHybridExportConfigs_entityField' => array(
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formhybrid_formHybridExportConfigs_entityField'],
+                    'exclude'                 => true,
+                    'inputType'               => 'select',
+                    'options_callback' => array('tl_form_hybrid_module', 'getEditableForExport'),
+                    'eval'                    => array('tl_class' => 'w50', 'chosen' => true, 'includeBlankOption' => true),
+                    'sql'                     => "varchar(64) NOT NULL default ''"
+                )
+            )
+        )
     );
 }
 
@@ -753,6 +780,14 @@ class tl_form_hybrid_module extends \Backend
     public static function getEditable($objDc)
     {
         return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer);
+    }
+
+    public static function getEditableForExport($objDc)
+    {
+        if (($objModule = \ModuleModel::findByPk($objDc->activeRecord->pid)) === null)
+            return array();
+
+        return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objModule->formHybridDataContainer);
     }
 
     public function getDataContainers(\DataContainer $arrDca)
