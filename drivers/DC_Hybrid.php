@@ -1810,10 +1810,10 @@ class DC_Hybrid extends \DataContainer
 
                     $objExporter = ModuleExporter::export($objConfig, $this->objActiveRecord, $arrExportFields);
 
-                    if ($this->formhybrid_formHybridExportConfigs_entityField)
+                    if ($objExportConfigs->formhybrid_formHybridExportConfigs_entityField)
                     {
                         $objFile = FilesModel::findByPath($objExporter->getFileDir() . '/' . $objExporter->getFilename());
-                        $this->objActiveRecord->{$this->formhybrid_formHybridExportConfigs_entityField} = $objFile->uuid;
+                        $this->objActiveRecord->{$objExportConfigs->formhybrid_formHybridExportConfigs_entityField} = $objFile->uuid;
                         $this->objActiveRecord->save();
                     }
                 }

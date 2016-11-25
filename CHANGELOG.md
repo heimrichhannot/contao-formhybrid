@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.3] - 2016-11-24
+- fixed exporter bug
+
 ## [2.6.2] - 2016-11-24
 - added opportunity to export multiple files
 
