@@ -53,7 +53,11 @@ class FormConfiguration
 			$this->varConfig = $varConfig;
 		}
 
-		if(is_array($this->varConfig))
+		if($varConfig instanceof \HeimrichHannot\FormHybrid\FormConfiguration)
+        {
+            $this->varConfig = $varConfig->getData();
+        }
+		else if(is_array($this->varConfig))
 		{
 			$this->transform();
 		}

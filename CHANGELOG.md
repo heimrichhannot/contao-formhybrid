@@ -1,17 +1,30 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.4] - 2016-12-01
+
+### Fixed
+- FormConfiguration, when instance is created from FormConfiguration object
+
 ## [2.6.3] - 2016-11-24
+
+### Fixed
 - fixed exporter bug
 
 ## [2.6.2] - 2016-11-24
+
+### Added
 - added opportunity to export multiple files
 
 ## [2.6.1] - 2016-11-23
+
+### Fixed
 - restore renderStart, renderStop functionality
 - redirectAfterSubmission, reset form if resetAfterSubmission was enabled but no redirect was initiated after submission 
 
 ## [2.6.0] - 2016-11-21
+
+### Added
 - added support for exporter
 
 ## [2.5.60] - 2016-11-15
