@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.5] - 2016-12-02
+
+### Fixed
+- clear $_SESSION['FILES'] after form submission
+
+### Changed
+- multifileupload 1.1.0 is now required and functionality moved to from DC_Hybrid to multifileupload module
+
 ## [2.6.4] - 2016-12-01
 
 ### Fixed

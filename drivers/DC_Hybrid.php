@@ -292,6 +292,12 @@ class DC_Hybrid extends \DataContainer
 
     protected function initialize($blnCreated = false)
     {
+        // clear files cache
+        if(!$this->isSubmitted())
+        {
+            unset($_SESSION['FILES']);
+        }
+
         // load the model
         // don't load any class if the form's a filter form -> submission should be used instead
         if ($this->hasDatabaseTable() && !$this->hasNoEntity())
@@ -1187,34 +1193,6 @@ class DC_Hybrid extends \DataContainer
                             )
                         );
                     }
-                } // support file uploads
-                elseif ($objWidget instanceof \uploadable && $arrData['inputType'] == 'multifileupload')
-                {
-                    $strMethod = strtolower($this->strMethod);
-                    if (\Input::$strMethod($strName))
-                    {
-                        $arrValue = json_decode(\Input::$strMethod($strName));
-
-                        if (!empty($arrValue))
-                        {
-                            $arrValue = array_map(
-                                function ($val)
-                                {
-                                    return \String::uuidToBin($val);
-                                },
-                                $arrValue
-                            );
-
-                            $this->objActiveRecord->{$strName} = serialize($arrValue);
-                        }
-                        else
-                        {
-                            $this->objActiveRecord->{$strName} = serialize($arrValue);
-                        }
-                    }
-
-                    // delete the files scheduled for deletion
-                    $objWidget->deleteScheduledFiles(json_decode(\Input::$strMethod('deleted_' . $strName)));
                 }
                 elseif ($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName])
                         && \Validator::isUuid($_SESSION['FILES'][$strName]['uuid'])
@@ -1647,12 +1625,9 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
-        $this->dca = $GLOBALS['TL_DCA'][$this->strTable];
+        $this->dca = &$GLOBALS['TL_DCA'][$this->strTable];
 
         $this->modifyDC($this->dca);
-
-        // store modified dca, otherwise for example widgets wont contain modified callbacks
-        $GLOBALS['TL_DCA'][$this->strTable] = $this->dca;
 
         return true;
     }

@@ -33,6 +33,8 @@ abstract class Form extends DC_Hybrid
 	{
 		$this->onSubmitCallback($this);
 
+        unset($_SESSION['FILES']); // clear files cache
+
 		if (!$this->isSkipValidation())
 		{
 			if (is_array($this->dca['config']['onsubmit_callback']))
