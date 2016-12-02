@@ -1290,6 +1290,11 @@ class DC_Hybrid extends \DataContainer
             $this->arrAttributes['data-close-modal-on-submit'] = true;
         }
 
+        if(!$this->enableAutoComplete)
+        {
+            $this->arrAttributes['autocomplete'] = 'off';
+        }
+
         if (is_array($this->arrAttributes))
         {
             $arrAttributes              = $this->arrAttributes;

@@ -591,6 +591,14 @@ $arrFields = array(
         'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
         'sql'       => "char(1) NOT NULL default ''",
     ),
+    'formHybridEnableAutoComplete'               => array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridEnableAutoComplete'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array('tl_class' => 'w50'),
+        'sql'       => "char(1) NOT NULL default ''",
+    ),
+
 );
 
 // conditions for the field depending redirect
@@ -679,31 +687,28 @@ if (in_array('exporter', \ModuleLoader::getActive()))
     );
 
     $arrFields['formHybridExportConfigs'] = array(
-        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridExportConfigs'],
-        'exclude'    => true,
-        'inputType'  => 'fieldpalette',
-        'foreignKey' => 'tl_fieldpalette.id',
-        'relation'   => array('type' => 'hasMany', 'load' => 'eager'),
-        'sql'        => "blob NULL",
-        'eval'       => array('tl_class' => 'clr'),
-        'fieldpalette'      => array(
-            'config' => array(
-                'hidePublished' => true
+        'label'        => &$GLOBALS['TL_LANG']['tl_module']['formHybridExportConfigs'],
+        'exclude'      => true,
+        'inputType'    => 'fieldpalette',
+        'foreignKey'   => 'tl_fieldpalette.id',
+        'relation'     => array('type' => 'hasMany', 'load' => 'eager'),
+        'sql'          => "blob NULL",
+        'eval'         => array('tl_class' => 'clr'),
+        'fieldpalette' => array(
+            'config'   => array(
+                'hidePublished' => true,
             ),
-            'list'     => array
-            (
-                'label' => array
-                (
+            'list'     => array(
+                'label' => array(
                     'fields' => array('formhybrid_formHybridExportConfigs_config'),
                     'format' => '%s',
                 ),
             ),
-            'palettes' => array
-            (
+            'palettes' => array(
                 'default' => 'formhybrid_formHybridExportConfigs_config,formhybrid_formHybridExportConfigs_entityField',
             ),
             'fields'   => array(
-                'formhybrid_formHybridExportConfigs_config' => array(
+                'formhybrid_formHybridExportConfigs_config'      => array(
                     'label'            => &$GLOBALS['TL_LANG']['tl_module']['formhybrid_formHybridExportConfigs_config'],
                     'exclude'          => true,
                     'filter'           => true,
@@ -713,15 +718,15 @@ if (in_array('exporter', \ModuleLoader::getActive()))
                     'sql'              => "int(10) unsigned NOT NULL default '0'",
                 ),
                 'formhybrid_formHybridExportConfigs_entityField' => array(
-                    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formhybrid_formHybridExportConfigs_entityField'],
-                    'exclude'                 => true,
-                    'inputType'               => 'select',
+                    'label'            => &$GLOBALS['TL_LANG']['tl_module']['formhybrid_formHybridExportConfigs_entityField'],
+                    'exclude'          => true,
+                    'inputType'        => 'select',
                     'options_callback' => array('tl_form_hybrid_module', 'getEditableForExport'),
-                    'eval'                    => array('tl_class' => 'w50', 'chosen' => true, 'includeBlankOption' => true),
-                    'sql'                     => "varchar(64) NOT NULL default ''"
-                )
-            )
-        )
+                    'eval'             => array('tl_class' => 'w50', 'chosen' => true, 'includeBlankOption' => true),
+                    'sql'              => "varchar(64) NOT NULL default ''",
+                ),
+            ),
+        ),
     );
 }
 
@@ -785,7 +790,9 @@ class tl_form_hybrid_module extends \Backend
     public static function getEditableForExport($objDc)
     {
         if (($objModule = \ModuleModel::findByPk($objDc->activeRecord->pid)) === null)
+        {
             return array();
+        }
 
         return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objModule->formHybridDataContainer);
     }

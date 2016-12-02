@@ -81,6 +81,8 @@ $arrLang['formHybridIdGetParameter']               = array('ID GET-Parameter', '
 $arrLang['formHybridAppendIdToUrlOnCreation']      = array('New instance: Append ID GET-Parameter to url', 'After creation of instances their id is appended to the url.');
 $arrLang['formHybridTransformGetParamsToHiddenFields']      = array('Transform GET-Parameters to hidden fields', 'Makes sense e.g. for filter forms in GET mode.');
 
+$arrLang['formHybridEnableAutoComplete'] = array('Enable form "autocomplete"', 'Enable autocomplete for this form (not recommended). <strong>Caution: Form submission values will be cached and restored on browser back button.</strong>');
+
 /**
  * References
  */

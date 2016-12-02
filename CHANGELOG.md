@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.6] - 2016-12-03
+
+### Changed
+- set autocomplete="off" for all forms by default, can be enabled with formHybridEnableAutoComplete in tl_module, autocomplete="off" prevents browser back button restore field values from last submission
+
 ## [2.6.5] - 2016-12-02
 
 ### Fixed

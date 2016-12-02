@@ -86,6 +86,8 @@ $arrLang['formHybridExportConfigs'] = array('Konfiguration', 'Fügen Sie hier ne
 $arrLang['formhybrid_formHybridExportConfigs_config'] = array('Exporter-Konfiguration', 'Wählen Sie hier die gewünschte Exporter-Konfiguration aus.');
 $arrLang['formhybrid_formHybridExportConfigs_entityField'] = array('Exportdatei in Feld speichern', 'Wählen Sie hier das Feld aus, in das eine Referenz zur Exportdatei gespeichert werden soll.');
 
+$arrLang['formHybridEnableAutoComplete'] = array('Formular "autocomplete" aktivieren', 'Aktivieren Sie autocomplete für dieses Formular (nicht empfohlen). <strong>Achtung: Formularwerte werden im Browser zwischengespeichert und beim Klicken auf "Zurück" im Browser wiederhergestellt.</strong>');
+
 /**
  * References
  */
