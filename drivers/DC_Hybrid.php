@@ -1856,7 +1856,7 @@ class DC_Hybrid extends \DataContainer
             return;
         }
 
-        if (!$blnRedirect)
+		if (!$blnRedirect || $this->isFilterForm)
         {
             if($this->getReset())
             {

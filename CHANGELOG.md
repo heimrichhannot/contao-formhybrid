@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.7] - 2016-12-05
+
+### Fixed
+- prevent redirectAfterSubmission for isFilterForm Config
+
 ## [2.6.6] - 2016-12-03
 
 ### Changed
