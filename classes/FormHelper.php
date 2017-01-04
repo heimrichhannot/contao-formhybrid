@@ -171,7 +171,7 @@ class FormHelper extends \System
 
 		foreach (explode(',', $strPreservedTags) as $strTag) {
 			$varValue = preg_replace(
-				'/<(\/?' . $strTag . '[^>]*)>/i',
+				'/<(\/?' . $strTag . '(\s[^>]*)?)>/i',
 				'|%lt%$1%gt%|',
 				$varValue
 			);

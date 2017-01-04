@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.8] - 2017-01-04
+
+### Fixed
+- fixed minor bugs
+
 ## [2.6.7] - 2016-12-05
 
 ### Fixed
