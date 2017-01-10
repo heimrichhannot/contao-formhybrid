@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.9] - 2017-01-10
+
+### Changed
+- html2text/html2text dependency updated to 4.x
+
 ## [2.6.8] - 2017-01-04
 
 ### Fixed
