@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.10] - 2017-01-16
+
+### Changed
+- formHybridSingleSubmission default value changed to false
+
 ## [2.6.9] - 2017-01-10
 
 ### Changed
