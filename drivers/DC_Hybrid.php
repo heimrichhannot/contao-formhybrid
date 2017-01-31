@@ -767,6 +767,11 @@ class DC_Hybrid extends \DataContainer
             $this->generateSubmitField();
         }
 
+	if ($this->addExportButton)
+        {
+            $this->generateExportSubmitField();
+        }
+
         if (!$this->async)
         {
             $this->generateFormIdentifierField();
@@ -1525,6 +1530,16 @@ class DC_Hybrid extends \DataContainer
                     break;
             }
         }
+    }
+
+    protected function generateExportSubmitField()
+    {
+        $arrData = array(
+            'inputType' => 'submit',
+            'label'     => &$GLOBALS['TL_LANG']['MSC']['formhybrid']['export'],
+        );
+
+        $this->arrFields[FORMHYBRID_NAME_EXPORT] = $this->generateField(FORMHYBRID_NAME_EXPORT, $arrData);
     }
 
     protected function generateSubmitField()

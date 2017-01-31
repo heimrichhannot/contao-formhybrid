@@ -31,6 +31,25 @@ abstract class Form extends DC_Hybrid
 
 	protected function processForm()
 	{
+		if (\Input::post(FORMHYBRID_NAME_EXPORT))
+		{
+		    $intConfigId = FieldPaletteModel::findById($this->formHybridExportConfigs[0])->formhybrid_formHybridExportConfigs_config;
+		    $objConfig   = ExporterModel::findById($intConfigId);
+
+		    if (!$objConfig->linkedTable)
+		    {
+		        $objConfig->linkedTable = $this->strTable;
+		    }
+
+		    $objExporterClass = $objConfig->exporterClass;
+		    if (class_exists($objExporterClass))
+		    {
+		        $objExporter = new $objExporterClass($objConfig);
+
+		        $objExporter->export(\FrontendUser::getInstance(), \FrontendUser::getInstance()->getData());
+		    }
+		}
+
 		$this->onSubmitCallback($this);
 
         unset($_SESSION['FILES']); // clear files cache

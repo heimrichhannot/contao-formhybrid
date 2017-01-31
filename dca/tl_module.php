@@ -20,6 +20,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridUseCustomFormId';
 $arrDca['palettes']['__selector__'][] = 'formHybridAllowIdAsGetParameter';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddHashToAction';
 $arrDca['palettes']['__selector__'][] = 'formHybridExportAfterSubmission';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddExportButton';
 
 array_insert($arrDca['palettes']['__selector__'], 0, array('formHybridViewMode')); // bug??  must be indexed before "type"
 
@@ -47,7 +48,7 @@ $arrDca['subpalettes']['formHybridAddPermanentFields']                        = 
 $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 'formHybridCustomFormId';
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
-
+$arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
 
 /**
  * Callbacks
@@ -597,7 +598,13 @@ $arrFields = array(
         'eval'      => array('tl_class' => 'w50'),
         'sql'       => "char(1) NOT NULL default ''",
     ),
-
+    'formHybridAddExportButton'               => array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddExportButton'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array('tl_class' => 'w50', 'submitOnChange'=>true),
+        'sql'       => "char(1) NOT NULL default ''",
+    ),
 );
 
 // conditions for the field depending redirect

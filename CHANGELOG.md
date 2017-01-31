@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.11] - 2017-01-31
+
+### Added
+- generation of export-submit button
+- handling of export form frontend
+
 ## [2.6.10] - 2017-01-16
 
 ### Changed
