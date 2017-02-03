@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+
+## [2.6.12] - 2017-02-03
+
+### Fixed
+- removed html2text from commposer.json since already contained in haste_plus
+
 ## [2.6.11] - 2017-01-31
 
 ### Added
