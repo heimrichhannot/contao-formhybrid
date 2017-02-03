@@ -24,7 +24,6 @@
     "require": {
         "php": ">=5.4.0, <7",
         "contao/core": ">=3.2,<4-dev",
-        "html2text/html2text": "~4.0",
         "codefog/contao-haste": "~4.0",
         "heimrichhannot/contao-haste_plus": "~1.5",
         "heimrichhannot/contao-status_messages": "~1.0",
