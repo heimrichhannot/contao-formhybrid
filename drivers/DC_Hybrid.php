@@ -1483,8 +1483,12 @@ class DC_Hybrid extends \DataContainer
         {
             foreach ($this->arrDefaults as $strName => $varValue)
             {
-                // don't cache here!
-                $this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varValue, false);
+                // contao conform handling of default values -> set them only if no value had been set already by some other code
+                if ($this->objActiveRecord->{$strName} === null)
+                {
+                    // don't cache here!
+                    $this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varValue, false);
+                }
             }
         }
     }

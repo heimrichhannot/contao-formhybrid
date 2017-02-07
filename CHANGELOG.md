@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 
+## [2.6.13] - 2017-02-07
+
+### Fixed
+- set active record from default only if value === null
+
 ## [2.6.12] - 2017-02-03
 
 ### Fixed
