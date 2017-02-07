@@ -22,6 +22,8 @@ $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['orderFree'] = 'Kostenl
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['order'] = 'Auftrag erteilen';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['register'] = 'Anmeldung abschicken';
 $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['submitApplication'] = 'Bewerbung abschicken';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['subscribe'] = 'Anmelden';
+$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['unsubscribe'] = 'Abmelden';
 
 /**
  * Messages

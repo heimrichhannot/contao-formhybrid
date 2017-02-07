@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.14] - 2017-02-07
+
+### Added
+- added ne submit labels unsubscribe & subscribe
 
 ## [2.6.13] - 2017-02-07
 
