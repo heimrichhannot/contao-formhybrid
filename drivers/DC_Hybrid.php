@@ -1786,7 +1786,7 @@ class DC_Hybrid extends \DataContainer
                         {
                             foreach ($this->arrSubFields[$objWidget->subName] as $objSubWidget)
                             {
-                                $arrData = $GLOBALS['TL_DCA'][$this->strTable][$objSubWidget->name];
+                                $arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$objSubWidget->name];
 
                                 $arrExportFields[$objSubWidget->name] = array(
                                     'raw' => $this->objActiveRecord->{$objSubWidget->name},
