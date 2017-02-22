@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.16] - 2017-02-22
+
+### Fixed
+- exporter now contains linkedTable for skip fields
+
 ## [2.6.15] - 2017-02-08
 
 ### Fixed

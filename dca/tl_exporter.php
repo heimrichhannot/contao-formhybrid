@@ -8,7 +8,7 @@ $arrDca = &$GLOBALS['TL_DCA']['tl_exporter'];
 $arrDca['palettes'][\HeimrichHannot\FormHybrid\FormHybrid::EXPORT_TYPE_FORMHYBRID] =
     '{title_legend},title,type;' .
     '{export_legend},target,fileType;' .
-    '{table_legend},skipFields,skipLabels;';
+    '{table_legend},linkedTable,skipFields,skipLabels;';
 
 /**
  * Fields
