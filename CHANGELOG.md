@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.17] - 2017-02-23
+
+### Fixed
+- set default values from DCA after modifyDC has run, and move oncreate_callbacks after setDefaults() within initialize
+
 ## [2.6.16] - 2017-02-22
 
 ### Fixed

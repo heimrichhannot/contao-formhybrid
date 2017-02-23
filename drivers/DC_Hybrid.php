@@ -96,7 +96,7 @@ class DC_Hybrid extends \DataContainer
 
     protected $objAjax;
 
-    protected $arrOriginalRow = array();
+    protected $arrOriginalRow = null;
 
     protected $relatedAjaxRequest = false;
 
@@ -243,29 +243,6 @@ class DC_Hybrid extends \DataContainer
                 if ($this->intId && is_numeric($this->intId))
                 {
                     FormSession::addSubmissionId($this->getFormId(false), $this->getId());
-
-                    // Call the oncreate_callback
-                    if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback']))
-                    {
-                        foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback'] as $callback)
-                        {
-                            if (is_array($callback))
-                            {
-                                $this->import($callback[0]);
-                                $this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
-                            }
-                            elseif (is_callable($callback))
-                            {
-                                $callback($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
-                            }
-
-                            if (!$this->saveToBlob)
-                            {
-                                $this->objActiveRecord->refresh();
-                            }
-                        }
-                    }
-
                     $this->doIdDependentRedirectToEntity();
                 }
                 else
@@ -333,6 +310,29 @@ class DC_Hybrid extends \DataContainer
                             $GLOBALS['TL_DCA'][$this->strTable]
                         ); // set defaults again, as they might has been overwritten within loadDC/modifyDC
                         $this->setSubmission();
+
+                        // Call the oncreate_callback after modifyDC has been called
+                        if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback']))
+                        {
+                            foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['oncreate_callback'] as $callback)
+                            {
+                                if (is_array($callback))
+                                {
+                                    $this->import($callback[0]);
+                                    $this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
+                                }
+                                elseif (is_callable($callback))
+                                {
+                                    $callback($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
+                                }
+
+                                if (!$this->saveToBlob)
+                                {
+                                    $this->objActiveRecord->refresh();
+                                }
+                            }
+                        }
+
                         $this->save(); // initially try to save record, as ajax requests for example require entity model
                     }
                     elseif ($this->hasDatabaseTable() && !$this->hasNoEntity())
@@ -1483,12 +1483,7 @@ class DC_Hybrid extends \DataContainer
         {
             foreach ($this->arrDefaults as $strName => $varValue)
             {
-                // contao conform handling of default values -> set them only if no value had been set already by some other code
-                if ($this->objActiveRecord->{$strName} === null)
-                {
-                    // don't cache here!
-                    $this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varValue, false);
-                }
+                $this->objActiveRecord->{$strName} = FormHelper::replaceInsertTags($varValue, false);
             }
         }
     }
@@ -1663,7 +1658,10 @@ class DC_Hybrid extends \DataContainer
             return;
         }
 
-        $this->arrOriginalRow = $this->objActiveRecord->originalRow();
+        if($this->arrOriginalRow === null)
+        {
+            $this->arrOriginalRow = $this->objActiveRecord->originalRow();
+        }
 
         if ($this->saveToBlob)
         {
