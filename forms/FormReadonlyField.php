@@ -28,9 +28,9 @@ class FormReadonlyField extends \Widget
 	 */
 	protected $strPrefix = 'widget widget-readonly';
 
-	protected static $arrSkipTypes = array('hidden', 'submit');
+	protected static $arrSkipTypes = ['hidden', 'submit'];
 
-	protected $arrAttributesData = array();
+	protected $arrAttributesData = [];
 
 	/**
 	 * Initialize the object

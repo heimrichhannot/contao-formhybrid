@@ -12,7 +12,7 @@
 $dc = &$GLOBALS['TL_DCA']['tl_content'];
 
 // selector
-array_insert($dc['palettes']['__selector__'], 0, array('formhybridElement')); // bug? mustn't be inserted after type selector
+array_insert($dc['palettes']['__selector__'], 0, ['formhybridElement']); // bug? mustn't be inserted after type selector
 
 /**
  * Palettes
@@ -20,31 +20,23 @@ array_insert($dc['palettes']['__selector__'], 0, array('formhybridElement')); //
 $dc['palettes']['formhybridStart'] = '{type_legend},type;{formhybrid_legend},formhybridModule;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 $dc['palettes']['formhybridElement'] = '{type_legend},type;{formhybrid_legend},formhybridElement;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 
-$arrFields = array
-(
-	'formhybridModule' => array
-	(
-		'label'                   => &$GLOBALS['TL_LANG']['tl_content']['module'],
-		'exclude'                 => true,
-		'inputType'               => 'select',
-		'options_callback'        => array('tl_content_formhybrid', 'getModules'),
-		'eval'                    => array('mandatory'=>true, 'chosen'=>true, 'submitOnChange'=>true),
-		'wizard' => array
-		(
-			array('tl_content_formhybrid', 'editModule')
-		),
-		'sql'                     => "int(10) unsigned NOT NULL default '0'"
-	),
-	'formhybridElement' => array
-	(
-		'label'                   => &$GLOBALS['TL_LANG']['tl_content']['formhybridElement'],
-		'exclude'                 => true,
-		'inputType'               => 'select',
-		'options_callback'        => array('tl_content_formhybrid', 'getElements'),
-		'eval'                    => array('mandatory'=>true, 'chosen'=>true, 'submitOnChange'=>true, 'includeBlankOption' => true),
-		'sql'                     => "varchar(64) NOT NULL default ''"
-	),
-);
+$arrFields = [
+    'formhybridModule' => [
+        'label'                   => &$GLOBALS['TL_LANG']['tl_content']['module'],
+        'exclude'                 => true,
+        'inputType'               => 'select',
+        'options_callback'        => ['tl_content_formhybrid', 'getModules'],
+        'eval'                    => ['mandatory' =>true, 'chosen' =>true, 'submitOnChange' =>true],
+        'wizard' => [
+            ['tl_content_formhybrid', 'editModule']],
+        'sql'                     => "int(10) unsigned NOT NULL default '0'"],
+    'formhybridElement' => [
+        'label'                   => &$GLOBALS['TL_LANG']['tl_content']['formhybridElement'],
+        'exclude'                 => true,
+        'inputType'               => 'select',
+        'options_callback'        => ['tl_content_formhybrid', 'getElements'],
+        'eval'                    => ['mandatory' =>true, 'chosen' =>true, 'submitOnChange' =>true, 'includeBlankOption' => true],
+        'sql'                     => "varchar(64) NOT NULL default ''"],];
 
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
 
@@ -53,7 +45,7 @@ class tl_content_formhybrid extends Backend
 
 	public function getElements()
 	{
-		$arrOptions = array();
+		$arrOptions = [];
 
 		$arrElements = &$GLOBALS['TL_FORMHYBRID_ELEMENTS'];
 
@@ -86,7 +78,7 @@ class tl_content_formhybrid extends Backend
 	 */
 	public function getModules()
 	{
-		$arrModules = array();
+		$arrModules = [];
 		$objModules = $this->Database->prepare("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE formHybridDataContainer!='default' AND formHybridDataContainer!='' ORDER BY t.name, m.name")->execute();
 
 		while ($objModules->next())

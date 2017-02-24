@@ -99,10 +99,10 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 			}
 		}
 
-		$arrUnique = array();
-		$arrDatepicker = array();
-		$arrTinyMCE = array();
-		$arrHeaderItems = array();
+		$arrUnique = [];
+		$arrDatepicker = [];
+		$arrTinyMCE = [];
+		$arrHeaderItems = [];
 
 		foreach ($this->columnFields as $strKey => $arrField)
 		{
@@ -124,11 +124,11 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 				foreach ($this->varValue as $row => $value) {
 					$tinyId = 'ctrl_' . $this->strField . '_row' . $row . '_' . $strKey;
 
-					$GLOBALS['TL_RTE']['tinyMCE'][$tinyId] = array(
+					$GLOBALS['TL_RTE']['tinyMCE'][$tinyId] = [
 						'id'   => $tinyId,
 						'file' => 'tinyMCE',
 						'type' => null
-					);
+                    ];
 				}
 
 				$arrTinyMCE[] = $strKey;
@@ -148,9 +148,9 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 			$intNumberOfRows = $this->minCount;
 		}
 
-		$arrHidden = array();
-		$arrItems = array();
-		$arrHiddenHeader = array();
+		$arrHidden = [];
+		$arrItems = [];
+		$arrHiddenHeader = [];
 
 		// Add input fields
 		for ($i = 0; $i < $intNumberOfRows; $i++)
@@ -199,10 +199,8 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 					continue;
 				}
 
-				$arrItems[$i][$strKey] = array
-				(
-					'field'    => $objWidget
-				);
+				$arrItems[$i][$strKey] = [
+					'field'    => $objWidget];
 			}
 		}
 
@@ -224,7 +222,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 		$objTemplate->items = $arrItems;
 		$objTemplate->hidden = $arrHidden;
 
-		$arrButtons = array();
+		$arrButtons = [];
 		foreach ($arrItems as $k => $arrValue)
 		{
 			$arrButtons[$k]       = $this->generateButtonString($k);
@@ -242,7 +240,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 	 * @param array
 	 * @return string
 	 */
-	protected function generateTable($arrUnique, $arrDatepicker, $arrHidden, $arrItems, $arrHiddenHeader = array())
+	protected function generateTable($arrUnique, $arrDatepicker, $arrHidden, $arrItems, $arrHiddenHeader = [])
 	{
 
 		// generate header fields

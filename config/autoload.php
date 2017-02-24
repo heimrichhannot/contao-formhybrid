@@ -12,17 +12,17 @@
 /**
  * Register the namespaces
  */
-ClassLoader::addNamespaces(array
-(
-	'HeimrichHannot',
-));
+ClassLoader::addNamespaces(
+    [
+	'HeimrichHannot',]
+);
 
 
 /**
  * Register the classes
  */
-ClassLoader::addClasses(array
-(
+ClassLoader::addClasses(
+    [
 	// Forms
 	'HeimrichHannot\FormHybrid\FormReadonlyField'        => 'system/modules/formhybrid/forms/FormReadonlyField.php',
 	'HeimrichHannot\FormHybrid\FormMultiColumnWizard'    => 'system/modules/formhybrid/forms/FormMultiColumnWizard.php',
@@ -50,15 +50,15 @@ ClassLoader::addClasses(array
 	'HeimrichHannot\FormHybrid\ContentFormHybridElement' => 'system/modules/formhybrid/elements/ContentFormHybridElement.php',
 
 	// Drivers
-	'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',
-));
+	'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',]
+);
 
 
 /**
  * Register the templates
  */
-TemplateLoader::addFiles(array
-(
+TemplateLoader::addFiles(
+    [
 	'form_readonly'                  => 'system/modules/formhybrid/templates/forms',
 	'formhybridreadonly_default'     => 'system/modules/formhybrid/templates/readonly',
 	'formhybridreadonly_default_sub' => 'system/modules/formhybrid/templates/readonly',
@@ -67,5 +67,5 @@ TemplateLoader::addFiles(array
 	'formhybridStop_default'         => 'system/modules/formhybrid/templates/form',
 	'formhybrid_default_sub'         => 'system/modules/formhybrid/templates/form',
 	'ce_formhybrid_start'            => 'system/modules/formhybrid/templates/elements',
-	'ce_formhybrid_stop'             => 'system/modules/formhybrid/templates/elements',
-));
+	'ce_formhybrid_stop'             => 'system/modules/formhybrid/templates/elements',]
+);

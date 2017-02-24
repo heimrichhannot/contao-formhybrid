@@ -22,7 +22,7 @@ class AvisotaHelper {
 	{
 		$repository = EntityHelper::getRepository('Avisota\Contao:Recipient');
 
-		if (($recipient  = $repository->findOneBy(array('email' => $strEmail))) === null) {
+		if (($recipient  = $repository->findOneBy(['email' => $strEmail])) === null) {
 			$recipient = new Recipient();
 
 			$entityAccessor = $GLOBALS['container']['doctrine.orm.entityAccessor'];
@@ -76,7 +76,7 @@ class AvisotaHelper {
 			$event = new GenerateFrontendUrlEvent($pageDetails);
 			$eventDispatcher->dispatch(ContaoEvents::CONTROLLER_GENERATE_FRONTEND_URL, $event);
 
-			$query = array('token' => array());
+			$query = ['token' => []];
 
 			foreach ($subscriptions as $subscription) {
 				$query['token'][] = $subscription->getActivationToken();
@@ -87,13 +87,13 @@ class AvisotaHelper {
 
 			\System::loadLanguageFile('fe_avisota_subscription');
 
-			$data = array(
-				'link'          => array(
+			$data = [
+                'link'          => [
 					'url'  => $url,
 					'text' => $GLOBALS['TL_LANG']['fe_avisota_subscription']['confirm'],
-				),
-				'subscriptions' => $subscriptions,
-			);
+                ],
+                'subscriptions' => $subscriptions,
+            ];
 
 			static::sendAvisotaEMail($strConfirmationMessageId, $recipient, $data);
 		}
@@ -108,7 +108,7 @@ class AvisotaHelper {
 	 */
 	protected static function loadMailingLists($mailingListIds)
 	{
-		$mailingLists          = array();
+		$mailingLists          = [];
 		$mailingListRepository = EntityHelper::getRepository('Avisota\Contao:MailingList');
 		$queryBuilder          = $mailingListRepository->createQueryBuilder('ml');
 		$expr                  = $queryBuilder->expr();
@@ -121,19 +121,22 @@ class AvisotaHelper {
 		return $query->getResult();
 	}
 
-	public static function sendAvisotaEMail($strConfirmationMessageId, $varRecipientOrEmail, $arrData = array(), $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = array())
+	public static function sendAvisotaEMail($strConfirmationMessageId, $varRecipientOrEmail, $arrData = [], $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = []
+    )
 	{
 		$objMessage = static::getAvisotaMessage($strConfirmationMessageId);
 
 		static::doSendAvisotaEMail($objMessage, $varRecipientOrEmail, $arrData, $strSalutationGroupId, $intRecipientMode, $arrFiles);
 	}
 
-	public static function sendAvisotaEMailByMessage($objMessage, $varRecipientOrEmail, $arrData = array(), $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = array())
+	public static function sendAvisotaEMailByMessage($objMessage, $varRecipientOrEmail, $arrData = [], $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = []
+    )
 	{
 		static::doSendAvisotaEMail($objMessage, $varRecipientOrEmail, $arrData, $strSalutationGroupId, $intRecipientMode, $arrFiles);
 	}
 
-	private static function doSendAvisotaEMail($objMessage, $varRecipientOrEmail, $arrData = array(), $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = array())
+	private static function doSendAvisotaEMail($objMessage, $varRecipientOrEmail, $arrData = [], $strSalutationGroupId = null, $intRecipientMode = null, $arrFiles = []
+    )
 	{
 		if ($objMessage) {
 			// possible attachments
@@ -142,7 +145,7 @@ class AvisotaHelper {
 			}
 
 			foreach ($arrFiles as $strFileUuid) {
-				$objMessage->setFiles(array($strFileUuid));
+				$objMessage->setFiles([$strFileUuid]);
 			}
 
 			/** @var MessageRendererInterface $renderer */
@@ -197,7 +200,7 @@ class AvisotaHelper {
 			$entityAccessor = $GLOBALS['container']['doctrine.orm.entityAccessor'];
 
 			if (($objRecipient = $repository->findOneBy(
-					array('email' => $varRecipientOrEmail)
+                    ['email' => $varRecipientOrEmail]
 				)) === null
 			) {
 				$objRecipient = new Recipient();
@@ -211,7 +214,7 @@ class AvisotaHelper {
 				}
 			}
 
-			$arrDataToAdd = array();
+			$arrDataToAdd = [];
 			switch ($intRecipientMode)
 			{
 				case static::RECIPIENT_MODE_USE_SUBMISSION_DATA:
@@ -220,7 +223,7 @@ class AvisotaHelper {
 					// add submission data to recipient
 					$synonymizer = $GLOBALS['container']['avisota.recipient.synonymizer'];
 
-					$arrDataSynonymized = array();
+					$arrDataSynonymized = [];
 					foreach ($arrDataToAdd as $strField => $varValue)
 					{
 						$arrDataSynonymized[$strField] = $varValue;
@@ -236,7 +239,7 @@ class AvisotaHelper {
 					$arrDataToAdd = $arrDataSynonymized;
 					break;
 				case static::RECIPIENT_MODE_USE_MEMBER_DATA:
-					$arrDataToAdd = static::addMemberProperties(array('email' => $varRecipientOrEmail));
+					$arrDataToAdd = static::addMemberProperties(['email' => $varRecipientOrEmail]);
 					break;
 			}
 
@@ -298,7 +301,7 @@ class AvisotaHelper {
 
 	public static function addMemberProperties($arrDetails)
 	{
-		$arrRecipientFields = array();
+		$arrRecipientFields = [];
 		\Controller::loadDataContainer('orm_avisota_recipient');
 
 		foreach ($GLOBALS['TL_DCA']['orm_avisota_recipient']['metapalettes']['default'] as $strPalette => $arrFields)

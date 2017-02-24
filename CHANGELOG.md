@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.6.18] - 2017-02-24
+
+### Fixed
+- position of export -> now before processing notifications so that eported files can now be attached
+- transformed array() to []
+
 ## [2.6.17] - 2017-02-23
 
 ### Fixed

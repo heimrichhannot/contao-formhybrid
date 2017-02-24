@@ -42,7 +42,7 @@ class TagsHelper extends \System
 			{
 				$objTags = TagModel::findByIdAndTable($dc->activeRecord->id, $dc->table);
 
-				$arrSavedTags = array();
+				$arrSavedTags = [];
 
 				if($objTags !== null)
 				{

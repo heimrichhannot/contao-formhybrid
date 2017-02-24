@@ -98,7 +98,7 @@ class FormAjax
 		}
 
 		$objResponse = new ResponseSuccess();
-		$objResponse->setResult(new ResponseData($this->html, array('id' => $this->dc->getFormId())));
+		$objResponse->setResult(new ResponseData($this->html, ['id' => $this->dc->getFormId()]));
 		StatusMessage::reset($this->dc->objModule->id); // reset messages after html has been submitted
 		return $objResponse;
 	}

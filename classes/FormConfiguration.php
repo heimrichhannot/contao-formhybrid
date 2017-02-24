@@ -20,16 +20,14 @@ class FormConfiguration
 	 * The transformed data
 	 * @varT
 	 */
-	protected $arrData = array();
+	protected $arrData = [];
 	/**
 	 * The raw config data
 	 * @var
 	 */
-	protected $varConfig = array();
-	protected $arrDefaults = array
-	(
-		''
-	);
+	protected $varConfig = [];
+	protected $arrDefaults = [
+		''];
 	public function __construct($varConfig)
 	{
 		if($varConfig instanceof \Module && $varConfig->Template instanceof \FrontendTemplate)
@@ -65,7 +63,7 @@ class FormConfiguration
 	protected function transform()
 	{
 		// leave non-formhybrid data inside config
-		$this->arrData = Arrays::filterOutByPrefixes($this->varConfig, array('formHybrid'));
+		$this->arrData = Arrays::filterOutByPrefixes($this->varConfig, ['formHybrid']);
 
 		// never set context id from module id
 		if(isset($this->arrData['id']))
@@ -75,7 +73,7 @@ class FormConfiguration
 		}
 
 		// transform formhybrid prefixed attributes
-		$arrData = Arrays::filterByPrefixes($this->varConfig, array('formHybrid'));
+		$arrData = Arrays::filterByPrefixes($this->varConfig, ['formHybrid']);
 
 		foreach ($arrData as $strKey => $varValue)
 		{
@@ -100,7 +98,7 @@ class FormConfiguration
 				}
 				else
 				{
-					$varValue = Url::removeQueryString(array('file'), \Environment::get('uri'));
+					$varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
 					// remove all query parameters within ajax request
 					if(Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
 					{
@@ -203,7 +201,7 @@ class FormConfiguration
 	 */
 	public function getData()
 	{
-		$arrData = array();
+		$arrData = [];
 		foreach ($this->arrData as $strKey => $varValue)
 		{
 			$arrData[$strKey] = $this->{$strKey};

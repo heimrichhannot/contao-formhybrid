@@ -4,9 +4,9 @@
  * Content Elements
  */
 $GLOBALS['TL_LANG']['CTE']['formhybrid'] = 'Formhybrid';
-$GLOBALS['TL_LANG']['CTE']['formhybridStart'] = array('Form Start','Declares the start of a form');
-$GLOBALS['TL_LANG']['CTE']['formhybridElement'] = array('Form Element','Insert elements into the form');
-$GLOBALS['TL_LANG']['CTE']['formhybridStop'] = array('Form Stop','Declares the stop of a form');
+$GLOBALS['TL_LANG']['CTE']['formhybridStart'] = ['Form Start', 'Declares the start of a form'];
+$GLOBALS['TL_LANG']['CTE']['formhybridElement'] = ['Form Element', 'Insert elements into the form'];
+$GLOBALS['TL_LANG']['CTE']['formhybridStop'] = ['Form Stop', 'Declares the stop of a form'];
 
 /**
  * Submit Labels

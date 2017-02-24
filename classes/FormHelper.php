@@ -15,7 +15,7 @@ class FormHelper extends \System
 {
 	public static function getFormId($strTable, $intModule, $intId = null, $blnAddEntityId = true)
 	{
-		$arrValues = array();
+		$arrValues = [];
 		
 		$arrValues[0] = $strTable;
 		$arrValues[1] = $intModule;
@@ -43,7 +43,7 @@ class FormHelper extends \System
 
 	public static function getFieldOptions($arrData, $objDc = null)
 	{
-		$arrOptions = array();
+		$arrOptions = [];
 
 		if (is_array($arrData['options'])) {
 			$arrOptions = $arrData['options'];
@@ -52,7 +52,7 @@ class FormHelper extends \System
 		if ($objDc !== null && empty($arrOptions)
 			&& (is_array($arrData['options_callback']) || is_callable($arrData['options_callback']))
 		) {
-			$arrCallback = array();
+			$arrCallback = [];
 
 			if (is_array($arrData['options_callback'])) {
 				$strClass    = $arrData['options_callback'][0];
@@ -150,7 +150,7 @@ class FormHelper extends \System
 		}
 
 		if (is_array($varValue)) {
-			$arrValues = array();
+			$arrValues = [];
 
 			foreach ($varValue as $i => $strValue) {
 				$arrValues[$i] = static::escapeAllEntities($strDca, $strField, $strValue);
@@ -164,7 +164,7 @@ class FormHelper extends \System
 		$strPreservedTags = isset($arrData['eval']['allowedTags']) ? $arrData['eval']['allowedTags'] : \Config::get('allowedTags');
 
 		// transform to array
-		$strPreservedTags = str_replace(array('<', '>'), array('', ','), rtrim($strPreservedTags, '>'));
+		$strPreservedTags = str_replace(['<', '>'], ['', ','], rtrim($strPreservedTags, '>'));
 
 		// prepare for replacing
 		$varValue = html_entity_decode($varValue);
@@ -181,9 +181,9 @@ class FormHelper extends \System
 		$varValue = FormHelper::xssClean($varValue, $arrData['eval']['allowHtml']);
 
 		$varValue = str_replace(
-			array('|%lt%', '%gt%|', '&amp;', '&quot;'),
-			array('<', '>', '&', '"'),
-			$varValue
+            ['|%lt%', '%gt%|', '&amp;', '&quot;'],
+            ['<', '>', '&', '"'],
+            $varValue
 		);
 
 		return $varValue;
@@ -288,7 +288,7 @@ class FormHelper extends \System
 
 	public static function getAssocMultiColumnWizardList(array $arrValues, $strKey, $strValue = '')
 	{
-		$arrReturn = array();
+		$arrReturn = [];
 
 		foreach ($arrValues as $arrValue) {
 			if (!isset($arrValue[$strKey]) && !isset($arrValue[$strValue])) {
@@ -314,7 +314,7 @@ class FormHelper extends \System
 		\Controller::loadDataContainer($strTable);
 
 		$boxes   = trimsplit(';', $strPalette);
-		$legends = array();
+		$legends = [];
 
 		if (!empty($boxes)) {
 			foreach ($boxes as $k => $v) {
@@ -340,7 +340,7 @@ class FormHelper extends \System
 			}
 		}
 
-		$arrFields = array();
+		$arrFields = [];
 
 		if (!is_array($boxes)) {
 			return $arrFields;
@@ -479,7 +479,7 @@ class FormHelper extends \System
 	 */
 	public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, \DataContainer $dc = null)
 	{
-		$arrFilteredSubPalettes = array();
+		$arrFilteredSubPalettes = [];
 
 		foreach ($arrFieldsInPalette as $strField) {
 			if (in_array($strField, $arrSubPalettes)) {
@@ -521,22 +521,22 @@ class FormHelper extends \System
 	public static function getEditableFields($strDataContainer)
 	{
 		if (!$strDataContainer) {
-			return array();
+			return [];
 		}
 
 		\Controller::loadDataContainer($strDataContainer);
 
 		if (!is_array($GLOBALS['TL_DCA'][$strDataContainer])) {
-			return array();
+			return [];
 		}
 
-		$arrFields = array();
+		$arrFields = [];
 
 		if (is_array($GLOBALS['TL_DCA'][$strDataContainer]['fields']))
 		{
 			foreach ($GLOBALS['TL_DCA'][$strDataContainer]['fields'] as $strName => $arrData)
 			{
-				if (in_array($strName, array('id', 'tstamp')))
+				if (in_array($strName, ['id', 'tstamp']))
 				{
 					continue;
 				}

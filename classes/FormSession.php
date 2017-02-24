@@ -29,7 +29,7 @@ class FormSession
 	{
 		if (!is_array($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY]))
 		{
-			$_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY] = array();
+			$_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY] = [];
 		}
 		
 		$_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY][$formId] = $intId;

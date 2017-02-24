@@ -10,7 +10,7 @@ abstract class Form extends DC_Hybrid
 {
 	const FORMHYBRID_NAME = 'formhybrid';
 
-	protected $arrSubmitCallbacks = array();
+	protected $arrSubmitCallbacks = [];
 
 	protected $strLogFile = 'formhybrid.log';
 
@@ -530,7 +530,7 @@ abstract class Form extends DC_Hybrid
 
 		if (!$this->isSubmitted())
 		{
-			$arrSubmission = $blnSkipDefaults ? array() : $this->getDefaults();
+			$arrSubmission = $blnSkipDefaults ? [] : $this->getDefaults();
 		}
 
 		if (($this->hasNoEntity() || !$this->hasDatabaseTable()) && is_array($arrSubmission))

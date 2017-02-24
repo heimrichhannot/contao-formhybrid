@@ -19,37 +19,23 @@ class DatabaseUpdater
 		$objDatabase = \Database::getInstance();
 		\Controller::loadDataContainer('tl_module');
 
-		$arrRenameFields = array
-		(
-			'tl_module'      => array
-			(
-				'jumpToSuccess' => array
-				(
+		$arrRenameFields = [
+            'tl_module'      => [
+                'jumpToSuccess' => [
 					'name' => 'jumpTo',
-					'syncValue' => true
-				),
-				'jumpToSuccessPreserveParams' => array
-				(
+					'syncValue' => true],
+                'jumpToSuccessPreserveParams' => [
 					'name' => 'formHybridJumpToPreserveParams',
-					'syncValue' => false
-				),
-				'allowIdAsGetParameter' => array
-				(
+					'syncValue' => false],
+                'allowIdAsGetParameter' => [
 					'name' => 'formHybridAllowIdAsGetParameter',
-					'syncValue' => true
-				),
-				'idGetParameter' => array
-				(
+					'syncValue' => true],
+                'idGetParameter' => [
 					'name' => 'formHybridIdGetParameter',
-					'syncValue' => true
-				),
-				'appendIdToUrlOnCreation' => array
-				(
+					'syncValue' => true],
+                'appendIdToUrlOnCreation' => [
 					'name' => 'formHybridAppendIdToUrlOnCreation',
-					'syncValue' => true
-				)
-			),
-		);
+					'syncValue' => true]],];
 		
 		foreach ($arrRenameFields as $strTable => $arrFields)
 		{

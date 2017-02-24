@@ -30,7 +30,7 @@ class Validator
 
 		if(empty($arrOptions))
 		{
-			$arrOptions = array(0,1);
+			$arrOptions = [0, 1];
 		}
 
 		$blnIsAssociative = ($arrData['eval']['isAssociative'] || array_is_assoc($arrOptions));

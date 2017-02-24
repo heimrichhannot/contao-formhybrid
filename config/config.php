@@ -24,11 +24,11 @@ define('FORMHYBRID_PALETTE_DEFAULT', '
 /**
  * Content elements
  */
-$GLOBALS['TL_CTE']['formhybrid'] = array(
+$GLOBALS['TL_CTE']['formhybrid'] = [
 	'formhybridStart'   => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStart',
 	'formhybridElement' => 'HeimrichHannot\\FormHybrid\\ContentFormHybridElement',
 	'formhybridStop'    => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStop',
-);
+];
 
 
 /**
@@ -47,7 +47,7 @@ if (TL_MODE == 'FE') {
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['parseWidget'][] = array('HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook');
+$GLOBALS['TL_HOOKS']['parseWidget'][] = ['HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook'];
 
 /**
  * Front end widgets
@@ -83,24 +83,14 @@ if (in_array('notification_center_plus', \ModuleLoader::getActive())) {
 /**
  * Ajax Actions
  */
-$GLOBALS['AJAX'][\HeimrichHannot\FormHybrid\Form::FORMHYBRID_NAME] = array
-(
-	'actions' => array
-	(
-		'toggleSubpalette' => array
-		(
-			'arguments' => array('subId', 'subField', 'subLoad'),
-			'optional'   => array('subLoad'),
-		),
-		'asyncFormSubmit'  => array
-		(
-			'arguments' => array(),
-			'optional'   => array(),
-		),
-		'reload'  => array
-		(
-			'arguments' => array(),
-			'optional'   => array(),
-		),
-	),
-);
+$GLOBALS['AJAX'][\HeimrichHannot\FormHybrid\Form::FORMHYBRID_NAME] = [
+    'actions' => [
+        'toggleSubpalette' => [
+            'arguments' => ['subId', 'subField', 'subLoad'],
+            'optional'   => ['subLoad'],],
+        'asyncFormSubmit'  => [
+            'arguments' => [],
+            'optional'   => [],],
+        'reload'  => [
+            'arguments' => [],
+            'optional'   => [],],],];

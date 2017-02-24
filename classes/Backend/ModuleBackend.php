@@ -26,12 +26,12 @@ class ModuleBackend extends \Backend
 
 	public function getViewModes()
 	{
-		return array_values(Arrays::filterByPrefixes(get_defined_constants(), array('FORMHYBRID_VIEW_MODE_')));
+		return array_values(Arrays::filterByPrefixes(get_defined_constants(), ['FORMHYBRID_VIEW_MODE_']));
 	}
 
 	public function getSubmitLabels()
 	{
-		$arrOptions = array();
+		$arrOptions = [];
 
 		$arrTitles = $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels'];
 
