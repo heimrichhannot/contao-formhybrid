@@ -1995,7 +1995,7 @@ class DC_Hybrid extends \DataContainer
     {
     }
 
-    public function onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, array $arrOriginalRow = [])
+    public function onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, $arrOriginalRow = null)
     {
     }
 

@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.20] - 2017-02-24
+
+### Fixed
+
+- DC_Hybrid::onUpdateCallback $arrOriginalRow argument type removed
+
+
 ## [2.6.19] - 2017-02-24
 
 ### Fixed
