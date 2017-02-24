@@ -12,6 +12,7 @@ use HeimrichHannot\FileCredit\FilesModel;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Files;
 use HeimrichHannot\Haste\Util\FormSubmission;
+use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use HeimrichHannot\Versions\Version;
@@ -701,7 +702,19 @@ class DC_Hybrid extends \DataContainer
                     $arrOptions  = $objInstance->$arrCallback[1]($this);
                 }
 
-                if ($varValue && isset($this->dca['palettes'][$varValue]) && $strPalette && in_array($varValue, $arrOptions))
+                // check for existing subpalettes in order to distinguish between type and subpalette selectors
+                $blnIsSubPaletteSelector = false;
+                foreach (array_keys($this->dca['subpalettes']) as $strSubPaletteSelector)
+                {
+                    if (StringUtil::startsWith($strSubPaletteSelector, $strSelector . '_'))
+                    {
+                        $blnIsSubPaletteSelector = true;
+                        break;
+                    }
+                }
+
+                if ($varValue && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette &&
+                    in_array($varValue, $arrOptions))
                 {
                     // no messages
                     $this->setSilentMode($this->isSkipValidation());

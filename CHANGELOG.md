@@ -1,5 +1,10 @@
-# Change Log
+# Changelog
 All notable changes to this project will be documented in this file.
+
+## [2.6.19] - 2017-02-24
+
+### Fixed
+- missing fields due to type selector issues
 
 ## [2.6.18] - 2017-02-24
 
