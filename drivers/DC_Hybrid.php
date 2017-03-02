@@ -1298,7 +1298,8 @@ class DC_Hybrid extends \DataContainer
         $this->Template->formName                      = $this->strFormName;
         $this->Template->formId                        = $this->strFormId;
         $this->Template->method                        = $this->strMethod;
-        $this->Template->action                        = $this->strAction;
+        $this->Template->action                        = $this->updateAction($this->strAction);
+
         $this->Template->enctype                       = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
         $this->Template->skipScrollingToSuccessMessage = $this->skipScrollingToSuccessMessage;
         $this->Template->novalidate                    = $this->novalidate ? ' novalidate' : '';
@@ -1337,6 +1338,11 @@ class DC_Hybrid extends \DataContainer
         }
 
         $this->Template->cssID = ' id="' . $this->strFormName . '"';
+    }
+
+    protected function updateAction($strAction)
+    {
+        return $strAction;
     }
 
     protected function generateSubpalette($ajaxId)

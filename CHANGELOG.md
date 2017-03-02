@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.21] - 2017-03-02
+
+### Fixed
+
+- added updateAction()
+
 ## [2.6.20] - 2017-02-24
 
 ### Fixed
