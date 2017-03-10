@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.22] - 2017-03-10
+
+### Fixed
+
+- added property removeAutoItemFromAction
+
 ## [2.6.21] - 2017-03-02
 
 ### Fixed

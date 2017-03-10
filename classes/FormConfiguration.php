@@ -15,6 +15,7 @@ use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
+use HeimrichHannot\Request\Request;
 
 class FormConfiguration
 {
@@ -120,22 +121,32 @@ class FormConfiguration
                 else
                 {
                     $varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
+
                     // remove all query parameters within ajax request
                     if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
                     {
                         $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
                     }
                 }
+
                 // async form
                 if ($this->async)
                 {
                     $varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
                 }
+                
                 // add hash
                 if ($this->addHashToAction)
                 {
                     $varValue .= '#' . ($this->customHash ?: $this->strFormId);
                 }
+
+                // remove auto_item
+                if (\Config::get('useAutoItem') && Request::hasGet('auto_item') && $this->removeAutoItemFromAction)
+                {
+                    $varValue = str_replace('/' . Request::getGet('auto_item'), '', $varValue);
+                }
+
                 break;
             case 'arrDefaultValues':
                 $varValue = FormHelper::getAssocMultiColumnWizardList($varValue, 'field');

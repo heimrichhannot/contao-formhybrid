@@ -242,6 +242,13 @@ $arrFields = [
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50'],
         'sql'       => "varchar(255) NOT NULL default ''",
     ],
+    'removeAutoItemFromAction' => [
+        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['removeAutoItemFromAction'],
+        'exclude'                 => true,
+        'inputType'               => 'checkbox',
+        'eval'                    => ['tl_class' => 'w50'],
+        'sql'                     => "char(1) NOT NULL default ''"
+    ],
     'formHybridCssClass'                         => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],
         'exclude'   => true,

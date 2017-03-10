@@ -65,6 +65,7 @@ $arrLang['formHybridIsComplete'] = ['Komplett', 'Diese Option wird automatisch v
 $arrLang['formHybridAction'] = ['Form action / Zielseite', 'Wählen Sie eine Zielseite aus.'];
 $arrLang['formHybridAddHashToAction'] = ['Hash zur Form-Action hinzufügen', 'Wählen Sie diese Option, um der Form-Action die Form-ID als Hash hinzuzufügen.'];
 $arrLang['formHybridCustomHash'] = ['Standard-Hash überschreiben', 'Geben Sie hier bei Bedarf einen eigenen Hash-Wert ein.'];
+$arrLang['removeAutoItemFromAction'] = ['Auto_item aus der Form-Action entfernen', 'Wählen Sie diese Option, wenn ein eventuell existierendes auto_item aus der Form-Action entfernt werden soll.'];
 $arrLang['formHybridAddPermanentFields'] = ['Immer auszugebende Felder hinzufügen', 'Wählen Sie diese Option, um dem Formular bestimmte Felder unter allen Umständen hinzuzufügen. Diese Felder sind in aller Regel Subpalettenfelder, die auch dann ausgegeben werden, wenn deren Selektor nicht aktiv ist. Sinnvoll etwa, wenn Felder im Kontext mehrerer Type-Selektoren vorkommen.'];
 $arrLang['formHybridPermanentFields'] = ['Immer auszugebende Felder', 'Wählen Sie hier Felder aus, die immer ausgegeben werden sollen.'];
 
