@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.23] - 2017-03-14
+
+### Fixed
+
+- button smashing on subpalette selectors is not impossible
+
 ## [2.6.22] - 2017-03-10
 
 ### Fixed
