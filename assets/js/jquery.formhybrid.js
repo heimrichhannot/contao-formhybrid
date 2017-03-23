@@ -1,54 +1,44 @@
-(function($)
-{
+(function ($) {
 
     FormhybridPlugins = {
-        init: function(action)
-        {
+        init: function (action) {
             this.scrollToMessages();
         },
-        scrollToMessages: function($container)
-        {
-            if (typeof $container === 'undefined')
-            {
+        scrollToMessages: function ($container) {
+            if (typeof $container === 'undefined') {
                 $container = $('.formhybrid:first');
             }
 
             // scroll to first alert message or first error field
             var alert = $container.find('.alert:first, .error:first');
 
-            if (alert.length > 0 && !$container.hasClass('noscroll'))
-            {
+            if (alert.length > 0 && !$container.hasClass('noscroll')) {
                 HASTE_PLUS.scrollTo(alert, 100, 500);
             }
         }
     };
 
     FormhybridAjaxRequest = {
-        registerEvents: function()
-        {
+        registerEvents: function () {
             this.asyncSubmit();
         },
-        asyncSubmit: function(form)
-        {
-            if (typeof form !== 'undefined')
-            {
+        asyncSubmit: function (form) {
+            if (typeof form !== 'undefined') {
                 var $form = $(form);
-                if ($form.length > 0)
-                {
+                if ($form.length > 0) {
                     FormhybridAjaxRequest._asyncFormSubmit($form);
                 }
                 return false;
             }
 
-            $(document).on('submit', '.formhybrid form[data-async]', function(e)
-            {
+            $(document).on('submit', '.formhybrid form[data-async]', function (e) {
                 var $form = $(this);
+
                 e.preventDefault();
                 FormhybridAjaxRequest._asyncFormSubmit($form);
             });
         },
-        _asyncFormSubmit: function($form, url, data)
-        {
+        _asyncFormSubmit: function ($form, url, data) {
             var $formData = $form.serializeArray();
 
             $formData.push({
@@ -56,25 +46,38 @@
                 value: $form.attr('id')
             });
 
-            if (typeof data != "undefined")
-            {
+            var $submit = $form.find(':input[type=submit]');
+
+            // disable all inputs
+            $form.find(':input:not([disabled])').prop('disabled', true);
+
+            if (typeof data != "undefined") {
                 $formData.push(data);
             }
 
-            function closeModal(response, $form)
-            {
+            function closeModal(response, $form) {
 
-                if (typeof response.result.data == 'undefined')
-                {
+                if (typeof response.result.data == 'undefined') {
                     return;
                 }
 
-                if (!response.result.data.closeModal)
-                {
+                if (!response.result.data.closeModal) {
                     return;
                 }
 
                 $form.closest('.modal').modal('hide');
+            }
+
+            var $submitText = $submit;
+
+            if ($submit.is('button')) {
+                if ($submit.children().length > 0) {
+                    var $submitChilds = $submit.find(':not(.before, .after)');
+
+                    if ($submitChilds.length > 0) {
+                        $submitText = $submitChilds.first();
+                    }
+                }
             }
 
             $.ajax({
@@ -82,42 +85,43 @@
                 dataType: 'json',
                 data: $formData,
                 method: $form.attr('method'),
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    if (jqXHR.status == 300)
-                    {
+                beforeSend: function () {
+                    var i = 0,
+                        text = $submitText.text();
+                    setInterval(function () {
+                        $submitText.text(text + Array((++i % 4) + 1).join("."));
+                    }, 500);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 300) {
                         location.href = jqXHR.responseJSON.result.data.url;
                         closeModal(jqXHR.responseJSON, $form);
                         return;
                     }
                 },
-                success: function(response, textStatus, jqXHR)
-                {
-                    if (typeof response == 'undefined')
-                    {
-                        return;
-                    }
-
-                    if (response.result.html && response.result.data.id)
-                    {
-
-                        var container = '<div>' + response.result.html + '</div>',
-                            $replace = $(container).find('#' + response.result.data.id);
-
-                        if (typeof $replace !== 'undefined')
-                        {
-                            $form.replaceWith($replace);
+                success: function (response, textStatus, jqXHR) {
+                        if (typeof response == 'undefined') {
+                            return;
                         }
 
-                        FormhybridPlugins.scrollToMessages($replace);
+                        if (response.result.html && response.result.data.id) {
 
-                        closeModal(response, $form);
-                    }
+                            var container = '<div>' + response.result.html + '</div>',
+                                $replace = $(container).find('#' + response.result.data.id);
+
+                            if (typeof $replace !== 'undefined') {
+                                $form.replaceWith($replace);
+                            }
+
+                            FormhybridPlugins.scrollToMessages($replace);
+
+                            closeModal(response, $form);
+                        }
+
                 }
             });
         },
-        toggleSubpalette: function(el, id, field, url)
-        {
+        toggleSubpalette: function (el, id, field, url) {
             el.blur();
 
             var $el = $(el),
@@ -134,21 +138,18 @@
                 {name: 'subId', value: id},
                 {name: 'subField', value: field});
 
-            if ($el.is(':checkbox') || $el.is(':radio'))
-            {
+            if ($el.is(':checkbox') || $el.is(':radio')) {
                 checked = $el.is(':checked');
             }
 
-            if (checked === false)
-            {
+            if (checked === false) {
 
                 $.ajax({
                     type: 'post',
                     url: url,
                     dataType: 'json',
                     data: $formData,
-                    success: function(response)
-                    {
+                    success: function (response) {
                         $item.remove();
 
                         $el.closest('form').find('#' + checkboxId).attr('disabled', false);
@@ -167,17 +168,14 @@
                 url: url,
                 dataType: 'json',
                 data: $formData,
-                success: function(response, textStatus, jqXHR)
-                {
+                success: function (response, textStatus, jqXHR) {
                     $item.remove();
                     // bootstrapped forms
-                    if ($el.closest('form').find('.' + field).length > 0)
-                    {
+                    if ($el.closest('form').find('.' + field).length > 0) {
                         // always try to attach subpalette after wrapper element from parent widget
                         $el.closest('form').find('.' + field).eq(0).after(response.result.html);
                     }
-                    else
-                    {
+                    else {
                         $el.closest('#ctrl_' + field).after(response.result.html);
                     }
 
@@ -185,27 +183,23 @@
                 }
             });
         },
-        reload: function(id, url)
-        {
+        reload: function (id, url) {
             var $form = $('#' + id);
             this._asyncFormSubmit($form, url);
         }
     };
 
     var FormHybridHelper = {
-        getParameterByName: function(sParam, href)
-        {
+        getParameterByName: function (sParam, href) {
             var sPageURL = decodeURIComponent(href),
                 sURLVariables = sPageURL.split('&'),
                 sParameterName,
                 i;
 
-            for (i = 0; i < sURLVariables.length; i++)
-            {
+            for (i = 0; i < sURLVariables.length; i++) {
                 sParameterName = sURLVariables[i].split('=');
 
-                if (sParameterName[0] === sParam)
-                {
+                if (sParameterName[0] === sParam) {
                     return sParameterName[1] === undefined ? true : sParameterName[1];
                 }
             }
@@ -213,16 +207,13 @@
     };
 
 
-    $(document).ready(function()
-    {
+    $(document).ready(function () {
         FormhybridAjaxRequest.registerEvents();
         FormhybridPlugins.init();
     });
 
-    $(document).ajaxComplete(function(event, jqXHR, ajaxOptions)
-    {
-        if (typeof ajaxOptions == 'undefined')
-        {
+    $(document).ajaxComplete(function (event, jqXHR, ajaxOptions) {
+        if (typeof ajaxOptions == 'undefined') {
             return false;
         }
         FormhybridPlugins.init(FormHybridHelper.getParameterByName('action', ajaxOptions.data));

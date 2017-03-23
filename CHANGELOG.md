@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.24] - 2017-03-23
+
+### Changed
+
+- asyncFormSubmit: disable submit fields, add dots `...` after text to indicate user that loading is in progress and set fields on submit to readonly 
+
 ## [2.6.23] - 2017-03-14
 
 ### Fixed
