@@ -12,6 +12,7 @@ Usage is simple: Include the default palette (_FORMHYBRID_PALETTE_DEFAULT_) in c
 - transforming of special field's values depending on their dca properties (e.g. date)
 - ajax handling
 - store submissions using submissions module if necessary
+- optIn entity activation and notification handling added to module config and form creation process, add `formHybridAddOptIn` to your module configuration, create an opt-in notification and provide ##opt_in_link## inside text or html and add `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable([TABLE_NAME])` at the end of your DCA File
 
 ## Tokens
 
@@ -30,6 +31,8 @@ The following tokens are provided for usage:
 | ##form_plain_*## | Input: <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p> \ | Strips html entities from the submitted value (helpful for plain text e-mails and tinymce textareas) |
 |       					 | Output: -> ##form_value_text## -> Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. | |
 | ##form_*## | ##form_county## -> Germany | Contains the formatted value of the submission  (value takes options into consideration and return its corresponding value). |
+| ##opt_in_token## | ##opt_in_token## -> [TOKEN] / Generates only the opt-in the token. 
+| ##opt_in_link## | ##opt_in_link## -> http://mywebsite.com/linkto-form?token=[TOKEN] | Generates the opt-in activation link.
 
 
 ## Inserttags

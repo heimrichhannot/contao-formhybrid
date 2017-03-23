@@ -89,6 +89,16 @@ $arrLang['formhybrid_formHybridExportConfigs_entityField'] = ['Exportdatei in Fe
 
 $arrLang['formHybridEnableAutoComplete'] = ['Formular "autocomplete" aktivieren', 'Aktivieren Sie autocomplete für dieses Formular (nicht empfohlen). <strong>Achtung: Formularwerte werden im Browser zwischengespeichert und beim Klicken auf "Zurück" im Browser wiederhergestellt.</strong>'];
 $arrLang['formHybridAddExportButton'] = ['Export-Button hinzufügen', 'Wählen Sie diese Option, wenn dem Formular ein Export-Button hinzugefügt werden soll. Achtung: hierfür muss eine passende Exporter-Konfiguration angelegt sein!'];
+
+$arrLang['formHybridAddOptIn'] = ['Opt-in Verfahren aktivieren', 'Aktivieren Sie das Opt-In Zustimmungsverfahren für Einsendungen.'];
+$arrLang['formHybridOptInNotification'] = ['Opt-in Benachrichtigung', 'Wählen Sie hier eine Nachricht aus, die nach dem erfolgreichen Absenden des Formulars an dessen Absender verschickt werden soll um dessen Authentizität zu überprüfen.'];
+$arrLang['formHybridOptInSuccessMessage'] = ['Opt-in Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Opt-in Erfolgsmeldung nach erfolgreichen Absenden des Formulars an.'];
+
+/**
+ * Explanations
+ */
+$arrLang['formHybridOptInExplanation'] = 'Beim Opt-in Verfahren wird eine E-Mail an den Nutzer gesendet, in der er seine Authentizität durch den Aufruf des Aktivierungslinks in der E-Mail bestätigt. Erst nachdem die Einsendung durch das Opt-In-Verfahren verifiziert wurde, werden E-Mail Benachrichtigungen & E-Mail Bestätigungen verschickt. <br /> <b>Entwicklerhinweis: In der DCA-Datei der Entität <u>muss</u> am Ende `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable([TABELLENNAME]);` aufgerufen werden, damit das Feld `' . HeimrichHannot\FormHybrid\FormHybrid::OPT_IN_DATABASE_FIELD . '` der Tabelle hinzugefügt wird!</b>';
+
 /**
  * References
  */

@@ -21,6 +21,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridAllowIdAsGetParameter';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddHashToAction';
 $arrDca['palettes']['__selector__'][] = 'formHybridExportAfterSubmission';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddExportButton';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddOptIn';
 
 array_insert($arrDca['palettes']['__selector__'], 0, ['formHybridViewMode']); // bug??  must be indexed before "type"
 
@@ -49,6 +50,7 @@ $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
+$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification';
 
 /**
  * Callbacks
@@ -242,12 +244,12 @@ $arrFields = [
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50'],
         'sql'       => "varchar(255) NOT NULL default ''",
     ],
-    'removeAutoItemFromAction' => [
-        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['removeAutoItemFromAction'],
-        'exclude'                 => true,
-        'inputType'               => 'checkbox',
-        'eval'                    => ['tl_class' => 'w50'],
-        'sql'                     => "char(1) NOT NULL default ''"
+    'removeAutoItemFromAction'                   => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['removeAutoItemFromAction'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50'],
+        'sql'       => "char(1) NOT NULL default ''",
     ],
     'formHybridCssClass'                         => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridCssClass'],
@@ -605,12 +607,45 @@ $arrFields = [
         'eval'      => ['tl_class' => 'w50'],
         'sql'       => "char(1) NOT NULL default ''",
     ],
-    'formHybridAddExportButton'               => [
+    'formHybridAddExportButton'                  => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddExportButton'],
         'exclude'   => true,
         'inputType' => 'checkbox',
-        'eval'      => ['tl_class' => 'w50', 'submitOnChange' =>true],
+        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
         'sql'       => "char(1) NOT NULL default ''",
+    ],
+    'formHybridAddOptIn'                         => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddOptIn'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+        'sql'       => "char(1) NOT NULL default ''",
+    ],
+    'formHybridOptInNotification'                => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInNotification'],
+        'exclude'          => true,
+        'search'           => true,
+        'inputType'        => 'select',
+        'options_callback' => ['tl_form_hybrid_module', 'getOptInMessages'],
+        'eval'             => ['chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true],
+        'sql'              => "int(10) unsigned NOT NULL default '0'",
+    ],
+    'formHybridOptInExplanation'                 => [
+        'inputType' => 'explanation',
+        'eval'      => [
+            'text'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInExplanation'], // this is a string, not an array
+            'class'    => 'tl_info', // all contao message css classes are possible
+            'tl_class' => 'long clr',
+        ],
+    ],
+    'formHybridOptInSuccessMessage'                   => [
+        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInSuccessMessage'],
+        'exclude'     => true,
+        'filter'      => false,
+        'inputType'   => 'textarea',
+        'explanation' => 'formhybrid_inserttags_text',
+        'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
+        'sql'         => "text NULL",
     ],
 ];
 
@@ -910,6 +945,32 @@ class tl_form_hybrid_module extends \Backend
         }
 
         return $arrFields;
+    }
+
+    public function getOptInMessages(\DataContainer $arrDca)
+    {
+        $arrOptions = [];
+
+        $objNotifications = NotificationCenter\Model\Notification::findByType(\HeimrichHannot\FormHybrid\FormHybrid::NOTIFICATION_TYPE_FORM_OPT_IN);
+
+        if ($objNotifications === null)
+        {
+            return $arrOptions;
+        }
+
+        $objMessages = NotificationCenter\Model\Message::findBy(['pid IN (' . implode(',', array_map('intval', $objNotifications->fetchEach('id'))) . ')'], []);
+
+        while ($objMessages->next())
+        {
+            if (($objNotification = $objMessages->getRelated('pid')) === null)
+            {
+                continue;
+            }
+
+            $arrOptions[$objNotification->title][$objMessages->id] = $objMessages->title;
+        }
+
+        return $arrOptions;
     }
 
     public function getNoficiationMessages(\DataContainer $arrDca)

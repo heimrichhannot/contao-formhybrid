@@ -33,7 +33,8 @@
         "heimrichhannot/contao-multifileupload": "^1.1",
         "heimrichhannot/contao-ajax": "~1.0",
         "heimrichhannot/contao-request": "~1.0",
-        "heimrichhannot/contao-versions": "~1.0"
+        "heimrichhannot/contao-versions": "~1.0",
+        "heimrichhannot/contao-be_explanation": "~1.0"
     },
     "suggest": {
         "heimrichhannot/contao-exporter": "Export entities to pdf"

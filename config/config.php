@@ -14,20 +14,23 @@ define('FORMHYBRID_VIEW_MODE_DEFAULT', 'default');
 define('FORMHYBRID_VIEW_MODE_READONLY', 'readonly');
 define('FORMHYBRID_ACTION_SCOPE', 'formhybrid');
 
-define('FORMHYBRID_PALETTE_DEFAULT', '
+define(
+    'FORMHYBRID_PALETTE_DEFAULT',
+    '
 {formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
 {formhybrid_template_legend},formHybridTemplate,formHybridCustomSubTemplates,formHybridStartTemplate,formHybridStopTemplate,formHybridCustomSubmit;
 {formhybrid_action_legend},formHybridResetAfterSubmission,formHybridSingleSubmission,formHybridAction,formHybridAddHashToAction,removeAutoItemFromAction,formHybridAsync,formHybridEnableAutoComplete,formHybridAddFieldDependentRedirect;
 {formhybrid_message_legend},formHybridSuccessMessage,formHybridSkipScrollingToSuccessMessage;
-{formhybrid_notification_legend},formHybridSendSubmissionAsNotification,formHybridSendSubmissionViaEmail,formHybridSendConfirmationAsNotification,formHybridSendConfirmationViaEmail');
+{formhybrid_notification_legend},formHybridSendSubmissionAsNotification,formHybridSendSubmissionViaEmail,formHybridSendConfirmationAsNotification,formHybridSendConfirmationViaEmail'
+);
 
 /**
  * Content elements
  */
 $GLOBALS['TL_CTE']['formhybrid'] = [
-	'formhybridStart'   => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStart',
-	'formhybridElement' => 'HeimrichHannot\\FormHybrid\\ContentFormHybridElement',
-	'formhybridStop'    => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStop',
+    'formhybridStart'   => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStart',
+    'formhybridElement' => 'HeimrichHannot\\FormHybrid\\ContentFormHybridElement',
+    'formhybridStop'    => 'HeimrichHannot\\FormHybrid\\ContentFormHybridStop',
 ];
 
 
@@ -40,8 +43,9 @@ $GLOBALS['TL_WRAPPERS']['stop'][]  = 'formhybridStop';
 /**
  * Javascript
  */
-if (TL_MODE == 'FE') {
-	$GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid' . (!$GLOBALS['TL_CONFIG']['debugMode'] ? '.min' : '') . '.js|static';
+if (TL_MODE == 'FE')
+{
+    $GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid' . (!$GLOBALS['TL_CONFIG']['debugMode'] ? '.min' : '') . '.js|static';
 }
 
 /**
@@ -58,27 +62,83 @@ $GLOBALS['TL_FFL']['multiColumnWizard'] = 'HeimrichHannot\FormHybrid\FormMultiCo
 /**
  * Notification Center Tokens
  */
-if (in_array('notification_center_plus', \ModuleLoader::getActive())) {
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_value_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_plain_*';
+if (in_array('notification_center_plus', \ModuleLoader::getActive()))
+{
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_value_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['recipients'][] = 'form_plain_*';
 
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission_all';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_submission_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_value_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_plain_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'formsubmission_all';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_submission_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_value_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_text'][] = 'form_plain_*';
 
 
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_submission_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_value_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_plain_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_submission_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_value_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_subject'][] = 'form_plain_*';
 
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission_all';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_submission_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_value_*';
-	$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_plain_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'formsubmission_all';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_submission_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_value_*';
+    $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['contao']['core_form']['email_html'][] = 'form_plain_*';
 }
+
+/**
+ * Notification Center Notification Types
+ */
+$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE'] = array_merge_recursive(
+    (array) $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE'],
+    [
+        \HeimrichHannot\FormHybrid\FormHybrid::NOTIFICATION_TYPE_FORMHYBRID => [
+            \HeimrichHannot\FormHybrid\FormHybrid::NOTIFICATION_TYPE_FORM_OPT_IN => [
+                'recipients'           => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_subject'        => ['form_value_*', 'form_plain_*', 'admin_email', 'env_*', 'page_*', 'user_*', 'date', 'last_update', 'opt_in_link'],
+                'email_text'           => [
+                    'formsubmission',
+                    'formsubmission_all',
+                    'form_submission_*',
+                    'form_value_*',
+                    'form_plain_*',
+                    'salutation_submission',
+                    'admin_email',
+                    'env_*',
+                    'page_*',
+                    'user_*',
+                    'date',
+                    'last_update',
+                    'opt_in_link',
+                    'opt_in_token',
+                ],
+                'email_html'           => [
+                    'formsubmission',
+                    'formsubmission_all',
+                    'form_submission_*',
+                    'form_value_*',
+                    'form_plain_*',
+                    'salutation_submission',
+                    'admin_email',
+                    'env_*',
+                    'page_*',
+                    'user_*',
+                    'date',
+                    'last_update',
+                    'opt_in_link',
+                    'opt_in_token',
+                ],
+                'file_name'            => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'file_content'         => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_sender_name'    => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_sender_address' => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_recipient_cc'   => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_recipient_bcc'  => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'email_replyTo'        => ['form_value_*', 'form_plain_*', 'admin_email'],
+                'attachment_tokens'    => ['form_value_*', 'form_plain_*'],
+            ],
+        ],
+    ]
+);
 
 /**
  * Ajax Actions
@@ -87,10 +147,15 @@ $GLOBALS['AJAX'][\HeimrichHannot\FormHybrid\Form::FORMHYBRID_NAME] = [
     'actions' => [
         'toggleSubpalette' => [
             'arguments' => ['subId', 'subField', 'subLoad'],
-            'optional'   => ['subLoad'],],
+            'optional'  => ['subLoad'],
+        ],
         'asyncFormSubmit'  => [
             'arguments' => [],
-            'optional'   => [],],
-        'reload'  => [
+            'optional'  => [],
+        ],
+        'reload'           => [
             'arguments' => [],
-            'optional'   => [],],],];
+            'optional'  => [],
+        ],
+    ],
+];

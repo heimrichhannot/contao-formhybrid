@@ -2,9 +2,14 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Firebase\JWT\JWT;
+use HeimrichHannot\Ajax\Ajax;
+use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Exporter\ExporterModel;
 use HeimrichHannot\FieldPalette\FieldPaletteModel;
 use HeimrichHannot\Haste\Util\FormSubmission;
+use HeimrichHannot\Haste\Util\Url;
+use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use MatthiasMullie\Minify\Exception;
 
@@ -24,11 +29,98 @@ abstract class Form extends DC_Hybrid
         header("Expires: 0"); // Proxies.
 
         parent::__construct($this->strTable, $varConfig, $intId);
+
+        if ($this->addOptIn)
+        {
+            if (!\Database::getInstance()->fieldExists(FormHybrid::OPT_IN_DATABASE_FIELD, $this->table))
+            {
+                throw new \Exception(
+                    'Opt-in requires existing field `' . FormHybrid::OPT_IN_DATABASE_FIELD . '` in database table `' . $this->table
+                    . '`. Run `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable(' . $this->table . ')` within DCA `' . $this->table . '.php!`'
+                );
+            }
+
+            if(Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
+            {
+                $this->activateSubmission();
+            }
+        }
     }
 
     public function generate()
     {
         return parent::edit();
+    }
+
+    protected function activateSubmission()
+    {
+        $strJWT = Request::getGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE);
+
+        try
+        {
+            $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
+        } catch (\Exception $e)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        if (!$objData->table || !$objData->token)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        if ($objData->table != $this->table)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        $objResult =
+            \Database::getInstance()->prepare('SELECT * FROM ' . $objData->table . ' WHERE ' . FormHybrid::OPT_IN_DATABASE_FIELD . ' = ?')->limit(1)->execute($objData->token);
+
+        if ($objResult->numRows < 1)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        $this->intId = $objResult->id;
+
+        $strModelClass = \Model::getClassFromTable($objData->table);
+
+        if (!class_exists($strModelClass))
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        /**
+         * @var \Model $objModel
+         */
+        $objModel = new $strModelClass();
+        $objModel->setRow($objResult->row());
+
+        \Database::getInstance()->prepare('UPDATE ' . $objData->table . ' SET ' . FormHybrid::OPT_IN_DATABASE_FIELD . ' = "" WHERE id = ?')->execute($objModel->id);
+
+        $arrSubmissionData = FormSubmission::prepareData($objModel, $this->strTable, $this->dca, $this, $this->arrEditable);
+
+        $this->createSuccessNotifications($arrSubmissionData);
+
+        if (!$this->isSilentMode())
+        {
+            $this->createSuccessMessage($arrSubmissionData, true);
+        }
+
+        $this->afterActivationCallback($this);
+
+        return true;
     }
 
     protected function processForm()
@@ -122,6 +214,77 @@ abstract class Form extends DC_Hybrid
 
         $arrSubmissionData = $this->prepareSubmissionData();
 
+        if ($this->addOptIn && $this->optInNotification)
+        {
+            $this->createOptInNotification($arrSubmissionData);
+        }
+
+        if (!$this->addOptIn)
+        {
+            $this->createSuccessNotifications($arrSubmissionData);
+        }
+
+        if (!$this->isSilentMode())
+        {
+            $this->createSuccessMessage($arrSubmissionData);
+        }
+
+        $this->afterSubmitCallback($this);
+    }
+
+    protected function prepareSubmissionData()
+    {
+        return FormSubmission::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
+    }
+
+    protected function onSubmitCallback(\DataContainer $dc)
+    {
+    }
+
+    protected function afterSubmitCallback(\DataContainer $dc)
+    {
+    }
+
+    protected function afterActivationCallback(\DataContainer $dc)
+    {
+    }
+
+    protected function createOptInNotification($arrSubmissionData)
+    {
+        if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->optInNotification)) !== null)
+        {
+            $arrToken = FormSubmission::tokenizeData($arrSubmissionData);
+
+            $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+
+            $this->objActiveRecord->refresh();
+            $this->objActiveRecord->{FormHybrid::OPT_IN_DATABASE_FIELD} = $strToken;
+            $this->objActiveRecord->save();
+
+            $strJWT = JWT::encode(
+                [
+                    'table' => $this->table,
+                    'token' => $strToken,
+                    'date'  => time(),
+                ],
+                \Config::get('encryptionKey')
+            );
+
+            $arrToken['opt_in_token'] = $strJWT;
+            $arrToken['opt_in_link']  = Url::addQueryString(
+                FormHybrid::OPT_IN_REQUEST_ATTRIBUTE . '=' . $strJWT,
+                AjaxAction::removeAjaxParametersFromUrl(\Environment::get('uri'))
+            );
+
+            if ($this->sendOptInNotification($objMessage, $arrSubmissionData, $arrToken))
+            {
+                $objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
+            }
+        }
+    }
+
+    protected function createSuccessNotifications($arrSubmissionData)
+    {
         if ($this->sendSubmissionAsNotification || $this->submissionNotification)
         {
             if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->submissionNotification)) !== null)
@@ -180,26 +343,6 @@ abstract class Form extends DC_Hybrid
                 $this->createConfirmationEmail($arrSubmissionData);
             }
         }
-
-        if (!$this->isSilentMode())
-        {
-            $this->createSuccessMessage($arrSubmissionData);
-        }
-
-        $this->afterSubmitCallback($this);
-    }
-
-    protected function prepareSubmissionData()
-    {
-        return FormSubmission::prepareData($this->objActiveRecord, $this->strTable, $this->dca, $this, $this->arrEditable);
-    }
-
-    protected function onSubmitCallback(\DataContainer $dc)
-    {
-    }
-
-    protected function afterSubmitCallback(\DataContainer $dc)
-    {
     }
 
     protected function createSubmissionEmail($arrSubmissionData)
@@ -338,12 +481,26 @@ abstract class Form extends DC_Hybrid
         );
     }
 
-    protected function createSuccessMessage($arrSubmissionData)
+    protected function createInvalidOptInTokenMessage()
     {
+        $this->successMessage = $GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken'];
+
+        StatusMessage::addError($this->successMessage, $this->objModule->id, 'alert alert-danger');
+    }
+
+    protected function createSuccessMessage($arrSubmissionData, $blnForceSuccess = false)
+    {
+        $strMessage = !empty($this->successMessage) ? $this->successMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
+
+        if ($this->addOptIn && !$blnForceSuccess)
+        {
+            $strMessage = !empty($this->optInSuccessMessage) ? $this->optInSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn'];
+        }
+
         $this->successMessage = \String::parseSimpleTokens(
             $this->replaceInsertTags(
                 FormHelper::replaceFormDataTags(
-                    !empty($this->successMessage) ? $this->successMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'],
+                    $strMessage,
                     $arrSubmissionData
                 )
             ),
@@ -351,6 +508,11 @@ abstract class Form extends DC_Hybrid
         );
 
         StatusMessage::addSuccess($this->successMessage, $this->objModule->id, 'alert alert-success');
+    }
+
+    protected function sendOptInNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+    {
+        return true;
     }
 
     protected function sendSubmissionNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
@@ -439,8 +601,7 @@ abstract class Form extends DC_Hybrid
                 } catch (Exception $e)
                 {
                     log_message(
-                        'Error sending submission email for entity ' . $this->strTable . ':' . $this->intId . ' to : ' . implode(',', $arrRecipient)
-                        . ' (' . $e . ')',
+                        'Error sending submission email for entity ' . $this->strTable . ':' . $this->intId . ' to : ' . implode(',', $arrRecipient) . ' (' . $e . ')',
                         $this->strLogFile
                     );
                 }
