@@ -51,7 +51,7 @@ if (TL_MODE == 'FE')
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['parseWidget'][] = ['HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook'];
+$GLOBALS['TL_HOOKS']['parseWidget'][]    = ['HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook'];
 
 /**
  * Front end widgets

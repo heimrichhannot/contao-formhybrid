@@ -14,7 +14,6 @@ namespace HeimrichHannot\FormHybrid;
 
 class Hooks extends \Controller
 {
-
 	public function parseWidgetHook($strBuffer, $objWidget)
 	{
 		if(TL_MODE == 'BE') return $strBuffer;

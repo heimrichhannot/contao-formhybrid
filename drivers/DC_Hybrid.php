@@ -14,6 +14,7 @@ use HeimrichHannot\Haste\Util\Files;
 use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
+use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use HeimrichHannot\Versions\Version;
 
@@ -174,13 +175,20 @@ class DC_Hybrid extends \DataContainer
 
         $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
 
-        if (\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION))
+        if (($blnSkipValidation = $this->getInputValue(FORMHYBRID_NAME_SKIP_VALIDATION)) !== null)
         {
-            $this->setSkipValidation(\Input::$strInputMethod(FORMHYBRID_NAME_SKIP_VALIDATION));
+            $this->setSkipValidation($blnSkipValidation);
         }
 
         // GET is checked for each field separately
-        $this->isSubmitted      = (\Input::$strInputMethod('FORM_SUBMIT') == $this->getFormId());
+        $this->isSubmitted = ($this->getInputValue('FORM_SUBMIT') == $this->getFormId());
+
+        // in case of ajax request, when request token expired and form name is the same, restore form for new id from old input
+        if (!$this->isSubmitted && Ajax::isRequestTokenExpired() && (StringUtil::startsWith($this->getInputValue('FORM_SUBMIT'), $this->getFormId(false))))
+        {
+            $this->isSubmitted = true;
+        }
+
         $this->hasDatabaseTable = \Database::getInstance()->tableExists($this->strTable);
 
         if ($this->hasDatabaseTable())
@@ -383,7 +391,7 @@ class DC_Hybrid extends \DataContainer
             return;
         }
 
-        if ($this->allowIdAsGetParameter && $this->appendIdToUrlOnCreation && \Input::get($this->idGetParameter) != $intId)
+        if ($this->allowIdAsGetParameter && $this->appendIdToUrlOnCreation && Request::getGet($this->idGetParameter) != $intId)
         {
             $strUrl = Url::addQueryString($this->idGetParameter . '=' . $this->intId);
 
@@ -623,9 +631,10 @@ class DC_Hybrid extends \DataContainer
 
     public function generateFields($ajaxId = null)
     {
-        $arrFields    = $this->arrEditable;
-        $arrSubFields = [];
-        $blnAjax      = false;
+        $arrFields              = $this->arrEditable;
+        $arrSubFields           = [];
+        $arrActivePaletteFields = [];
+        $blnAjax                = false;
 
         // subpalettes
         $arrSelectors = $this->dca['palettes']['__selector__'];
@@ -636,8 +645,18 @@ class DC_Hybrid extends \DataContainer
 
             foreach ($arrSelectors as $strName)
             {
-                list($blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette) =
-                    $this->retrieveSubpaletteWithState($strName, $arrFields);
+                if (($arrPaletteFields = $this->retrieveActivePaletteFields($strName)) !== false)
+                {
+                    $arrActivePaletteFields = $arrPaletteFields;
+                    break;
+                }
+            }
+
+            foreach ($arrSelectors as $strName)
+            {
+                list(
+                    $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
+                    ) = $this->retrieveSubpaletteWithState($strName, $arrFields, $arrActivePaletteFields);
 
                 if (!$blnToggleSubpalette)
                 {
@@ -713,18 +732,13 @@ class DC_Hybrid extends \DataContainer
                     }
                 }
 
-                if ($varValue && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette &&
-                    in_array($varValue, $arrOptions))
+                if ($varValue && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette
+                    && in_array($varValue, $arrOptions)
+                )
                 {
                     // no messages
                     $this->setSilentMode($this->isSkipValidation());
                     $this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
-
-                    // remove fields not existing in the current palette
-                    $arrFields = array_intersect(
-                        $arrFields,
-                        array_merge(FormHelper::getPaletteFields($this->strTable, $strPalette), $this->arrPermanentFields)
-                    );
 
                     // only one palette can be active at a time
                     $this->activePalette = $varValue;
@@ -733,6 +747,12 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
+
+        // remove fields not existing in the current palette
+        $arrFields = array_intersect(
+            $arrFields,
+            array_merge($arrActivePaletteFields, $this->arrPermanentFields)
+        );
 
         // add palette fields
         foreach ($arrFields as $strName)
@@ -798,6 +818,23 @@ class DC_Hybrid extends \DataContainer
         return $blnAjax;
     }
 
+    /**
+     * Return the current input value considering $this->strInputMethod
+     *
+     * @param string $strKey The requested input key
+     *
+     * @return mixed The value of the requested input
+     */
+    protected function getInputValue($strKey)
+    {
+        if (strtoupper($this->strInputMethod) == strtoupper(FORMHYBRID_METHOD_POST))
+        {
+            return Request::hasPost($strKey) ? Request::getPost($strKey) : null;
+        }
+
+        return Request::hasGet($strKey) ? Request::getGet($strKey) : null;
+    }
+
 
     /**
      * Return the value, considering default and submitted values
@@ -808,27 +845,58 @@ class DC_Hybrid extends \DataContainer
      */
     protected function getFieldValue($strName)
     {
-        $inputMethod = strtolower($this->strMethod);
+        $inputValue = (strtoupper($this->strMethod) == 'POST') ? Request::getPost($strName) : Request::getGet($strName);
 
         $varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
 
-        if ($this->isSubmitted && in_array($strName, $this->arrEditable) && ($requestValue = \Input::$inputMethod($strName)) !== null)
+        if ($this->isSubmitted && in_array($strName, $this->arrEditable) && $inputValue !== null)
         {
-            $varValue = $requestValue;
+            $varValue = $inputValue;
         }
 
         return $varValue;
     }
 
     /**
+     * Retrieve the active palette fields, for palettes type selector
+     *
+     * @param $strSelector
+     *
+     * @return boolean|array Return palette fields array if active, if default palette is active return true, otherwise false
+     */
+    protected function retrieveActivePaletteFields($strSelector)
+    {
+        $varValue = $this->getFieldValue($strSelector);
+
+        if (!isset($this->dca['palettes'][$varValue]))
+        {
+            return false;
+        }
+
+        if (is_array($this->arrDefaultValues) && in_array($strSelector, array_keys($this->arrDefaultValues)))
+        {
+            return array_intersect($this->arrEditable, FormHelper::getPaletteFields($this->strTable, $this->dca['palettes'][$varValue]));
+        }
+
+        // default palette does not limit field selection, as long the field is not editable
+        if ($varValue == 'default' && !in_array($strSelector, $this->arrEditable))
+        {
+            return is_array($this->dca['fields']) ? array_keys($this->dca['fields']) : [];
+        }
+
+        return array_intersect($this->arrEditable, FormHelper::getPaletteFields($this->strTable, $this->dca['palettes'][$varValue]));
+    }
+
+    /**
      * Retrieve the subpalette by the field selector
      *
-     * @param   string $strSelector
-     * @param   array  $arrFields
+     * @param string $strSelector
+     * @param array  $arrFields
+     * @param array  $arrActivePaletteFields
      *
      * @return array Return the state, subpalette name, the filtered fields array and autosubmit state
      */
-    protected function retrieveSubpaletteWithState($strSelector, array $arrFields)
+    protected function retrieveSubpaletteWithState($strSelector, array $arrFields, array $arrActivePaletteFields = [])
     {
         $blnActive           = null;
         $blnAutoSubmit       = false;
@@ -858,7 +926,7 @@ class DC_Hybrid extends \DataContainer
         } // radio: source in tl_news (source_default, source_external)
         else
         {
-            // type selector
+            // subpalettes type selector (Example???)
             if (isset($this->dca['subpalettes'][$varValue]))
             {
                 $blnAutoSubmit = true;
@@ -872,26 +940,52 @@ class DC_Hybrid extends \DataContainer
                 if (!empty($arrSubpalettes))
                 {
                     $blnToggleSubpalette = true; // also if no active type selector, cause no default value, toggleSubpalette
-                    $blnActive           = isset($arrSubpalettes[$strSelector . '_' . $varValue]);
+                    $blnExisting         = isset($arrSubpalettes[$strSelector . '_' . $varValue]);
 
-                    if ($blnActive)
+                    if ($blnExisting)
                     {
+                        $blnActive = false;
+
+                        if (in_array($strSelector, array_merge($arrActivePaletteFields, $this->arrPermanentFields)))
+                        {
+                            $blnActive = true;
+                        }
+
                         $strSubpalette       = $strSelector . '_' . $varValue;
                         $arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
                     }
 
-
                     // remove concatenated type selector sibling subpalette fields that are not active
                     foreach ($arrSubpalettes as $strSubSiblingPalette => $strSubSiblingFields)
                     {
-                        // do not remove active concatenated type selector fields
-                        if ($blnActive && $strSubSiblingPalette === $strSubpalette)
-                        {
-                            continue;
-                        }
+                        $arrSubPaletteSiblingFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubSiblingPalette]);
 
-                        $arrFields =
-                            array_diff($arrFields, FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubSiblingPalette]));
+                        foreach ($arrSubPaletteSiblingFields as $strSubPaletteSiblingField)
+                        {
+                            // field is not editable
+                            if (!in_array($strSubPaletteSiblingField, array_merge($this->arrEditable, $this->arrPermanentFields)))
+                            {
+                                Arrays::removeValue($strSubPaletteSiblingField, $arrSubPaletteFields);
+                                continue;
+                            }
+
+                            // do not remove active concatenated type selector fields but check before if fields are editable or permanent
+                            if ($blnActive && $strSubSiblingPalette === $strSubpalette)
+                            {
+                                continue;
+                            }
+
+                            // field is also part of parent palette
+                            if (in_array($strSubPaletteSiblingField, $this->arrEditable) && in_array($strSubPaletteSiblingField, $arrActivePaletteFields))
+                            {
+                                // remove field from subpalette fields as it is now stated as parent field
+                                Arrays::removeValue($strSubPaletteSiblingField, $arrSubPaletteFields);
+                                continue;
+                            }
+
+                            // remove sibling subpalette fields that are not active
+                            Arrays::removeValue($strSubPaletteSiblingField, $arrFields);
+                        }
                     }
                 }
             }
@@ -969,7 +1063,7 @@ class DC_Hybrid extends \DataContainer
 
         if ($this->isSubmitted && !$skipValidation)
         {
-            $varValue = \Input::$strInputMethod($strName) !== null ? \Input::$strInputMethod($strName) : $varValue;
+            $varValue = $this->getInputValue($strName) !== null ? $this->getInputValue($strName) : $varValue;
             $varValue = FormSubmission::prepareSpecialValueForSave(
                 $varValue,
                 $arrData,
@@ -1028,8 +1122,9 @@ class DC_Hybrid extends \DataContainer
 
         $this->updateWidget($arrWidget, $arrData);
 
-        list($blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette) =
-            $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
+        list(
+            $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
+            ) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 
         // support submitOnChange as form submission
         if ($arrData['eval']['submitOnChange'] && $blnToggleSubpalette)
@@ -1049,8 +1144,7 @@ class DC_Hybrid extends \DataContainer
                         break;
                 }
 
-                $arrWidget[$strEvent] =
-                    "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "', '" . AjaxAction::generateUrl(
+                $arrWidget[$strEvent] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "', '" . AjaxAction::generateUrl(
                         Form::FORMHYBRID_NAME,
                         'toggleSubpalette'
                     ) . "')";
@@ -1077,9 +1171,7 @@ class DC_Hybrid extends \DataContainer
 
                 if ($strEvent !== null)
                 {
-                    $arrWidget[$strEvent] =
-                        "FormhybridAjaxRequest.reload('" . $this->getFormId() . "', '" . AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'reload')
-                        . "')";
+                    $arrWidget[$strEvent] = "FormhybridAjaxRequest.reload('" . $this->getFormId() . "', '" . AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'reload') . "')";
 
                     unset($arrWidget['submitOnChange']);
                 }
@@ -1102,7 +1194,6 @@ class DC_Hybrid extends \DataContainer
         }
 
         // always xss clean the user input (also if filter, non-model submission, ...) -> done another time
-        // FrontendWidget::validateGetAndPost() in
         $objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
 
         if ($this->isSubmitted)
@@ -1295,10 +1386,10 @@ class DC_Hybrid extends \DataContainer
 
     public function generateStart()
     {
-        $this->Template->formName                      = $this->strFormName;
-        $this->Template->formId                        = $this->strFormId;
-        $this->Template->method                        = $this->strMethod;
-        $this->Template->action                        = $this->updateAction($this->strAction);
+        $this->Template->formName = $this->strFormName;
+        $this->Template->formId   = $this->strFormId;
+        $this->Template->method   = $this->strMethod;
+        $this->Template->action   = $this->updateAction($this->strAction);
 
         $this->Template->enctype                       = $this->hasUpload ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
         $this->Template->skipScrollingToSuccessMessage = $this->skipScrollingToSuccessMessage;
@@ -1804,7 +1895,7 @@ class DC_Hybrid extends \DataContainer
                                 $arrData,
                                 $this->strTable,
                                 $this
-                            )
+                            ),
                         ];
 
                         if ($arrData['inputType'] != 'explanation')
@@ -1826,13 +1917,12 @@ class DC_Hybrid extends \DataContainer
                                         $arrData,
                                         $this->strTable,
                                         $this
-                                    )
+                                    ),
                                 ];
 
                                 if ($arrData['inputType'] != 'explanation')
                                 {
-                                    $arrExportFields[$objSubWidget->name]['label'] =
-                                        $this->dca['fields'][$objSubWidget->name]['label'][0] ?: $objSubWidget->name;
+                                    $arrExportFields[$objSubWidget->name]['label'] = $this->dca['fields'][$objSubWidget->name]['label'][0] ?: $objSubWidget->name;
                                 }
                             }
                         }
@@ -1869,7 +1959,7 @@ class DC_Hybrid extends \DataContainer
 
         foreach ($arrPreserveParams as $strParam)
         {
-            $varValue = \Input::get($strParam);
+            $varValue = Request::getGet($strParam);
 
             if ($varValue === null)
             {
@@ -1990,7 +2080,7 @@ class DC_Hybrid extends \DataContainer
 
     protected function isValidAjaxRequest()
     {
-        return \Environment::get('isAjaxRequest') && \Input::post('scope') == FORMHYBRID_ACTION_SCOPE;
+        return \Environment::get('isAjaxRequest') && Request::getPost('scope') == FORMHYBRID_ACTION_SCOPE;
     }
 
     /**
@@ -2115,6 +2205,31 @@ class DC_Hybrid extends \DataContainer
     {
         $this->relatedAjaxRequest = (boolean) $isRelatedAjaxRequest;
     }
+
+    /**
+     * @return array
+     */
+    public function getActualFields()
+    {
+        return $this->arrFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActualHiddenFields()
+    {
+        return $this->arrHiddenFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActualSubFields()
+    {
+        return $this->arrSubFields;
+    }
+
 
     /**
      * @return array

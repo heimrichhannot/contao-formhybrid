@@ -31,7 +31,7 @@
         "heimrichhannot/contao-submissions": ">=1.0.14,<2.0.0-dev",
         "heimrichhannot/contao-inserttag_download": "~1.0",
         "heimrichhannot/contao-multifileupload": "^1.1",
-        "heimrichhannot/contao-ajax": "~1.0",
+        "heimrichhannot/contao-ajax": "^1.1",
         "heimrichhannot/contao-request": "~1.0",
         "heimrichhannot/contao-versions": "~1.0",
         "heimrichhannot/contao-be_explanation": "~1.0"

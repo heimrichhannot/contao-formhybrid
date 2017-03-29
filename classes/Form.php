@@ -24,9 +24,9 @@ abstract class Form extends DC_Hybrid
     public function __construct($varConfig = null, $intId = 0)
     {
         // prevent from caching form, chrome is greedy
-        header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
-        header("Pragma: no-cache"); // HTTP 1.0.
-        header("Expires: 0"); // Proxies.
+        Request::getInstance()->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
+        Request::getInstance()->headers->set('Pragma', 'no-cache'); // HTTP 1.0.
+        Request::getInstance()->headers->set('Expires', '0'); // Proxies.
 
         parent::__construct($this->strTable, $varConfig, $intId);
 
@@ -125,7 +125,7 @@ abstract class Form extends DC_Hybrid
 
     protected function processForm()
     {
-        if (\Input::post(FORMHYBRID_NAME_EXPORT))
+        if (Request::getPost(FORMHYBRID_NAME_EXPORT))
         {
             $intConfigId = FieldPaletteModel::findById($this->formHybridExportConfigs[0])->formhybrid_formHybridExportConfigs_config;
             $objConfig   = ExporterModel::findById($intConfigId);

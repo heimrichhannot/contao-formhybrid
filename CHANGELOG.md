@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.7.0] - 2017-03-29
+
+### Fixed
+
+- multiple palette, subpalette bugs that did typeSelector, concatenated typeSelector and subPalette handling wrong and returned wrong number of fields
+- if no palette is defined, and no typeSelector field is present in editable fields, access to all fields is possible (also usage of subpalette fields within palette, as long as subpalette selector is not present)
+- if palette is defined, or typeSelector field is present, only fields within the appropriate palette are accessible 
+
+### Added
+- palette and subpalette unit testing within `heimrichhannot/contao-formhybrid_tests` 
+
+## [2.6.26] - 2017-03-27
+
+### Fixed
+- on ajax request, when request token expired, nothin was returned, now we set the form data based on $_POST with new request token (provided by `heimrichhannot/contao-ajax`) to the new entity
+- inactive fields from non active subpalettes were removed, uncared that a type selector palette is active, where the fields are present in the palette itself
+
 ## [2.6.25] - 2017-03-23
 
 ### Added

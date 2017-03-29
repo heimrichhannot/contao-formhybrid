@@ -32,8 +32,14 @@ class FormConfiguration
      */
     protected $varConfig   = [];
     protected $arrDefaults = [
-        ''
+        '',
     ];
+
+    /**
+     * The current module model
+     * @var \ModuleModel
+     */
+    private $objModule;
 
     public function __construct($varConfig)
     {
@@ -134,7 +140,7 @@ class FormConfiguration
                 {
                     $varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
                 }
-                
+
                 // add hash
                 if ($this->addHashToAction)
                 {
@@ -253,12 +259,25 @@ class FormConfiguration
      */
     public function getModule()
     {
+        if ($this->objModule !== null)
+        {
+            return $this->objModule;
+        }
+
         if (!$this->moduleId || ($objModule = \ModuleModel::findByPk($this->moduleId)) === null)
         {
             return null;
         }
 
         return $objModule;
+    }
+
+    /**
+     * Set the current module
+     */
+    public function setModule(\ModuleModel $objModule)
+    {
+        $this->objModule = $objModule;
     }
 
     /**

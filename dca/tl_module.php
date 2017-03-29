@@ -1004,7 +1004,7 @@ class tl_form_hybrid_module extends \Backend
             return;
         }
 
-        $objModule = \ModuleModel::findByPk(\Input::get('id'));
+        $objModule = \ModuleModel::findByPk(\HeimrichHannot\Request\Request::getGet('id'));
         $arrDc     = &$GLOBALS['TL_DCA']['tl_module'];
 
         // submission
