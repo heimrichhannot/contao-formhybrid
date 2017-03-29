@@ -633,7 +633,7 @@ class DC_Hybrid extends \DataContainer
     {
         $arrFields              = $this->arrEditable;
         $arrSubFields           = [];
-        $arrActivePaletteFields = [];
+        $arrActivePaletteFields = $this->retrieveActivePaletteFields();
         $blnAjax                = false;
 
         // subpalettes
@@ -864,8 +864,13 @@ class DC_Hybrid extends \DataContainer
      *
      * @return boolean|array Return palette fields array if active, if default palette is active return true, otherwise false
      */
-    protected function retrieveActivePaletteFields($strSelector)
+    protected function retrieveActivePaletteFields($strSelector = null)
     {
+        if($strSelector === null)
+        {
+            return is_array($this->dca['fields']) ? array_keys($this->dca['fields']) : [];
+        }
+
         $varValue = $this->getFieldValue($strSelector);
 
         if (!isset($this->dca['palettes'][$varValue]))

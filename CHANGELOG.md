@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.7.1] - 2017-03-29
+
+### Fixed
+-  for no selector dca activePaletteFields were empty 
+
 ## [2.7.0] - 2017-03-29
 
 ### Fixed
