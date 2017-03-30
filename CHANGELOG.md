@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.7.2] - 2017-03-30
+
+### Fixed
+-  redirect to same page without optIn token after activation 
+
 ## [2.7.1] - 2017-03-29
 
 ### Fixed

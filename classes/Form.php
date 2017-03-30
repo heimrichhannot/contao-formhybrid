@@ -40,9 +40,11 @@ abstract class Form extends DC_Hybrid
                 );
             }
 
-            if(Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
+            if (Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
             {
                 $this->activateSubmission();
+                // remove parameter from query string and reload current page
+                \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
             }
         }
     }
