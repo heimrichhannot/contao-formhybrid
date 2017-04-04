@@ -14,6 +14,11 @@ Usage is simple: Include the default palette (_FORMHYBRID_PALETTE_DEFAULT_) in c
 - store submissions using submissions module if necessary
 - optIn entity activation and notification handling added to module config and form creation process, add `formHybridAddOptIn` to your module configuration, create an opt-in notification and provide ##opt_in_link## inside text or html and add `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable([TABLE_NAME])` at the end of your DCA File
 
+## Palette handling
+- permanentFields must be declared within editableFields in order to get right field position
+- a field declared in editableFields whose selector isnt active or is not part of editable fields itself is removed from the final field set
+- fields from active selectors that are not within editableFields are removed from final fields
+
 ## Tokens
 
 Formhybrid is notification center ready. It is possible to send 2 E-Mails on Form Submission to the sender (confirmation notification) and one to receiver (submission notification).
@@ -52,3 +57,10 @@ Type | Description
 ---- | -----------
 onload_callback | Add a 3rd parameter with boolean true to your onload_callbacks to run through them in frontend mode.  
 
+
+## Additional eval dca config parameters
+
+
+Key | Default | Example | Description
+|----------|:-------------:|:-------------:|------:|
+|allowedTags | null | <br><span><p> | Allow specific html tags inside input that will not be escaped (allowHtml must be true). allowHtml will be true by default if preserveTags, rte is set true within eval config.

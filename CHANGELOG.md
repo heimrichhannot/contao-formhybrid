@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.0] - 2017-03-31
+
+### Changed
+- make usage of `HeimrichHannot\Request\Request` class for all Request data to have better Test handling
+
+### Fixed
+- numerous subpalette, typeselector fixes due to unit testing with `heimrichhannot\contao-formhybrid_tests`  
+- XSS related fixes due to usage of `HeimrichHannot\Request\Request` instead of `Contao\Input` as we have different allowedTags for inputs
+
 ## [2.7.2] - 2017-03-30
 
 ### Fixed

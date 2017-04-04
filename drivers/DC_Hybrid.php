@@ -146,7 +146,7 @@ class DC_Hybrid extends \DataContainer
             $this->strTable = $strTable;
         }
 
-        if ($this->renderStart && $_POST && !$intId)
+        if ($this->renderStart && Request::getInstance()->request->count() > 0 && !$intId)
         {
             // get id from FormSession
             $this->intId = FormSession::getSubmissionId(FormHelper::getFormId($this->strTable, $this->objModule->id));
@@ -866,7 +866,7 @@ class DC_Hybrid extends \DataContainer
      */
     protected function retrieveActivePaletteFields($strSelector = null)
     {
-        if($strSelector === null)
+        if ($strSelector === null)
         {
             return is_array($this->dca['fields']) ? array_keys($this->dca['fields']) : [];
         }
@@ -967,6 +967,12 @@ class DC_Hybrid extends \DataContainer
 
                         foreach ($arrSubPaletteSiblingFields as $strSubPaletteSiblingField)
                         {
+                            // do never remove permanent fields
+                            if (in_array($strSubPaletteSiblingField, $this->arrPermanentFields))
+                            {
+                                continue;
+                            }
+
                             // field is not editable
                             if (!in_array($strSubPaletteSiblingField, array_merge($this->arrEditable, $this->arrPermanentFields)))
                             {
@@ -1198,9 +1204,6 @@ class DC_Hybrid extends \DataContainer
             $this->hasUpload = true;
         }
 
-        // always xss clean the user input (also if filter, non-model submission, ...) -> done another time
-        $objWidget->value = FormHelper::xssClean($objWidget->value, $arrData['eval']['allowHtml']);
-
         if ($this->isSubmitted)
         {
             // add filter class if filter is active
@@ -1291,12 +1294,12 @@ class DC_Hybrid extends \DataContainer
                                 {
                                     foreach ($varVal as $key => $val)
                                     {
-                                        $varVal[$key] = html_entity_decode($val);
+                                        $varVal[$key] = html_entity_decode($val, ENT_QUOTES, \Config::get('characterSet'));
                                     }
                                 }
                                 else
                                 {
-                                    $varVal = html_entity_decode($varVal);
+                                    $varVal = html_entity_decode($varVal, ENT_QUOTES, \Config::get('characterSet'));
                                 }
 
                                 return $varVal;
@@ -1312,7 +1315,9 @@ class DC_Hybrid extends \DataContainer
                                 $arrData,
                                 $this->strTable,
                                 $this->intId
-                            )
+                            ),
+                            ENT_QUOTES,
+                            \Config::get('characterSet')
                         );
                     }
                 }
@@ -1640,15 +1645,22 @@ class DC_Hybrid extends \DataContainer
             switch ($this->strMethod)
             {
                 case FORMHYBRID_METHOD_GET:
-                    $this->arrSubmission[$strName] = FormHelper::getGet($strName);
+                    $this->arrSubmission[$strName] = Request::getGet($strName);
                     break;
                 case FORMHYBRID_METHOD_POST:
-                    $this->arrSubmission[$strName] = FormHelper::getPost(
-                        $strName,
-                        $arrAttribues['decodeEntities'],
-                        $arrAttribues['allowHtml'],
-                        $arrAttribues['preserveTags']
-                    );
+
+                    if ($arrAttribues['preserveTags'])
+                    {
+                        $this->arrSubmission[$strName] = Request::getPostRaw($strName);
+                    }
+                    else if ($arrAttribues['allowHtml'])
+                    {
+                        $this->arrSubmission[$strName] = Request::getPostHtml($strName, $arrAttribues['decodeEntities']);
+                    }
+                    else
+                    {
+                        $this->arrSubmission[$strName] = Request::getPost($strName, $arrAttribues['decodeEntities']);
+                    }
                     break;
             }
         }
