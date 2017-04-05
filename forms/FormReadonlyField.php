@@ -103,7 +103,7 @@ class FormReadonlyField extends \Widget
 			$value = '-';
 		}
 
-		return $value;
+		return FormHelper::escapeAllEntities($this->strTable, $this->strName, $value);
 	}
 
 	/**

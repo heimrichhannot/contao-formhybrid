@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.8.0] - 2017-03-31
+## [2.8.1] - 2017-03-31
+
+### Fixed
+- XSS related fixed within `FormReadonlyField`
+
+## [2.8.0] - 2017-04-05
 
 ### Changed
 - make usage of `HeimrichHannot\Request\Request` class for all Request data to have better Test handling
