@@ -540,7 +540,7 @@ class DC_Hybrid extends \DataContainer
             {
 
                 $this->import($callback[0]);
-                $this->$callback[0]->$callback[1]($this);
+                $this->{$callback[0]}->{$callback[1]}($this);
 
                 // reload model from database, maybe something has changed in callback
                 if (!$this->saveToBlob)

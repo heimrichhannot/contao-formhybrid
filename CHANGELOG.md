@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.8.1] - 2017-04-06
+## [2.8.3] - 2017-04-06
+
+### Changed
+
+- changed "String" to "StringUtil" and "->$callback" to "->{$callback}"
+
+## [2.8.2] - 2017-04-06
 
 ### Changed
 
