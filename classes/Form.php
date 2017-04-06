@@ -157,7 +157,7 @@ abstract class Form extends DC_Hybrid
                 foreach ($this->dca['config']['onsubmit_callback'] as $callback)
                 {
                     $this->import($callback[0]);
-                    $this->$callback[0]->$callback[1]($this);
+                    $this->{$callback[0]}->{$callback[1]}($this);
 
                     // reload model from database, maybe something has changed in callback
                     if (!$this->saveToBlob)
@@ -354,14 +354,14 @@ abstract class Form extends DC_Hybrid
         $objEmail           = new \Email();
         $objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
         $objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-        $objEmail->subject  = \String::parseSimpleTokens(
+        $objEmail->subject  = \StringUtil::parseSimpleTokens(
             $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->submissionMailSubject, $arrSubmissionData), false),
             $arrSubmissionData
         );
 
         if ($hasText = (strlen($this->submissionMailText) > 0))
         {
-            $objEmail->text = \String::parseSimpleTokens(
+            $objEmail->text = \StringUtil::parseSimpleTokens(
                 $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->submissionMailText, $arrSubmissionData), false),
                 $arrSubmissionData
             );
@@ -379,7 +379,7 @@ abstract class Form extends DC_Hybrid
             {
                 $objFile = new \File($objModel->path, true);
 
-                $objEmail->html = \String::parseSimpleTokens(
+                $objEmail->html = \StringUtil::parseSimpleTokens(
                     $this->replaceInsertTags(FormHelper::replaceFormDataTags($objFile->getContent(), $arrSubmissionData), false),
                     $arrSubmissionData
                 );
@@ -396,7 +396,7 @@ abstract class Form extends DC_Hybrid
         // overwrite default from and
         if (!empty($this->submissionMailSender))
         {
-            list($senderName, $sender) = \String::splitFriendlyEmail($this->submissionMailSender);
+            list($senderName, $sender) = \StringUtil::splitFriendlyEmail($this->submissionMailSender);
             $objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
             $objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
         }
@@ -434,7 +434,7 @@ abstract class Form extends DC_Hybrid
         $objMessage = AvisotaHelper::getAvisotaMessage($intMessageId);
 
         $objMessage->setSubject(
-            \String::parseSimpleTokens(
+            \StringUtil::parseSimpleTokens(
                 $this->replaceInsertTags(FormHelper::replaceFormDataTags($objMessage->getSubject(), $arrSubmissionData), false),
                 $arrSubmissionData
             )
@@ -453,7 +453,7 @@ abstract class Form extends DC_Hybrid
                 str_replace(
                     "\n",
                     '<br>',
-                    \String::parseSimpleTokens(
+                    \StringUtil::parseSimpleTokens(
                         $this->replaceInsertTags(FormHelper::replaceFormDataTags($strText, $arrSubmissionData), false),
                         $arrSubmissionData
                     )
@@ -499,7 +499,7 @@ abstract class Form extends DC_Hybrid
             $strMessage = !empty($this->optInSuccessMessage) ? $this->optInSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn'];
         }
 
-        $this->successMessage = \String::parseSimpleTokens(
+        $this->successMessage = \StringUtil::parseSimpleTokens(
             $this->replaceInsertTags(
                 FormHelper::replaceFormDataTags(
                     $strMessage,
@@ -517,7 +517,7 @@ abstract class Form extends DC_Hybrid
         return true;
     }
 
-    protected function sendSubmissionNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+    protected function sendSubmissionNotification(\NotificationCenter\Model\Message $objMessage, &$arrSubmissionData, &$arrToken)
     {
         return true;
     }
@@ -540,14 +540,14 @@ abstract class Form extends DC_Hybrid
         $objEmail           = new \Email();
         $objEmail->from     = $GLOBALS['TL_ADMIN_EMAIL'];
         $objEmail->fromName = $GLOBALS['TL_ADMIN_NAME'];
-        $objEmail->subject  = \String::parseSimpleTokens(
+        $objEmail->subject  = \StringUtil::parseSimpleTokens(
             $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->confirmationMailSubject, $arrSubmissionData), false),
             $arrSubmissionData
         );
 
         if ($hasText = (strlen($this->confirmationMailText) > 0))
         {
-            $objEmail->text = \String::parseSimpleTokens(
+            $objEmail->text = \StringUtil::parseSimpleTokens(
                 $this->replaceInsertTags(FormHelper::replaceFormDataTags($this->confirmationMailText, $arrSubmissionData), false),
                 $arrSubmissionData
             );
@@ -564,7 +564,7 @@ abstract class Form extends DC_Hybrid
             {
                 $objFile = new \File($objModel->path, true);
 
-                $objEmail->html = \String::parseSimpleTokens(
+                $objEmail->html = \StringUtil::parseSimpleTokens(
                     $this->replaceInsertTags(FormHelper::replaceFormDataTags($objFile->getContent(), $arrSubmissionData), false),
                     $arrSubmissionData
                 );
@@ -581,7 +581,7 @@ abstract class Form extends DC_Hybrid
         // overwrite default from and
         if (!empty($this->confirmationMailSender))
         {
-            list($senderName, $sender) = \String::splitFriendlyEmail($this->confirmationMailSender);
+            list($senderName, $sender) = \StringUtil::splitFriendlyEmail($this->confirmationMailSender);
             $objEmail->from     = $this->replaceInsertTags(FormHelper::replaceFormDataTags($sender, $arrSubmissionData), false);
             $objEmail->fromName = $this->replaceInsertTags(FormHelper::replaceFormDataTags($senderName, $arrSubmissionData), false);
         }
@@ -616,7 +616,7 @@ abstract class Form extends DC_Hybrid
         $objMessage = AvisotaHelper::getAvisotaMessage($intMessageId);
 
         $objMessage->setSubject(
-            \String::parseSimpleTokens(
+            \StringUtil::parseSimpleTokens(
                 $this->replaceInsertTags(FormHelper::replaceFormDataTags($objMessage->getSubject(), $arrSubmissionData), false),
                 $arrSubmissionData
             )
@@ -632,7 +632,7 @@ abstract class Form extends DC_Hybrid
             }
 
             $objContent->setText(
-                \String::parseSimpleTokens(
+                \StringUtil::parseSimpleTokens(
                     $this->replaceInsertTags(FormHelper::replaceFormDataTags($strText, $arrSubmissionData), false),
                     $arrSubmissionData
                 )
@@ -661,7 +661,7 @@ abstract class Form extends DC_Hybrid
         );
     }
 
-    protected function sendConfirmationNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+    protected function sendConfirmationNotification(\NotificationCenter\Model\Message $objMessage, &$arrSubmissionData, &$arrToken)
     {
         return true;
     }

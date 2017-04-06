@@ -331,7 +331,7 @@ class DC_Hybrid extends \DataContainer
                                 if (is_array($callback))
                                 {
                                     $this->import($callback[0]);
-                                    $this->$callback[0]->$callback[1]($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
+                                    $this->{$callback[0]}->{$callback[1]}($this->strTable, $this->intId, $this->objActiveRecord->row(), $this);
                                 }
                                 elseif (is_callable($callback))
                                 {
@@ -718,7 +718,7 @@ class DC_Hybrid extends \DataContainer
                 if (is_array($arrCallback) && class_exists($arrCallback[0]))
                 {
                     $objInstance = \Controller::importStatic($arrCallback[0]);
-                    $arrOptions  = $objInstance->$arrCallback[1]($this);
+                    $arrOptions  = $objInstance->{$arrCallback[1]}($this);
                 }
 
                 // check for existing subpalettes in order to distinguish between type and subpalette selectors

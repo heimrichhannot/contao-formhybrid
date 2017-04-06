@@ -80,7 +80,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 					foreach ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['save_callback'] AS $callback)
 					{
 						$this->import($callback[0]);
-						$this->$callback[0]->$callback[1](serialize($this->varValue), $dc);
+						$this->{$callback[0]}->{$callback[1]}(serialize($this->varValue), $dc);
 					}
 				}
 				else

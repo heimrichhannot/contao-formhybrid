@@ -274,7 +274,7 @@ class FormHelper extends \System
         // Preserve insert tags
         if (\Config::get('disableInsertTags'))
         {
-            return \String::restoreBasicEntities($strBuffer);
+            return \StringUtil::restoreBasicEntities($strBuffer);
         }
 
         $tags = preg_split('/\{\{(([^\{\}]*|(?R))*)\}\}/', $strBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -362,7 +362,7 @@ class FormHelper extends \System
         }
 
 
-        return \String::restoreBasicEntities($strBuffer);
+        return \StringUtil::restoreBasicEntities($strBuffer);
     }
 
     public static function evalConditionTags($strBuffer)
