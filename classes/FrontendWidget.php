@@ -39,7 +39,7 @@ abstract class FrontendWidget extends \Widget
                 $_POST[$objWidget->name] = Request::getPost($objWidget->name, $objWidget->decodeEntities);
             }
 
-            $_POST[$objWidget->name] = html_entity_decode($_POST[$objWidget->name]);
+            $_POST[$objWidget->name] = static::decodeEntities($_POST[$objWidget->name]);
 
             // Captcha needs no value, just simple validation
             if ($objWidget instanceof \FormCaptcha)
@@ -70,6 +70,28 @@ abstract class FrontendWidget extends \Widget
         {
             $objWidget->class = 'error';
         }
+    }
+
+	/**
+	* Recursivly decode value entities
+	*
+	* @param array|string $varValue The value
+	* 
+	* @return array|string The value with decoded entities
+	*/
+	protected static function decodeEntities($varValue)
+    {
+        if (is_array($varValue))
+        {
+            foreach ($varValue as $i => $childValue)
+            {
+                $varValue[$i] = static::decodeEntities($childValue);
+            }
+
+            return $varValue;
+        }
+
+        return html_entity_decode($varValue);
     }
 
     /**

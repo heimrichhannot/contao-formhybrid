@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.4] - 2017-04-10
+
+### Fixed
+
+- array|string handling exceptions
+
 ## [2.8.3] - 2017-04-06
 
 ### Changed

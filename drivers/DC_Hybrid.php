@@ -723,12 +723,15 @@ class DC_Hybrid extends \DataContainer
 
                 // check for existing subpalettes in order to distinguish between type and subpalette selectors
                 $blnIsSubPaletteSelector = false;
-                foreach (array_keys($this->dca['subpalettes']) as $strSubPaletteSelector)
+                if(is_array($this->dca['subpalettes']))
                 {
-                    if (StringUtil::startsWith($strSubPaletteSelector, $strSelector . '_'))
+                    foreach (array_keys($this->dca['subpalettes']) as $strSubPaletteSelector)
                     {
-                        $blnIsSubPaletteSelector = true;
-                        break;
+                        if (StringUtil::startsWith($strSubPaletteSelector, $strSelector . '_'))
+                        {
+                            $blnIsSubPaletteSelector = true;
+                            break;
+                        }
                     }
                 }
 
