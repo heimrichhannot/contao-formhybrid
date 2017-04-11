@@ -7,6 +7,8 @@ $arrLang = &$GLOBALS['TL_LANG']['tl_module'];
  */
 $arrLang['formHybridDataContainer'] = ['Data Container', 'Choose the desired data container.'];
 $arrLang['formHybridEditable'] = ['Fields', 'Choose the editable fields.'];
+$arrLang['formHybridForcePaletteRelation'] =
+    ['Force palette relation', 'Palette relation is active by default. Disable if you want to access fields from all palettes and subpalettes despite their reference.'];
 $arrLang['formHybridAddEditableRequired'] = ['Override mandatory fields', 'Define mandatory ignoring the dca configuration.'];
 $arrLang['formHybridEditableRequired'] = ['Mandatory fields', 'Choose the desired mandatory fields.'];
 $arrLang['formHybridAddReadOnly'] = ['Add read only fields', 'Choose this if you want to have read only fields.'];

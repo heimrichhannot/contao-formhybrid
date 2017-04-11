@@ -878,6 +878,15 @@ class DC_Hybrid extends \DataContainer
 
         if (!isset($this->dca['palettes'][$varValue]))
         {
+            // always fallback to default palette if forcePaletteRelation is active (default: true)
+            if($this->forcePaletteRelation)
+            {
+                $varValue = 'default';
+            }
+        }
+
+        if (!isset($this->dca['palettes'][$varValue]))
+        {
             return false;
         }
 

@@ -85,6 +85,14 @@ $arrFields = [
         'sql'              => "varchar(10) NOT NULL default 'default'",
         'reference'        => &$GLOBALS['TL_LANG']['tl_module']['reference'],
     ],
+    'formHybridForcePaletteRelation'             => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridForcePaletteRelation'],
+        'exclude'   => true,
+        'default'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50'],
+        'sql'       => "char(1) NOT NULL default '1'",
+    ],
     'formHybridEditable'                         => [
         'inputType'        => 'checkboxWizard',
         'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
@@ -638,7 +646,7 @@ $arrFields = [
             'tl_class' => 'long clr',
         ],
     ],
-    'formHybridOptInSuccessMessage'                   => [
+    'formHybridOptInSuccessMessage'              => [
         'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInSuccessMessage'],
         'exclude'     => true,
         'filter'      => false,

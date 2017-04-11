@@ -17,7 +17,7 @@ define('FORMHYBRID_ACTION_SCOPE', 'formhybrid');
 define(
     'FORMHYBRID_PALETTE_DEFAULT',
     '
-{formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
+{formhybrid_config_legend},formHybridDataContainer,formHybridEditable,formHybridForcePaletteRelation,formHybridAddEditableRequired,formHybridAddDisplayedSubPaletteFields,formHybridEditableSkip,formHybridAddDefaultValues,formHybridViewMode;
 {formhybrid_template_legend},formHybridTemplate,formHybridCustomSubTemplates,formHybridStartTemplate,formHybridStopTemplate,formHybridCustomSubmit;
 {formhybrid_action_legend},formHybridResetAfterSubmission,formHybridSingleSubmission,formHybridAction,formHybridAddHashToAction,removeAutoItemFromAction,formHybridAsync,formHybridEnableAutoComplete,formHybridAddFieldDependentRedirect;
 {formhybrid_message_legend},formHybridSuccessMessage,formHybridSkipScrollingToSuccessMessage;
@@ -51,7 +51,7 @@ if (TL_MODE == 'FE')
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['parseWidget'][]    = ['HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook'];
+$GLOBALS['TL_HOOKS']['parseWidget'][] = ['HeimrichHannot\FormHybrid\Hooks', 'parseWidgetHook'];
 
 /**
  * Front end widgets

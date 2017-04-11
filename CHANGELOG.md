@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.5] - 2017-04-11
+
+### Changed
+- `tl_module.formHybridForcePaletteRelation` field added (default: true) and force palette relation handling by default!
+
 ## [2.8.4] - 2017-04-10
 
 ### Fixed
