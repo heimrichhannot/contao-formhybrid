@@ -871,19 +871,16 @@ class DC_Hybrid extends \DataContainer
     {
         if ($strSelector === null)
         {
+            // fallback to default palette if forcePaletteRelation is active (default: true)
+            if($this->forcePaletteRelation)
+            {
+                return array_intersect($this->arrEditable, FormHelper::getPaletteFields($this->strTable, $this->dca['palettes']['default']));
+            }
+
             return is_array($this->dca['fields']) ? array_keys($this->dca['fields']) : [];
         }
 
         $varValue = $this->getFieldValue($strSelector);
-
-        if (!isset($this->dca['palettes'][$varValue]))
-        {
-            // always fallback to default palette if forcePaletteRelation is active (default: true)
-            if($this->forcePaletteRelation)
-            {
-                $varValue = 'default';
-            }
-        }
 
         if (!isset($this->dca['palettes'][$varValue]))
         {
@@ -896,7 +893,7 @@ class DC_Hybrid extends \DataContainer
         }
 
         // default palette does not limit field selection, as long the field is not editable
-        if ($varValue == 'default' && !in_array($strSelector, $this->arrEditable))
+        if (!$this->forcePaletteRelation && $varValue == 'default' && !in_array($strSelector, $this->arrEditable))
         {
             return is_array($this->dca['fields']) ? array_keys($this->dca['fields']) : [];
         }

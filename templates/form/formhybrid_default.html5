@@ -1,8 +1,8 @@
 <div class="<?php echo $this->class; ?><?php if ($this->skipScrollingToSuccessMessage): ?> noscroll<?php endif ?> block"<?php echo $this->cssID; ?>>
 	<script><?php echo \HeimrichHannot\FormHybrid\FormHelper::getLocaleString(); ?></script>
 	<form action="<?php echo $this->action; ?>"
-	id="<?php echo $this->formId; ?>" 
-	method="<?php echo $this->method; ?>" 
+	id="<?php echo $this->formId; ?>"
+	method="<?php echo $this->method; ?>"
 	enctype="<?php echo $this->enctype; ?>"
 	<?php echo $this->attributes; ?>
 	<?php echo $this->novalidate; ?>

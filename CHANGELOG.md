@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.6] - 2017-04-11
+
+### Fixed
+- tested `tl_module.formHybridForcePaletteRelation` palette handling and fixed small bug
+
 ## [2.8.5] - 2017-04-11
 
 ### Changed
