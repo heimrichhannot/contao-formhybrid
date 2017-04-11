@@ -81,18 +81,20 @@ class FormReadonlyField extends \Widget
 		$arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName];
 		$value = FormSubmission::prepareSpecialValueForPrint($this->varValue, $arrData, $this->strTable, $this, $this->activeRecord);
 
+
 		switch($this->type)
 		{
+		    // xss protection for multifileupload within presentation not required, xss protection done within multifileupload
 			case 'multifileupload':
 				if ($this->fieldType == 'checkbox')
 				{
-					$value = '<ul class="download-list">' . implode('', array_map(function($val) {
+                    return '<ul class="download-list">' . implode('', array_map(function($val) {
 						return '<li>{{download::' . str_replace(\Environment::get('url') . '/', '', $val) . '}}</li>';
 					}, explode(', ', $value))) . '</ul>';
 					break;
 				}
 
-				$value = '{{download::' . str_replace(\Environment::get('url') . '/', '', $value) . '}}';
+                return '{{download::' . str_replace(\Environment::get('url') . '/', '', $value) . '}}';
 			break;
 		}
 

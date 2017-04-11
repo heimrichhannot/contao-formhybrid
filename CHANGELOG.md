@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.7] - 2017-04-11
+
+### Fixed
+-  do not escape entities for `FormReadonlyField` of type `multifileupload`
+
 ## [2.8.6] - 2017-04-11
 
 ### Fixed
