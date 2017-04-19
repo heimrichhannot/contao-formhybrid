@@ -81,7 +81,6 @@ class FormReadonlyField extends \Widget
 		$arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName];
 		$value = FormSubmission::prepareSpecialValueForPrint($this->varValue, $arrData, $this->strTable, $this, $this->activeRecord);
 
-
 		switch($this->type)
 		{
 		    // xss protection for multifileupload within presentation not required, xss protection done within multifileupload

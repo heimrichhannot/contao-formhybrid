@@ -122,6 +122,11 @@ class FormHelper extends \System
             // always decode entities if HTML is allowed
             $varValue = Request::cleanHtml($varValue, true, true, $strPreservedTags);
         }
+        else if(is_array($arrData['options']) || isset($arrData['options_callback']) || isset($arrData['foreignKey']))
+        {
+            // options should not be strict cleaned, as they might contain html tags like <strong>
+            $varValue = Request::cleanHtml($varValue, true, true, $strPreservedTags);
+        }
         else
         {
             $varValue = Request::clean($varValue, $arrData['eval']['decodeEntities'], true);
