@@ -1,15 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.9] - 2017-05-03
+
+### Fixed
+- `FormReadonlyField` option value issue
+
 ## [2.8.8] - 2017-04-19
 
 ### Fixed
--  do not escape values for `FormReadonlyField` if dca config contains  `options`, `options_callback` or `foreignKey`   
+- do not escape values for `FormReadonlyField` if dca config contains  `options`, `options_callback` or `foreignKey`   
 
 ## [2.8.7] - 2017-04-11
 
 ### Fixed
--  do not escape entities for `FormReadonlyField` of type `multifileupload`
+- do not escape entities for `FormReadonlyField` of type `multifileupload`
 
 ## [2.8.6] - 2017-04-11
 

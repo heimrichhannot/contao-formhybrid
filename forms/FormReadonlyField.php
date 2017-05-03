@@ -79,7 +79,9 @@ class FormReadonlyField extends \Widget
 	public function generate()
 	{
 		$arrData = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName];
-		$value = FormSubmission::prepareSpecialValueForPrint($this->varValue, $arrData, $this->strTable, $this, $this->activeRecord);
+        $this->objDca->strField = $this->strName;
+        $this->objDca->strTable = $this->strTable;
+		$value = FormSubmission::prepareSpecialValueForPrint($this->varValue, $arrData, $this->strTable, $this->objDca, $this->activeRecord);
 
 		switch($this->type)
 		{
