@@ -327,8 +327,8 @@ class AvisotaHelper {
 			// enhance with member data if existing
 			if ($objMember !== null)
 			{
-				if ($objMember->$strName)
-					$arrDetails[$strName] = $objMember->$strName;
+				if ($objMember->{$strName})
+					$arrDetails[$strName] = $objMember->{$strName};
 				else
 				{
 					// try synonyms
@@ -337,9 +337,9 @@ class AvisotaHelper {
 
 					if ($arrSynonyms) {
 						foreach ($arrSynonyms as $strSynonym) {
-							if ($objMember->$strSynonym)
+							if ($objMember->{$strSynonym})
 							{
-								$arrDetails[$strName] = $objMember->$strSynonym;
+								$arrDetails[$strName] = $objMember->{$strSynonym};
 							}
 						}
 					}

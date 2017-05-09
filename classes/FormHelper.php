@@ -68,7 +68,7 @@ class FormHelper extends \System
 
                 try
                 {
-                    $arrCallback = @$objInstance->$strMethod($objDc);
+                    $arrCallback = @$objInstance->{$strMethod}($objDc);
                 } catch (\Exception $e)
                 {
                     \System::log("$strClass::$strMethod raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
@@ -436,7 +436,7 @@ class FormHelper extends \System
                 $strClass    = $arrField['options_callback'][0];
                 $strMethod   = $arrField['options_callback'][1];
                 $objInstance = \Controller::importStatic($strClass);
-                $arrOptions  = $objInstance->$strMethod($dc);
+                $arrOptions  = $objInstance->{$strMethod}($dc);
 
                 foreach ($arrOptions as $strOption)
                 {

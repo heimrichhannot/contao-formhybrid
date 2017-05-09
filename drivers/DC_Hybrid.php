@@ -1205,7 +1205,7 @@ class DC_Hybrid extends \DataContainer
             $arrFormHybridOptions = $arrData['formHybridOptions'];
 
             $this->import($arrFormHybridOptions[0]);
-            $objWidget->options = $this->$arrFormHybridOptions[0]->$arrFormHybridOptions[1]();
+            $objWidget->options = $this->{$arrFormHybridOptions[0]}->{$arrFormHybridOptions[1]}();
         }
 
         if ($objWidget instanceof \uploadable)
@@ -1256,7 +1256,7 @@ class DC_Hybrid extends \DataContainer
                         if (is_array($callback))
                         {
                             $this->import($callback[0]);
-                            $varValue = $this->$callback[0]->$callback[1]($varValue, $this);
+                            $varValue = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
                         }
                         elseif (is_callable($callback))
                         {
@@ -1396,7 +1396,7 @@ class DC_Hybrid extends \DataContainer
             foreach ($this->dca['fields'][$strName]['load_callback'] as $callback)
             {
                 $this->import($callback[0]);
-                $varValue = $this->$callback[0]->$callback[1]($varValue, $this);
+                $varValue = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
             }
         }
 
