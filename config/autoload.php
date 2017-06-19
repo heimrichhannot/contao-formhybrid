@@ -23,34 +23,34 @@ ClassLoader::addNamespaces(
  */
 ClassLoader::addClasses(
     [
-	// Forms
-	'HeimrichHannot\FormHybrid\FormReadonlyField'        => 'system/modules/formhybrid/forms/FormReadonlyField.php',
-	'HeimrichHannot\FormHybrid\FormMultiColumnWizard'    => 'system/modules/formhybrid/forms/FormMultiColumnWizard.php',
+        // Forms
+        'HeimrichHannot\FormHybrid\FormReadonlyField'        => 'system/modules/formhybrid/forms/FormReadonlyField.php',
+        'HeimrichHannot\FormHybrid\FormMultiColumnWizard'    => 'system/modules/formhybrid/forms/FormMultiColumnWizard.php',
 
-	// Classes
-	'HeimrichHannot\FormHybrid\Submission'               => 'system/modules/formhybrid/classes/Submission.php',
-	'HeimrichHannot\FormHybrid\FormAjax'                 => 'system/modules/formhybrid/classes/FormAjax.php',
-	'HeimrichHannot\FormHybrid\FormSession'              => 'system/modules/formhybrid/classes/FormSession.php',
-	'HeimrichHannot\FormHybrid\FormHybrid'               => 'system/modules/formhybrid/classes/FormHybrid.php',
-	'HeimrichHannot\FormHybrid\FormHelper'               => 'system/modules/formhybrid/classes/FormHelper.php',
-	'HeimrichHannot\FormHybrid\Backend\ModuleBackend'    => 'system/modules/formhybrid/classes/Backend/ModuleBackend.php',
-	'HeimrichHannot\FormHybrid\TagsHelper'               => 'system/modules/formhybrid/classes/TagsHelper.php',
-	'HeimrichHannot\FormHybrid\FormConfiguration'        => 'system/modules/formhybrid/classes/FormConfiguration.php',
-	'HeimrichHannot\FormHybrid\Form'                     => 'system/modules/formhybrid/classes/Form.php',
-	'HeimrichHannot\FormHybrid\FrontendWidget'           => 'system/modules/formhybrid/classes/FrontendWidget.php',
-	'HeimrichHannot\FormHybrid\Hooks'                    => 'system/modules/formhybrid/classes/Hooks.php',
-	'HeimrichHannot\FormHybrid\Validator'                => 'system/modules/formhybrid/classes/Validator.php',
-	'HeimrichHannot\FormHybrid\AvisotaHelper'            => 'system/modules/formhybrid/classes/AvisotaHelper.php',
-	'HeimrichHannot\FormHybrid\DatabaseUpdater'          => 'system/modules/formhybrid/classes/DatabaseUpdater.php',
-	'HeimrichHannot\FormHybrid\FormSubmissionHelper'     => 'system/modules/formhybrid/classes/FormSubmissionHelper.php',
+        // Classes
+        'HeimrichHannot\FormHybrid\Submission'        => 'system/modules/formhybrid/classes/Submission.php',
+        'HeimrichHannot\FormHybrid\FormAjax'          => 'system/modules/formhybrid/classes/FormAjax.php',
+        'HeimrichHannot\FormHybrid\FormSession'       => 'system/modules/formhybrid/classes/FormSession.php',
+        'HeimrichHannot\FormHybrid\FormHybrid'        => 'system/modules/formhybrid/classes/FormHybrid.php',
+        'HeimrichHannot\FormHybrid\FormHelper'        => 'system/modules/formhybrid/classes/FormHelper.php',
+        'HeimrichHannot\FormHybrid\Backend\Module'    => 'system/modules/formhybrid/classes/Backend/Module.php',
+        'HeimrichHannot\FormHybrid\TagsHelper'        => 'system/modules/formhybrid/classes/TagsHelper.php',
+        'HeimrichHannot\FormHybrid\FormConfiguration' => 'system/modules/formhybrid/classes/FormConfiguration.php',
+        'HeimrichHannot\FormHybrid\Form'              => 'system/modules/formhybrid/classes/Form.php',
+        'HeimrichHannot\FormHybrid\FrontendWidget'    => 'system/modules/formhybrid/classes/FrontendWidget.php',
+        'HeimrichHannot\FormHybrid\Hooks'                    => 'system/modules/formhybrid/classes/Hooks.php',
+        'HeimrichHannot\FormHybrid\Validator'                => 'system/modules/formhybrid/classes/Validator.php',
+        'HeimrichHannot\FormHybrid\AvisotaHelper'            => 'system/modules/formhybrid/classes/AvisotaHelper.php',
+        'HeimrichHannot\FormHybrid\DatabaseUpdater'          => 'system/modules/formhybrid/classes/DatabaseUpdater.php',
+        'HeimrichHannot\FormHybrid\FormSubmissionHelper'     => 'system/modules/formhybrid/classes/FormSubmissionHelper.php',
 
-	// Elements
-	'HeimrichHannot\FormHybrid\ContentFormHybridStop'    => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',
-	'HeimrichHannot\FormHybrid\ContentFormHybridStart'   => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
-	'HeimrichHannot\FormHybrid\ContentFormHybridElement' => 'system/modules/formhybrid/elements/ContentFormHybridElement.php',
+        // Elements
+        'HeimrichHannot\FormHybrid\ContentFormHybridStop'    => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',
+        'HeimrichHannot\FormHybrid\ContentFormHybridStart'   => 'system/modules/formhybrid/elements/ContentFormHybridStart.php',
+        'HeimrichHannot\FormHybrid\ContentFormHybridElement' => 'system/modules/formhybrid/elements/ContentFormHybridElement.php',
 
-	// Drivers
-	'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',]
+        // Drivers
+        'HeimrichHannot\FormHybrid\DC_Hybrid'                => 'system/modules/formhybrid/drivers/DC_Hybrid.php',]
 );
 
 
