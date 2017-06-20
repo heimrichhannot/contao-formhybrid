@@ -1140,7 +1140,7 @@ class DC_Hybrid extends \DataContainer
             $this
         );
 
-        $this->updateWidget($arrWidget, $arrData);
+        $this->updateWidget($arrWidget, $arrData, []);
 
         list(
             $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
@@ -1352,8 +1352,9 @@ class DC_Hybrid extends \DataContainer
         );
     }
 
-    protected function updateWidget($arrWidget, $arrData)
+    protected function updateWidget(&$arrWidget, $arrData, $arrSkipFields = [])
     {
+
     }
 
     protected function stripInsertTags($varValue, $arrResult = [])

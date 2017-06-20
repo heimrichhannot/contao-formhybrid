@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.12] - 2017-06-20
+
+### Fixed
+- updateWidget() signature
+
 ## [2.8.11] - 2017-06-20
 
 ### Fixed
