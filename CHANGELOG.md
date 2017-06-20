@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.11] - 2017-06-20
+
+### Fixed
+- versions dep
+- refactoring of tl_module
+
 ## [2.8.10] - 2017-05-09
 
 ### Fixed
