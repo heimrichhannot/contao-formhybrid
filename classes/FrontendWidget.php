@@ -91,7 +91,7 @@ abstract class FrontendWidget extends \Widget
             return $varValue;
         }
 
-        return html_entity_decode($varValue);
+        return is_string($varValue) ? html_entity_decode($varValue) : '';
     }
 
     /**

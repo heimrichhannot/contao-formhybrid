@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.13] - 2017-07-07
+
+### Fixed
+- `html_entity_decode` within `FrontendWidget::decodeEntities()` now ignores objects and only supports strings
+
 ## [2.8.12] - 2017-06-20
 
 ### Fixed
