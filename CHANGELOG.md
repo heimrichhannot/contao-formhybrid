@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.14] - 2017-07-18
+
+### Changed
+- added css class subpalette to subpalette template (templates/form/formhybrid_default_sub.html5)
+
 ## [2.8.13] - 2017-07-07
 
 ### Fixed
