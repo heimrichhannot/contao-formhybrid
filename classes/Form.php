@@ -522,7 +522,7 @@ abstract class Form extends DC_Hybrid
         return true;
     }
 
-    protected function sendSubmissionEmail($objEmail, $arrRecipient, $arrSubmissionData)
+    protected function sendSubmissionEmail($objEmail, &$arrRecipient, &$arrSubmissionData)
     {
         $this->onSendSubmissionEmailCallback($objEmail, $arrRecipient, $arrSubmissionData);
 
@@ -666,7 +666,7 @@ abstract class Form extends DC_Hybrid
         return true;
     }
 
-    protected function sendConfirmationEmail($objEmail, $arrRecipient, $arrSubmissionData)
+    protected function sendConfirmationEmail($objEmail, &$arrRecipient, &$arrSubmissionData)
     {
         return true;
     }

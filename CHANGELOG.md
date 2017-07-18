@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.15] - 2017-07-18
+
+### Changed
+
+- use `$arrRecipients` and `$arrSubmissionData` as reference in `Form::sendConfirmationEmail`
+- use `$arrRecipients` and `$arrSubmissionData` as reference in `Form::sendConfirmationSubmission` 
+
 ## [2.8.14] - 2017-07-18
 
 ### Changed
