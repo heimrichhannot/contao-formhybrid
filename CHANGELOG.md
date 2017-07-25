@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.16] - 2017-07-25
+
+### Added
+
+- handling for modal ajax query params
+
 ## [2.8.15] - 2017-07-18
 
 ### Changed

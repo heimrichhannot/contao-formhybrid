@@ -128,10 +128,17 @@ class FormConfiguration
                 {
                     $varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
 
-                    // remove all query parameters within ajax request
+                    // remove all formhybrid query parameters within ajax request
                     if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
                     {
                         $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
+                    }
+
+                    // remove all modal query parameters within ajax request
+                    if (in_array('modal', \ModuleLoader::getActive()) && Ajax::isRelated(\HeimrichHannot\Modal\Modal::MODAL_NAME) !== false)
+                    {
+                        $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
+                        $varValue = Url::removeParameterFromUri($varValue, 'location');
                     }
                 }
 
