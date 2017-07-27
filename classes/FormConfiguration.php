@@ -154,10 +154,10 @@ class FormConfiguration
                     $varValue .= '#' . ($this->customHash ?: $this->strFormId);
                 }
 
-                // remove auto_item
-                if (\Config::get('useAutoItem') && Request::hasGet('auto_item') && $this->removeAutoItemFromAction)
+                // remove auto_item (-> Request class not working here since Contao adds auto_item manually to \Input ...)
+                if (\Config::get('useAutoItem') && \Input::get('auto_item') && $this->removeAutoItemFromAction)
                 {
-                    $varValue = str_replace('/' . Request::getGet('auto_item'), '', $varValue);
+                    $varValue = str_replace('/' . \Input::get('auto_item'), '', $varValue);
                 }
 
                 break;

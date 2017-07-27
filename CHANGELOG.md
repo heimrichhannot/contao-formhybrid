@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.17] - 2017-07-27
+
+### Fixed
+
+- auto_item removal from action
+
 ## [2.8.16] - 2017-07-25
 
 ### Added
