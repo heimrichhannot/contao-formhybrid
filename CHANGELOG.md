@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.18] - 2017-08-09
+
+### Fixed
+* DCA-Loading in Module class for Contao 4
+
 ## [2.8.17] - 2017-07-27
 
 ### Fixed

@@ -12,6 +12,7 @@ namespace HeimrichHannot\FormHybrid\Backend;
 
 
 use HeimrichHannot\Haste\Util\Arrays;
+use Contao\CoreBundle\Monolog\ContaoContext;
 
 class Module extends \Backend
 {
@@ -149,7 +150,22 @@ class Module extends \Backend
         foreach ($arrModules as $strModule)
         {
             $strDir = TL_ROOT . '/system/modules/' . $strModule . '/dca';
-
+            if (!file_exists($strDir) && version_compare(VERSION, 4.0, '>'))
+            {
+                try
+                {
+                    $strDir = \System::getContainer()->get('kernel')->locateResource('@'.$strModule);
+                    $strDir .= 'Resources/contao/dca';
+                }
+                catch (\InvalidArgumentException $ex)
+                {
+                    \System::getContainer()->get('monolog.logger.contao')->addNotice(
+                        'Bundle/Extension '.$strModule.' not found.',
+                        ['contao' => new ContaoContext(__CLASS__.'::'.__FUNCTION__, TL_GENERAL)]
+                    );
+                    $strDir = '';
+                }
+            }
             if (file_exists($strDir))
             {
                 foreach (scandir($strDir) as $strFile)
