@@ -106,10 +106,15 @@ abstract class Form extends DC_Hybrid
         /**
          * @var \Model $objModel
          */
-        $objModel = new $strModelClass();
-        $objModel->setRow($objResult->row());
-
-        \Database::getInstance()->prepare('UPDATE ' . $objData->table . ' SET ' . FormHybrid::OPT_IN_DATABASE_FIELD . ' = "" WHERE id = ?')->execute($objModel->id);
+        $objModel = $strModelClass::findById($this->intId);
+        if (empty($objModel))
+        {
+            $objModel = new $strModelClass();
+            $objModel->setRow($objResult->row());
+        }
+        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
+        $objModel->$strRow = "";
+        $objModel->save();
 
         $arrSubmissionData = FormSubmission::prepareData($objModel, $this->strTable, $this->dca, $this, $this->arrEditable);
 
@@ -119,7 +124,13 @@ abstract class Form extends DC_Hybrid
         {
             $this->createSuccessMessage($arrSubmissionData, true);
         }
-
+        if (!empty($this->optInConfirmedProperty))
+        {
+            $objModel->refresh();
+            $strConfirmationProperty = $this->optInConfirmedProperty;
+            $objModel->$strConfirmationProperty = true;
+            $objModel->save();
+        }
         $this->afterActivationCallback($this);
 
         return true;

@@ -161,6 +161,8 @@ $arrLang['formHybridOptInNotification']   = [
 ];
 $arrLang['formHybridOptInSuccessMessage'] =
     ['Opt-in Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Opt-in Erfolgsmeldung nach erfolgreichen Absenden des Formulars an.'];
+$arrLang['formHybridOptInConfirmedProperty'] =
+    ['Opt-in Erfolg Property', 'Ein Property (Boolean), welches bei erfolgreichem Opt-In auf true gesetzt werden soll.'];
 
 /**
  * Explanations

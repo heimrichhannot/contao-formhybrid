@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.8.19] - 2017-08-11
+
+### Added
+* OptInConfirmed property select
+* updated readme
+
+### Changed
+* OptInToken deletion via model class (`Form::activateSubmission()`)
+
 ## [2.8.18] - 2017-08-09
 
 ### Fixed

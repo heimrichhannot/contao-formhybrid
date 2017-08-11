@@ -85,6 +85,9 @@ $arrLang['formHybridTransformGetParamsToHiddenFields']      = ['Transform GET-Pa
 
 $arrLang['formHybridEnableAutoComplete'] = ['Enable form "autocomplete"', 'Enable autocomplete for this form (not recommended). <strong>Caution: Form submission values will be cached and restored on browser back button.</strong>'];
 
+$arrLang['formHybridOptInConfirmedProperty'] =
+    ['Opt-in success property', 'A property (boolean) which is set true, if opt-in was a success.'];
+
 /**
  * References
  */

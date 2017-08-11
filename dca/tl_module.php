@@ -50,7 +50,7 @@ $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
-$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification';
+$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty';
 
 /**
  * Callbacks
@@ -652,6 +652,19 @@ $arrFields = [
         'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
         'sql'         => "text NULL",
     ],
+    'formHybridOptInConfirmedProperty' => [
+        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInConfirmedProperty'],
+        'inputType'   => 'select',
+        'exclude'     => true,
+        'filter'      => false,
+        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
+        'sql'       => "varchar(64) NOT NULL default ''",
+        'eval' => [
+            'tl_class' => 'w50',
+            'includeBlankOption' => true
+        ]
+    ]
+
 ];
 
 // conditions for the field depending redirect
