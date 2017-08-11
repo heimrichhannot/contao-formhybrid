@@ -97,5 +97,6 @@ Following methods are availiable to overwrite (no complete list, see Form and DC
 
 |Method                              |Description|
 |------------------------------------|-----------|
-|onSubmitCallback(\DataContainer $dc)|Called after submitting the form, before writing to the database and sending confirmations)|
-|afterSubmitCallback(\DataContainer $dc)|Called after submitting the form and after saving enitity and sending confirmations|
+|onSubmitCallback(\DataContainer $dc)|Called after submitting the form, before writing to the database and sending confirmations). No return value.|
+|afterSubmitCallback(\DataContainer $dc)|Called after submitting the form and after saving enitity and sending confirmations. No return value|
+|afterActivationCallback(\DataContainer $dc)|Called after successfull opt in. No return value|
