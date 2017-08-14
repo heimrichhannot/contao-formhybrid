@@ -164,6 +164,11 @@ $arrLang['formHybridOptInSuccessMessage'] =
 $arrLang['formHybridOptInConfirmedProperty'] =
     ['Opt-in Erfolg Property', 'Ein Property (Boolean), welches bei erfolgreichem Opt-In auf true gesetzt werden soll.'];
 
+$arrLang['formHybridAddOptOut']            = ['Opt-out Verfahren aktivieren', 'Aktivieren Sie die Generierung von Links, um eine erstellte Entität wieder zu löschen.'];
+$arrLang['formHybridOptOutSuccessMessage'] = ['Opt-out Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Opt-out Erfolgsmeldung an, welche dem Benutzer nach erfolgreichem Opt-out angezeigt wird.'];
+
+
+
 /**
  * Explanations
  */

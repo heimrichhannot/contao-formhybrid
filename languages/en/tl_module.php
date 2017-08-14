@@ -88,6 +88,9 @@ $arrLang['formHybridEnableAutoComplete'] = ['Enable form "autocomplete"', 'Enabl
 $arrLang['formHybridOptInConfirmedProperty'] =
     ['Opt-in success property', 'A property (boolean) which is set true, if opt-in was a success.'];
 
+$arrLang['formHybridAddOptOut']            = ['Active Opt-out process', 'This will generate links, to delete the created entity.'];
+$arrLang['formHybridOptOutSuccessMessage'] = ['Overwrite opt-out success message', 'You can provide an alternative success message, which will be presented to the user, when opt-out was successfully.'];
+
 /**
  * References
  */
