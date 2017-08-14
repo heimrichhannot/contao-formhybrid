@@ -28,7 +28,11 @@ $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['submitApplication'] = 
  */
 $GLOBALS['TL_LANG']['formhybrid']['messages']['success'] = 'Thanks for your submission.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'] = 'No record matches the given id.';
-
+$GLOBALS['TL_LANG']['formhybrid']['messages']['optIn']              =
+    'Thanks for your request. To validate your identity we will send you an email within the next minutes, which contains an activation link. By clicking this link, you verify your email address.';
+$GLOBALS['TL_LANG']['formhybrid']['messages']['optOut']              =
+    'You have successful unsubscribed.';
+$GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken']  = 'Your request could not be fullfilled, the activation link is invalid or was already used.';
 /**
  * Misc
  */

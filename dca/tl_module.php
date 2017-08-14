@@ -22,6 +22,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridAddHashToAction';
 $arrDca['palettes']['__selector__'][] = 'formHybridExportAfterSubmission';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddExportButton';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptIn';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddOptOut';
 
 array_insert($arrDca['palettes']['__selector__'], 0, ['formHybridViewMode']); // bug??  must be indexed before "type"
 
@@ -51,6 +52,8 @@ $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
 $arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty';
+$arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage';
+
 
 /**
  * Callbacks
@@ -663,8 +666,23 @@ $arrFields = [
             'tl_class' => 'w50',
             'includeBlankOption' => true
         ]
-    ]
-
+    ],
+    'formHybridAddOptOut'                         => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddOptOut'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+        'sql'       => "char(1) NOT NULL default ''",
+    ],
+    'formHybridOptOutSuccessMessage'              => [
+        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptOutSuccessMessage'],
+        'exclude'     => true,
+        'filter'      => false,
+        'inputType'   => 'textarea',
+        'explanation' => 'formhybrid_inserttags_text',
+        'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
+        'sql'         => "text NULL",
+    ],
 ];
 
 // conditions for the field depending redirect

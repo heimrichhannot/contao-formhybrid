@@ -1,10 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [dev] - 2017-08-11
+## [2.9.0] - 2017-08-14
+
+### Added
+* Opt-out function
 
 ### Changed 
+* opt-in/opt-out check in seperate functions (Form.php)
+* moved set optinconfirmedproperty remove unnecessary database call
 * updated readme
+* updated english translation
 
 ## [2.8.19] - 2017-08-11
 

@@ -12,7 +12,8 @@ Usage is simple: Include the default palette (_FORMHYBRID_PALETTE_DEFAULT_) in c
 - transforming of special field's values depending on their dca properties (e.g. date)
 - ajax handling
 - store submissions using submissions module if necessary
-- optIn entity activation and notification handling added to module config and form creation process, add `formHybridAddOptIn` to your module configuration, create an opt-in notification and provide ##opt_in_link## inside text or html and add `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable([TABLE_NAME])` at the end of your DCA File
+- optIn entity activation and notification handling
+- optOut entity handling
 
 ## Usage
 
@@ -95,8 +96,23 @@ use HeimrichHannot\FormHybrid\Form;
 More advanced configurations can be archived by extending the Form class and overwrite methods.
 Following methods are availiable to overwrite (no complete list, see Form and DC_Hybrid classes):
 
-|Method                              |Description|
-|------------------------------------|-----------|
-|onSubmitCallback(\DataContainer $dc)|Called after submitting the form, before writing to the database and sending confirmations). No return value.|
-|afterSubmitCallback(\DataContainer $dc)|Called after submitting the form and after saving enitity and sending confirmations. No return value|
-|afterActivationCallback(\DataContainer $dc)|Called after successfull opt in. No return value|
+|Method                                     |Description|
+|-------------------------------------------|-----------|
+|abstract compile()                         |Called before rendering the form. Must be implementet. No return value.|
+|onSubmitCallback(\DataContainer $dc)       |Called after submitting the form, before writing to the database and sending confirmations). No return value.|
+|afterSubmitCallback(\DataContainer $dc)    |Called after submitting the form and after saving enitity and sending confirmations. No return value|
+|afterActivationCallback(\DataContainer $dc)|Called after successful opt in. No return value|
+|afterUnsubscribeCallback(\DataContainer $dc)|Called after successful opt out. No return value|
+
+### Opt in handling
+FormHybrid comes with build in opt-in handling. Following steps are required to use it: 
+* add `formHybridAddOptIn` to your modules palette
+* add `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable([TABLE_NAME])` at the end of your entity dca file and update your database
+* create an opt in notification in notification center and provide `##opt_in_link##` inside text or html
+ 
+### Opt out handling ###
+FormHybrid comes with build in opt-out handling. After calling the opt-out link the entity will be deleted. Following steps are required to use it:
+* add `formHybridAddOptOut` to your modules palette and activate it in module configuration
+* add `\HeimrichHannot\FormHybrid\FormHybrid::addOptOutFieldToTable([TABLE_NAME])` at the end of your entity dca file and update your database
+* call `HeimrichHannot\FormHybrid\TokenGenerator` in your notification generation code with the opt-out-token from the database, to generate the opt-out-email-token and -url.
+* add `opt_out_token` and `opt_out_link` to your notification center tokens and call them in your messages

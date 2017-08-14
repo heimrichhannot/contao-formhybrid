@@ -30,28 +30,60 @@ abstract class Form extends DC_Hybrid
 
         parent::__construct($this->strTable, $varConfig, $intId);
 
-        if ($this->addOptIn)
-        {
-            if (!\Database::getInstance()->fieldExists(FormHybrid::OPT_IN_DATABASE_FIELD, $this->table))
-            {
-                throw new \Exception(
-                    'Opt-in requires existing field `' . FormHybrid::OPT_IN_DATABASE_FIELD . '` in database table `' . $this->table
-                    . '`. Run `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable(' . $this->table . ')` within DCA `' . $this->table . '.php!`'
-                );
-            }
-
-            if (Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
-            {
-                $this->activateSubmission();
-                // remove parameter from query string and reload current page
-                \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
-            }
-        }
+        $this->checkOptIn();
+        $this->checkOptOut();
     }
 
     public function generate()
     {
         return parent::edit();
+    }
+
+    protected function checkOptIn()
+    {
+        if (!$this->addOptIn)
+        {
+            return;
+        }
+        if (!\Database::getInstance()->fieldExists(FormHybrid::OPT_IN_DATABASE_FIELD, $this->table))
+        {
+            throw new \Exception(
+                'Opt-in requires existing field `' . FormHybrid::OPT_IN_DATABASE_FIELD . '` in database table `' . $this->table
+                . '`. Run `\HeimrichHannot\FormHybrid\FormHybrid::addOptInFieldToTable(' . $this->table . ')` within DCA `' . $this->table . '.php!`'
+            );
+        }
+
+        if (Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
+        {
+            $this->activateSubmission();
+            // remove parameter from query string and reload current page
+            \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
+        }
+    }
+
+    protected function checkOptOut()
+    {
+        if (!$this->addOptOut)
+        {
+            return;
+        }
+        if (!\Database::getInstance()->fieldExists(FormHybrid::OPT_OUT_DATABASE_FIELD, $this->table))
+        {
+            throw new \Exception(
+                'Opt-out requires existing field `' . FormHybrid::OPT_OUT_DATABASE_FIELD . '` in database table `' . $this->table
+                . '`. Run `\HeimrichHannot\FormHybrid\FormHybrid::addOptOutFieldToTable(' . $this->table . ')` within DCA `' . $this->table
+                . '.php!`'
+            );
+        }
+
+        if (Request::hasGet(Formhybrid::OPT_OUT_REQUEST_ATTRIBUTE))
+        {
+            $this->isOptOut = "1";
+            $this->removeSubscription();
+            // remove parameter from query string and reload current page
+            \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_OUT_REQUEST_ATTRIBUTE]));
+        }
+
     }
 
     protected function activateSubmission()
@@ -60,6 +92,7 @@ abstract class Form extends DC_Hybrid
 
         try
         {
+
             $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
         } catch (\Exception $e)
         {
@@ -112,8 +145,21 @@ abstract class Form extends DC_Hybrid
             $objModel = new $strModelClass();
             $objModel->setRow($objResult->row());
         }
+
         $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
         $objModel->$strRow = "";
+
+        if ($this->addOptOut)
+        {
+            $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+            $strOptOutRow = FormHybrid::OPT_OUT_DATABASE_FIELD;
+            $objModel->$strOptOutRow = $strToken;
+        }
+        if ($this->optInConfirmedProperty)
+        {
+            $strConfirmationProperty = $this->optInConfirmedProperty;
+            $objModel->$strConfirmationProperty = true;
+        }
         $objModel->save();
 
         $arrSubmissionData = FormSubmission::prepareData($objModel, $this->strTable, $this->dca, $this, $this->arrEditable);
@@ -124,14 +170,85 @@ abstract class Form extends DC_Hybrid
         {
             $this->createSuccessMessage($arrSubmissionData, true);
         }
-        if (!empty($this->optInConfirmedProperty))
-        {
-            $objModel->refresh();
-            $strConfirmationProperty = $this->optInConfirmedProperty;
-            $objModel->$strConfirmationProperty = true;
-            $objModel->save();
-        }
         $this->afterActivationCallback($this);
+
+        return true;
+    }
+
+    protected function removeSubscription()
+    {
+        $strJWT = Request::getGet(Formhybrid::OPT_OUT_REQUEST_ATTRIBUTE);
+
+        try
+        {
+            $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
+        } catch (\Exception $e)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        if (!$objData->table || !$objData->token)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        if ($objData->table != $this->table)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        $objResult =
+            \Database::getInstance()->prepare('SELECT * FROM ' . $objData->table . ' WHERE ' . FormHybrid::OPT_OUT_DATABASE_FIELD . ' = ?')->limit(1)->execute($objData->token);
+
+        if ($objResult->numRows < 1)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        $this->intId = $objResult->id;
+
+        $strModelClass = \Model::getClassFromTable($objData->table);
+
+        if (!class_exists($strModelClass))
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        /**
+         * @var \Model $objModel
+         */
+        $objModel = $strModelClass::findById($this->intId);
+        if (!$objModel)
+        {
+            $this->createInvalidOptInTokenMessage();
+
+            return false;
+        }
+
+        $arrData = $objModel->row();
+
+        /*
+         * Delete entry
+         */
+        $objModel->delete();
+
+        $arrSubmissionData = FormSubmission::tokenizeData($arrData, '');
+
+        if (!$this->isSilentMode())
+        {
+            $this->createSuccessMessage($arrSubmissionData);
+        }
+        $this->afterUnsubscribeCallback($this);
 
         return true;
     }
@@ -261,12 +378,16 @@ abstract class Form extends DC_Hybrid
     protected function afterActivationCallback(\DataContainer $dc)
     {
     }
+    protected function afterUnsubscribeCallback(\DataContainer $dc)
+    {
+    }
 
     protected function createOptInNotification($arrSubmissionData)
     {
         if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->optInNotification)) !== null)
         {
             $arrToken = FormSubmission::tokenizeData($arrSubmissionData);
+
 
             $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
 
@@ -505,7 +626,11 @@ abstract class Form extends DC_Hybrid
     {
         $strMessage = !empty($this->successMessage) ? $this->successMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['success'];
 
-        if ($this->addOptIn && !$blnForceSuccess)
+        if ($this->isOptOut && !$blnForceSuccess)
+        {
+            $strMessage = !empty($this->optOutSuccessMessage) ? $this->optOutSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['optOut'];
+        }
+        elseif ($this->addOptIn && !$blnForceSuccess)
         {
             $strMessage = !empty($this->optInSuccessMessage) ? $this->optInSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn'];
         }

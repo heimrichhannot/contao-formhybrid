@@ -94,7 +94,7 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE'] = array_merge_recursive(
         \HeimrichHannot\FormHybrid\FormHybrid::NOTIFICATION_TYPE_FORMHYBRID => [
             \HeimrichHannot\FormHybrid\FormHybrid::NOTIFICATION_TYPE_FORM_OPT_IN => [
                 'recipients'           => ['form_value_*', 'form_plain_*', 'admin_email'],
-                'email_subject'        => ['form_value_*', 'form_plain_*', 'admin_email', 'env_*', 'page_*', 'user_*', 'date', 'last_update', 'opt_in_link'],
+                'email_subject'        => ['form_value_*', 'form_plain_*', 'admin_email', 'env_*', 'page_*', 'user_*', 'date', 'last_update', 'opt_in_link','opt_out_token','opt_out_link'],
                 'email_text'           => [
                     'formsubmission',
                     'formsubmission_all',
@@ -110,6 +110,8 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE'] = array_merge_recursive(
                     'last_update',
                     'opt_in_link',
                     'opt_in_token',
+                    'opt_out_token',
+                    'opt_out_link'
                 ],
                 'email_html'           => [
                     'formsubmission',
@@ -126,6 +128,8 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE'] = array_merge_recursive(
                     'last_update',
                     'opt_in_link',
                     'opt_in_token',
+                    'opt_out_token',
+                    'opt_out_link'
                 ],
                 'file_name'            => ['form_value_*', 'form_plain_*', 'admin_email'],
                 'file_content'         => ['form_value_*', 'form_plain_*', 'admin_email'],
