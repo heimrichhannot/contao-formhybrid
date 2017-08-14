@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed 
 * opt-in/opt-out check in seperate functions (Form.php)
-* moved set optinconfirmedproperty remove unnecessary database call
+* moved set optinconfirmedproperty code to remove unnecessary database call
 * updated readme
 * updated english translation
 
