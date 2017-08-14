@@ -100,6 +100,7 @@ Following methods are availiable to overwrite (no complete list, see Form and DC
 |-------------------------------------------|-----------|
 |abstract compile()                         |Called before rendering the form. Must be implementet. No return value.|
 |onSubmitCallback(\DataContainer $dc)       |Called after submitting the form, before writing to the database and sending confirmations). No return value.|
+|onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, $arrOriginalRow = null)|Called after submit, if data record already exist|
 |afterSubmitCallback(\DataContainer $dc)    |Called after submitting the form and after saving enitity and sending confirmations. No return value|
 |afterActivationCallback(\DataContainer $dc)|Called after successful opt in. No return value|
 |afterUnsubscribeCallback(\DataContainer $dc)|Called after successful opt out. No return value|
