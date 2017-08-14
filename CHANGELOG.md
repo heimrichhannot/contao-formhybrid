@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.9.1] - 2017-08-14
+
+### Changed
+* updated languages (opt-out)
+
 ## [2.9.0] - 2017-08-14
 
 ### Added
