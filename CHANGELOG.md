@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.9.3] - 2017-08-16
+
+### Changed
+* moved token generation to own static method
+
 ## [2.9.2] - 2017-08-16
 
 ### Added
