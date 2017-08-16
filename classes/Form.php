@@ -151,7 +151,7 @@ abstract class Form extends DC_Hybrid
 
         if ($this->addOptOut)
         {
-            $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+            $strToken = static::generateUniqueToken();
             $strOptOutRow = FormHybrid::OPT_OUT_DATABASE_FIELD;
             $objModel->$strOptOutRow = $strToken;
         }
@@ -394,8 +394,7 @@ abstract class Form extends DC_Hybrid
         {
             $arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
-
-            $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+            $strToken = static::generateUniqueToken();
 
             $this->objActiveRecord->refresh();
             $this->objActiveRecord->{FormHybrid::OPT_IN_DATABASE_FIELD} = $strToken;
@@ -896,5 +895,17 @@ abstract class Form extends DC_Hybrid
     public function setSubmitCallbacks(array $callbacks)
     {
         $this->arrSubmitCallbacks = $callbacks;
+    }
+
+    /**
+     * Generate unique token
+     * Used for opt-in and opt-out tokens.
+     *
+     * @return string
+     */
+    public static function generateUniqueToken ()
+    {
+        $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+        return $strToken;
     }
 }
