@@ -35,6 +35,7 @@ $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn']              =
 $GLOBALS['TL_LANG']['formhybrid']['messages']['optOut']              =
     'Sie haben sich erfolgreich abgemeldet.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken']  = 'Die Anfrage kann nicht verarbeitet werden, der Aktivierungslink ist ungültig oder wurde bereits verwendet.';
+$GLOBALS['TL_LANG']['formhybrid']['messages']['dublicateEntry']  = 'Sie haben dieses Thema bereits abonniert.';
 
 
 /**

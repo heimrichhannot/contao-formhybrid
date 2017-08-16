@@ -278,6 +278,12 @@ abstract class Form extends DC_Hybrid
 
         unset($_SESSION['FILES']); // clear files cache
 
+        if ($this->isDuplicateEntityError)
+        {
+            $this->createDublicateEntryMessage();
+            return;
+        }
+
         if (!$this->isSkipValidation())
         {
             if (is_array($this->dca['config']['onsubmit_callback']))
@@ -618,6 +624,13 @@ abstract class Form extends DC_Hybrid
     protected function createInvalidOptInTokenMessage()
     {
         $this->successMessage = $GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken'];
+
+        StatusMessage::addError($this->successMessage, $this->objModule->id, 'alert alert-danger');
+    }
+
+    protected function createDublicateEntryMessage()
+    {
+        $this->successMessage = $GLOBALS['TL_LANG']['formhybrid']['messages']['dublicateEntry'];
 
         StatusMessage::addError($this->successMessage, $this->objModule->id, 'alert alert-danger');
     }

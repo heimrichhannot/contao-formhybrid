@@ -98,12 +98,19 @@ Following methods are availiable to overwrite (no complete list, see Form and DC
 
 |Method                                     |Description|
 |-------------------------------------------|-----------|
-|abstract compile()                         |Called before rendering the form. Must be implementet. No return value.|
-|onSubmitCallback(\DataContainer $dc)       |Called after submitting the form, before writing to the database and sending confirmations). No return value.|
-|onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, $arrOriginalRow = null)|Called after submit, if data record already exist|
-|afterSubmitCallback(\DataContainer $dc)    |Called after submitting the form and after saving enitity and sending confirmations. No return value|
-|afterActivationCallback(\DataContainer $dc)|Called after successful opt in. No return value|
-|afterUnsubscribeCallback(\DataContainer $dc)|Called after successful opt out. No return value|
+|abstract void compile()                         |Called before rendering the form. Must be implementet.|
+|void onSubmitCallback(\DataContainer $dc)       |Called after submitting the form, before writing to the database and sending confirmations).|
+|void onUpdateCallback($objItem, \DataContainer $objDc, $blnJustCreated, $arrOriginalRow = null)|Called after submit, if data record already exist.|
+|void afterSubmitCallback(\DataContainer $dc)    |Called after submitting the form and after saving enitity and sending confirmations.|
+|void afterActivationCallback(\DataContainer $dc)|Called after successful opt in.|
+|void afterUnsubscribeCallback(\DataContainer $dc)|Called after successful opt out.|
+|bool sendOptInNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)|Default: true|
+|bool sendSubmissionNotification(\NotificationCenter\Model\Message $objMessage, &$arrSubmissionData, &$arrToken)|Default: true|
+|bool sendSubmissionEmail($objEmail, &$arrRecipient, &$arrSubmissionData) |Default: true|
+|void onSendSubmissionEmailCallback($objEmail, $arrRecipient, $arrSubmissionData)|Called in sendSubmissionEmail()|
+|bool sendConfirmationNotification(\NotificationCenter\Model\Message $objMessage, &$arrSubmissionData, &$arrToken)|Default: true|
+|bool sendConfirmationEmail($objEmail, &$arrRecipient, &$arrSubmissionData)|Default: true|
+
 
 ### Opt in handling
 FormHybrid comes with build in opt-in handling. Following steps are required to use it: 

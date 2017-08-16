@@ -33,6 +33,7 @@ $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn']              =
 $GLOBALS['TL_LANG']['formhybrid']['messages']['optOut']              =
     'You have successful unsubscribed.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken']  = 'Your request could not be fullfilled, the activation link is invalid or was already used.';
+$GLOBALS['TL_LANG']['formhybrid']['messages']['dublicateEntry']  = 'You\'ve already subscribed to this topic.';
 /**
  * Misc
  */

@@ -108,6 +108,8 @@ class DC_Hybrid extends \DataContainer
 
     private $invalid = false;
 
+    protected $isDuplicateEntityError = false;
+
     /**
      * Force entity creation, also if ajax scope does not match with formhybrid scope
      *
