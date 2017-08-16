@@ -1,7 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.9-dev] - 2017-08-14
+## [2.9.2] - 2017-08-16
+
+### Added
+* dublicate entity flag
 
 ### Changed
 * update readme

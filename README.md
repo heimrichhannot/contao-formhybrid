@@ -74,8 +74,8 @@ onload_callback | Add a 3rd parameter with boolean true to your onload_callbacks
 ### Additional eval dca config parameters
 
 
-Key | Default | Example | Description
-|----------|:-------------:|:-------------:|------:|
+Key          | Default | Example | Description
+|------------|:-------------:|:-------------:|------:|
 |allowedTags | null | <br><span><p> | Allow specific html tags inside input that will not be escaped (allowHtml must be true). allowHtml will be true by default if preserveTags, rte is set true within eval config.
 
 ### Frontend Form
@@ -124,6 +124,10 @@ FormHybrid comes with build in opt-out handling. After calling the opt-out link 
 * add `\HeimrichHannot\FormHybrid\FormHybrid::addOptOutFieldToTable([TABLE_NAME])` at the end of your entity dca file and update your database
 * call `HeimrichHannot\FormHybrid\TokenGenerator` in your notification generation code with the opt-out-token from the database, to generate the opt-out-email-token and -url.
 * add `opt_out_token` and `opt_out_link` to your notification center tokens and call them in your messages
+
+### Dublicate entity flag
+
+Set `Form::isDuplicateEntityError` to true, to stop before saving and throw error message.
 
 ## Customization
 
