@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.9.5] - 2017-08-21
+
+### Changed
+* set objModule as active record in removeSubscription and activeSubmission
+
 ## [2.9.4] - 2017-08-21
 
 ### Added

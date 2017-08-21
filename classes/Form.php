@@ -146,9 +146,8 @@ abstract class Form extends DC_Hybrid
             $objModel->setRow($objResult->row());
         }
 
-        //TODO
-//        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
-//        $objModel->$strRow = "";
+        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
+        $objModel->$strRow = "";
 
         if ($this->addOptOut)
         {
@@ -162,6 +161,7 @@ abstract class Form extends DC_Hybrid
             $objModel->$strConfirmationProperty = true;
         }
         $objModel->save();
+        $this->objActiveRecord = $objModel;
 
         $arrSubmissionData = FormSubmission::prepareData($objModel, $this->strTable, $this->dca, $this, $this->arrEditable);
 
@@ -171,7 +171,7 @@ abstract class Form extends DC_Hybrid
         {
             $this->createSuccessMessage($arrSubmissionData, true);
         }
-        $this->afterActivationCallback($this);
+        $this->afterActivationCallback($this, $objModel);
 
         if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
         {
@@ -248,13 +248,15 @@ abstract class Form extends DC_Hybrid
          */
         $objModel->delete();
 
+        $this->objActiveRecord = $objModel;
+
         $arrSubmissionData = FormSubmission::tokenizeData($arrData, '');
 
         if (!$this->isSilentMode())
         {
             $this->createSuccessMessage($arrSubmissionData);
         }
-        $this->afterUnsubscribeCallback($this);
+        $this->afterUnsubscribeCallback($this, $objModel);
 
         if ($this->optOutJumpTo && $objTarget = \PageModel::findByPk($this->optOutJumpTo))
         {
@@ -851,7 +853,6 @@ abstract class Form extends DC_Hybrid
         }
     }
 
-    abstract protected function compile();
 
     /**
      * Return the Submission of the form, if nothing was submitted, return null
