@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.9.4] - 2017-08-21
+
+### Added
+* Opt-in and opt-out jumpTo page selection and redirect
+
 ## [2.9.3] - 2017-08-16
 
 ### Changed

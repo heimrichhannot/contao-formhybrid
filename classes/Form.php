@@ -146,8 +146,9 @@ abstract class Form extends DC_Hybrid
             $objModel->setRow($objResult->row());
         }
 
-        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
-        $objModel->$strRow = "";
+        //TODO
+//        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
+//        $objModel->$strRow = "";
 
         if ($this->addOptOut)
         {
@@ -172,6 +173,11 @@ abstract class Form extends DC_Hybrid
         }
         $this->afterActivationCallback($this);
 
+        if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
+        {
+            $strUrl = \Controller::generateFrontendUrl($objTarget->row(), null, null, true);
+            \Controller::redirect($strUrl);
+        }
         return true;
     }
 
@@ -249,6 +255,12 @@ abstract class Form extends DC_Hybrid
             $this->createSuccessMessage($arrSubmissionData);
         }
         $this->afterUnsubscribeCallback($this);
+
+        if ($this->optOutJumpTo && $objTarget = \PageModel::findByPk($this->optOutJumpTo))
+        {
+            $strUrl = \Controller::generateFrontendUrl($objTarget->row(), null, null, true);
+            \Controller::redirect($strUrl);
+        }
 
         return true;
     }

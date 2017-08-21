@@ -51,8 +51,8 @@ $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
-$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty';
-$arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage';
+$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInJumpTo';
+$arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage,formHybridOptOutJumpTo';
 
 
 /**
@@ -667,6 +667,15 @@ $arrFields = [
             'includeBlankOption' => true
         ]
     ],
+    'formHybridOptInJumpTo'            => [
+        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
+        'exclude'    => true,
+        'inputType'  => 'pageTree',
+        'foreignKey' => 'tl_page.title',
+        'eval'       => ['fieldType' => 'radio', 'tl_class' => 'w50'],
+        'sql'        => "int(10) unsigned NOT NULL default '0'",
+        'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
+    ],
     'formHybridAddOptOut'                         => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddOptOut'],
         'exclude'   => true,
@@ -682,6 +691,15 @@ $arrFields = [
         'explanation' => 'formhybrid_inserttags_text',
         'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
         'sql'         => "text NULL",
+    ],
+    'formHybridOptOutJumpTo'            => [
+        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
+        'exclude'    => true,
+        'inputType'  => 'pageTree',
+        'foreignKey' => 'tl_page.title',
+        'eval'       => ['fieldType' => 'radio', 'tl_class' => 'w50'],
+        'sql'        => "int(10) unsigned NOT NULL default '0'",
+        'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
     ],
 ];
 
