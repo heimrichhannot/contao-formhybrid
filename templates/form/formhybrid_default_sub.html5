@@ -1,7 +1,9 @@
 <?php if (is_array($this->fields)): ?>
-<div id="<?= $this->ajaxId; ?>" class="subpalette">
-	<?php foreach($this->fields as $name => $objField): ?>
-		<?= $objField->parse(); ?>
-	<?php endforeach; ?>
-</div>
+    <div id="<?= $this->ajaxId; ?>" class="subpalette">
+        <div class="subpalette-body">
+            <?php foreach ($this->fields as $name => $objField): ?>
+                <?= $objField->parse(); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
 <?php endif; ?>

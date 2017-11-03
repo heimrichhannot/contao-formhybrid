@@ -1,58 +1,63 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.0] - 2017-11-02
+
+### Added
+- subpalette wrapper div
+
 ## [2.9.5] - 2017-08-21
 
 ### Changed
-* set objModule as active record in removeSubscription and activeSubmission
+- set objModule as active record in removeSubscription and activeSubmission
 
 ## [2.9.4] - 2017-08-21
 
 ### Added
-* Opt-in and opt-out jumpTo page selection and redirect
+- Opt-in and opt-out jumpTo page selection and redirect
 
 ## [2.9.3] - 2017-08-16
 
 ### Changed
-* moved token generation to own static method
+- moved token generation to own static method
 
 ## [2.9.2] - 2017-08-16
 
 ### Added
-* dublicate entity flag
+- dublicate entity flag
 
 ### Changed
-* update readme
+- update readme
 
 ## [2.9.1] - 2017-08-14
 
 ### Changed
-* updated languages (opt-out)
+- updated languages (opt-out)
 
 ## [2.9.0] - 2017-08-14
 
 ### Added
-* Opt-out function
+- Opt-out function
 
 ### Changed 
-* opt-in/opt-out check in seperate functions (Form.php)
-* moved set optinconfirmedproperty code to remove unnecessary database call
-* updated readme
-* updated english translation
+- opt-in/opt-out check in seperate functions (Form.php)
+- moved set optinconfirmedproperty code to remove unnecessary database call
+- updated readme
+- updated english translation
 
 ## [2.8.19] - 2017-08-11
 
 ### Added
-* OptInConfirmed property select
+- OptInConfirmed property select
 
 ### Changed
-* OptInToken deletion via model class (in `Form::activateSubmission()`)
-* updated readme
+- OptInToken deletion via model class (in `Form::activateSubmission()`)
+- updated readme
 
 ## [2.8.18] - 2017-08-09
 
 ### Fixed
-* DCA-Loading in Module class for Contao 4
+- DCA-Loading in Module class for Contao 4
 
 ## [2.8.17] - 2017-07-27
 
