@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.1] - 2017-11-02
+
+### Added
+- submit button css class btn-lg
+
 ## [2.10.0] - 2017-11-02
 
 ### Added

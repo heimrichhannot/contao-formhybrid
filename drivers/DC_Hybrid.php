@@ -1691,7 +1691,7 @@ class DC_Hybrid extends \DataContainer
     protected function generateSubmitField()
     {
         $strLabel = &$GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['default'];
-        $strClass = 'btn btn-primary';
+        $strClass = 'btn btn-primary btn-lg';
 
         if ($this->strSubmit != '' && isset($this->arrFields[$this->strSubmit]))
         {
