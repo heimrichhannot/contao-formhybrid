@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.2] - 2017-11-21
+
+### Added
+- forceCreate check for oncreate callback in modal
+
 ## [2.10.1] - 2017-11-02
 
 ### Added

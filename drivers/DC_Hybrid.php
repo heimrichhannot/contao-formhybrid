@@ -313,7 +313,7 @@ class DC_Hybrid extends \DataContainer
             } // we require a module context for entity creation
             else
             {
-                if ($this->objModule !== null && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+                if ($this->objModule !== null && (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false || $this->isForceCreate()))
                 {
 
                     // do nothing, if ajax request but not related to formhybrid
