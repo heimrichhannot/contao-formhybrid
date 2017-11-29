@@ -31,7 +31,7 @@ $GLOBALS['TL_LANG']['MSC']['formhybrid']['submitLabels']['unsubscribe']       = 
 $GLOBALS['TL_LANG']['formhybrid']['messages']['success']            = 'Vielen Dank für Ihre Einsendung.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['error']['invalidId'] = 'Es wurde kein Datensatz mit dieser ID gefunden.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn']              =
-    'Vielen Dank für Ihre Einsendung. <br />Zur Bestätigung Ihrer Identität, wird Ihnen in wenigen Minuten eine E-Mail zugestellt. Darin enthalten ist ein Aktivierungslink, dem Sie bitte folgen, um Ihre Einsendung zu verifizieren. ';
+    'Vielen Dank für Ihre Einsendung. <br />Zur Bestätigung Ihrer Identität wird Ihnen in wenigen Minuten eine E-Mail zugestellt. Darin enthalten ist ein Aktivierungslink, dem Sie bitte folgen, um Ihre Einsendung zu verifizieren.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['optOut']              =
     'Sie haben sich erfolgreich abgemeldet.';
 $GLOBALS['TL_LANG']['formhybrid']['messages']['invalidOptInToken']  = 'Die Anfrage kann nicht verarbeitet werden, der Aktivierungslink ist ungültig oder wurde bereits verwendet.';

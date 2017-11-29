@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.3] - 2017-11-21
+
+### Fixed 
+- typo in opt-in message
+
 ## [2.10.2] - 2017-11-21
 
 ### Added
