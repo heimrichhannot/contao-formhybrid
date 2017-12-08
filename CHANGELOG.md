@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.4] - 2017-12-08
+
+### Fixed 
+- if `includeBlankOption` is active and field is submitted via `toggleSubpalette` the blankOption value was not added to the valid options array and caused an `ResponseError`
+
 ## [2.10.3] - 2017-11-29
 
 ### Fixed 
