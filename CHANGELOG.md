@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.5] - 2017-12-11
+
+### Changed 
+- moved `doIdDependentRedirectToEntity` (create()) after oncreate_callback (initialize())
+
 ## [2.10.4] - 2017-12-08
 
 ### Fixed 

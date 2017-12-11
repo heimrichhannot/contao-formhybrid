@@ -257,7 +257,6 @@ class DC_Hybrid extends \DataContainer
                 if ($this->intId && is_numeric($this->intId))
                 {
                     FormSession::addSubmissionId($this->getFormId(false), $this->getId());
-                    $this->doIdDependentRedirectToEntity();
                 }
                 else
                 {
@@ -348,6 +347,7 @@ class DC_Hybrid extends \DataContainer
                         }
 
                         $this->save(); // initially try to save record, as ajax requests for example require entity model
+			$this->doIdDependentRedirectToEntity();
                     }
                     elseif ($this->hasDatabaseTable() && !$this->hasNoEntity())
                     {
