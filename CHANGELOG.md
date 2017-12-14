@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.6] - 2017-12-14
+
+#### Changed
+- added magic getter and setter to FrontendWidget to overwrite the automatic encription in Widget class
+
 ## [2.10.5] - 2017-12-11
 
 ### Changed 
