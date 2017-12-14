@@ -16,6 +16,44 @@ use HeimrichHannot\Request\Request;
  */
 abstract class FrontendWidget extends \Widget
 {
+    public function __get($key)
+    {
+        switch ($key)
+        {
+            case 'value':
+                if ($this->arrConfiguration['nullIfEmpty'] && $this->varValue == '')
+                {
+                    return null;
+                }
+
+                return $this->varValue;
+                break;
+            default:
+                return parent::__get($key);
+                break;
+        }
+    }
+
+    public function __set($key, $value)
+    {
+        switch ($key)
+        {
+            case 'value':
+                $this->varValue = deserialize($value);
+
+                // Decrypt the value if it is encrypted
+                if ($this->arrConfiguration['encrypt'])
+                {
+                    $this->varValue = \Encryption::decrypt($this->varValue);
+                }
+                break;
+            default:
+                parent::__set($key, $value);
+                break;
+        }
+    }
+
+
     /**
      * Validate the user input and set the value
      */
@@ -76,7 +114,7 @@ abstract class FrontendWidget extends \Widget
 	* Recursivly decode value entities
 	*
 	* @param array|string $varValue The value
-	* 
+	*
 	* @return array|string The value with decoded entities
 	*/
 	protected static function decodeEntities($varValue)
