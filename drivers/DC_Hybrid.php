@@ -1774,7 +1774,7 @@ class DC_Hybrid extends \DataContainer
         {
             foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback'] as $callback)
             {
-                if ($callback[2] !== true)
+                if (!is_array($callback) || !isset($callback[2]) || $callback[2] !== true)
                 {
                     continue;
                 }

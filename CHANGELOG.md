@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.7] - 2018-10-24
+
+### Fixed
+- `Cannot use object of type Closure as array` for `onload_callback` in `DC_Hybrid`
+
+### Changed
+- licence LGPL-3.0+ is now LGPL-3.0-or-later 
+
 ## [2.10.6] - 2017-12-14
 
 #### Changed
