@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.10.7] - 2018-10-24
+## [2.10.8] - 2018-01-24
+
+### Changed
+- *JumpTo load to lazy
+
+## [2.10.7] - 2018-01-24
 
 ### Fixed
 - `Cannot use object of type Closure as array` for `onload_callback` in `DC_Hybrid`
