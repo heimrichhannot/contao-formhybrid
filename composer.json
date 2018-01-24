@@ -9,7 +9,7 @@
     ],
     "type": "contao-module",
     "homepage": "https://github.com/heimrichhannot/contao-formhybrid",
-    "license": "LGPL-3.0+",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Heimrich & Hannot",
