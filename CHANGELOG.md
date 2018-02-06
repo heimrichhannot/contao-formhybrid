@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2018-02-06
+
+### Changed
+- drop legacy submission and confirmation E-Mail support (including avisota submission and confirmation messages), use notification center instead (reduce `tl_module` column count)
+- dopped following database columns:
+  - formHybridSendSubmissionViaEmail
+  - formHybridSubmissionMailSender
+  - formHybridSubmissionMailRecipient
+  - formHybridSubmissionMailSubject
+  - formHybridSubmissionMailText
+  - formHybridSubmissionMailTemplate
+  - formHybridSubmissionMailAttachment
+  - formHybridSendConfirmationViaEmail
+  - formHybridConfirmationMailRecipientField
+  - formHybridConfirmationMailSender
+  - formHybridConfirmationMailSubject
+  - formHybridConfirmationMailText
+  - formHybridConfirmationMailTemplate
+  - formHybridConfirmationMailAttachment
+  - formHybridSubmissionAvisotaMessage
+  - formHybridSubmissionAvisotaSalutationGroup
+  - formHybridConfirmationAvisotaMessage
+  - formHybridConfirmationAvisotaSalutationGroup
+
 ## [2.10.8] - 2018-01-24
 
 ### Changed

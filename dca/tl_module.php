@@ -6,9 +6,7 @@ $arrDca = &$GLOBALS['TL_DCA']['tl_module'];
  * Subpalettes
  */
 $arrDca['palettes']['__selector__'][] = 'formHybridAddDefaultValues';
-$arrDca['palettes']['__selector__'][] = 'formHybridSendSubmissionViaEmail';
 $arrDca['palettes']['__selector__'][] = 'formHybridSendSubmissionAsNotification';
-$arrDca['palettes']['__selector__'][] = 'formHybridSendConfirmationViaEmail';
 $arrDca['palettes']['__selector__'][] = 'formHybridSendConfirmationAsNotification';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddEditableRequired';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddReadOnly';
@@ -34,11 +32,7 @@ $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT]  = 
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_READONLY] = 'formHybridReadonlyTemplate';
 $arrDca['subpalettes']['formHybridAddDefaultValues']                          = 'formHybridDefaultValues';
 $arrDca['subpalettes']['formHybridExportAfterSubmission']                     = 'formHybridExportConfigs';
-$arrDca['subpalettes']['formHybridSendSubmissionViaEmail']                    =
-    'formHybridSubmissionMailRecipient,formHybridSubmissionAvisotaMessage,formHybridSubmissionMailSender,formHybridSubmissionMailSubject,formHybridSubmissionMailText,formHybridSubmissionMailTemplate,formHybridSubmissionMailAttachment';
 $arrDca['subpalettes']['formHybridSendSubmissionAsNotification']              = 'formHybridSubmissionNotification';
-$arrDca['subpalettes']['formHybridSendConfirmationViaEmail']                  =
-    'formHybridConfirmationMailRecipientField,formHybridConfirmationAvisotaMessage,formHybridConfirmationMailSender,formHybridConfirmationMailSubject,formHybridConfirmationMailText,formHybridConfirmationMailTemplate,formHybridConfirmationMailAttachment';
 $arrDca['subpalettes']['formHybridSendConfirmationAsNotification']            = 'formHybridConfirmationNotification';
 $arrDca['subpalettes']['formHybridAddEditableRequired']                       = 'formHybridEditableRequired';
 $arrDca['subpalettes']['formHybridAddReadOnly']                               = 'formHybridReadOnly';
@@ -53,12 +47,6 @@ $arrDca['subpalettes']['formHybridAddHashToAction']                           = 
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
 $arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInJumpTo';
 $arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage,formHybridOptOutJumpTo';
-
-
-/**
- * Callbacks
- */
-$arrDca['config']['onload_callback'][] = ['HeimrichHannot\FormHybrid\Backend\Module', 'modifyPalette'];
 
 /**
  * Fields
@@ -324,77 +312,6 @@ $arrFields = [
         'eval'             => ['chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true],
         'sql'              => "int(10) unsigned NOT NULL default '0'",
     ],
-    'formHybridSendSubmissionViaEmail'           => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendSubmissionViaEmail'],
-        'exclude'     => true,
-        'inputType'   => 'checkbox',
-        'explanation' => 'formhybrid_inserttags',
-        'eval'        => ['submitOnChange' => true, 'tl_class' => 'w50 clr', 'helpwizard' => true],
-        'sql'         => "char(1) NOT NULL default ''",
-    ],
-    'formHybridSubmissionMailSender'             => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSender'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'text',
-        'explanation' => 'formhybrid_inserttags',
-        'eval'        => ['mandatory' => false, 'maxlength' => 128, 'tl_class' => 'w50 clr', 'helpwizard' => true],
-        'sql'         => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridSubmissionMailRecipient'          => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailRecipient'],
-        'exclude'     => true,
-        'search'      => true,
-        'inputType'   => 'text',
-        'explanation' => 'formhybrid_inserttags',
-        'eval'        => ['mandatory' => true, 'maxlength' => 128, 'rgxp' => 'emails', 'tl_class' => 'w50 clr', 'helpwizard' => true],
-        'sql'         => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridSubmissionMailSubject'            => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailSubject'],
-        'exclude'     => true,
-        'search'      => true,
-        'inputType'   => 'text',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => [
-            'mandatory'      => false,
-            'maxlength'      => 128,
-            'decodeEntities' => true,
-            'tl_class'       => 'w50',
-            'helpwizard'     => true,
-        ],
-        'sql'         => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridSubmissionMailText'               => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailText'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'textarea',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => ['tl_class' => 'clr', 'decodeEntities' => true, 'alwaysSave' => true, 'helpwizard' => true],
-        'sql'         => "text NULL",
-    ],
-    'formHybridSubmissionMailTemplate'           => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailTemplate'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'fileTree',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => [
-            'helpwizard' => true,
-            'files'      => true,
-            'fieldType'  => 'radio',
-            'extensions' => 'htm,html,txt,tpl',
-        ],
-        'sql'         => "binary(16) NULL",
-    ],
-    'formHybridSubmissionMailAttachment'         => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionMailAttachment'],
-        'exclude'   => true,
-        'inputType' => 'fileTree',
-        'eval'      => ['multiple' => true, 'fieldType' => 'checkbox', 'files' => true],
-        'sql'       => "blob NULL",
-    ],
     'formHybridSendConfirmationAsNotification'   => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationAsNotification'],
         'exclude'   => true,
@@ -410,76 +327,6 @@ $arrFields = [
         'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getNoficiationMessages'],
         'eval'             => ['chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true],
         'sql'              => "int(10) unsigned NOT NULL default '0'",
-    ],
-    'formHybridSendConfirmationViaEmail'         => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridSendConfirmationViaEmail'],
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50 clr'],
-        'sql'       => "char(1) NOT NULL default ''",
-    ],
-    'formHybridConfirmationMailRecipientField'   => [
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailRecipientField'],
-        'exclude'          => true,
-        'search'           => true,
-        'inputType'        => 'select',
-        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEmailFormFields'],
-        'eval'             => ['mandatory' => true, 'chosen' => true, 'maxlength' => 128, 'tl_class' => 'w50 clr'],
-        'sql'              => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridConfirmationMailSender'           => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSender'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'text',
-        'explanation' => 'formhybrid_inserttags',
-        'eval'        => ['mandatory' => false, 'maxlength' => 128, 'tl_class' => 'w50 clr', 'helpwizard' => true],
-        'sql'         => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridConfirmationMailSubject'          => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailSubject'],
-        'exclude'     => true,
-        'search'      => true,
-        'inputType'   => 'text',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => [
-            'mandatory'      => false,
-            'maxlength'      => 128,
-            'decodeEntities' => true,
-            'tl_class'       => 'w50',
-            'helpwizard'     => true,
-        ],
-        'sql'         => "varchar(128) NOT NULL default ''",
-    ],
-    'formHybridConfirmationMailText'             => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailText'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'textarea',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => ['tl_class' => 'clr', 'decodeEntities' => true, 'alwaysSave' => true, 'helpwizard' => true],
-        'sql'         => "text NULL",
-    ],
-    'formHybridConfirmationMailTemplate'         => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailTemplate'],
-        'exclude'     => true,
-        'filter'      => false,
-        'inputType'   => 'fileTree',
-        'explanation' => 'formhybrid_inserttags_text',
-        'eval'        => [
-            'helpwizard' => true,
-            'files'      => true,
-            'fieldType'  => 'radio',
-            'extensions' => 'htm,html,txt,tpl',
-        ],
-        'sql'         => "binary(16) NULL",
-    ],
-    'formHybridConfirmationMailAttachment'       => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationMailAttachment'],
-        'exclude'   => true,
-        'inputType' => 'fileTree',
-        'eval'      => ['multiple' => true, 'fieldType' => 'checkbox', 'files' => true],
-        'sql'       => "blob NULL",
     ],
     'formHybridAddFieldDependentRedirect'        => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddFieldDependentRedirect'],
@@ -655,19 +502,19 @@ $arrFields = [
         'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
         'sql'         => "text NULL",
     ],
-    'formHybridOptInConfirmedProperty' => [
-        'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInConfirmedProperty'],
-        'inputType'   => 'select',
-        'exclude'     => true,
-        'filter'      => false,
+    'formHybridOptInConfirmedProperty'           => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInConfirmedProperty'],
+        'inputType'        => 'select',
+        'exclude'          => true,
+        'filter'           => false,
         'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
-        'sql'       => "varchar(64) NOT NULL default ''",
-        'eval' => [
-            'tl_class' => 'w50',
+        'sql'              => "varchar(64) NOT NULL default ''",
+        'eval'             => [
+            'tl_class'           => 'w50',
             'includeBlankOption' => true
         ]
     ],
-    'formHybridOptInJumpTo'            => [
+    'formHybridOptInJumpTo'                      => [
         'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
         'exclude'    => true,
         'inputType'  => 'pageTree',
@@ -676,14 +523,14 @@ $arrFields = [
         'sql'        => "int(10) unsigned NOT NULL default '0'",
         'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
     ],
-    'formHybridAddOptOut'                         => [
+    'formHybridAddOptOut'                        => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddOptOut'],
         'exclude'   => true,
         'inputType' => 'checkbox',
         'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
         'sql'       => "char(1) NOT NULL default ''",
     ],
-    'formHybridOptOutSuccessMessage'              => [
+    'formHybridOptOutSuccessMessage'             => [
         'label'       => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptOutSuccessMessage'],
         'exclude'     => true,
         'filter'      => false,
@@ -692,7 +539,7 @@ $arrFields = [
         'eval'        => ['allowHtml' => true, 'tl_class' => 'clr', 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true],
         'sql'         => "text NULL",
     ],
-    'formHybridOptOutJumpTo'            => [
+    'formHybridOptOutJumpTo'                     => [
         'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
         'exclude'    => true,
         'inputType'  => 'pageTree',
@@ -715,71 +562,8 @@ $arrFields['formHybridFieldDependentRedirectJumpTo']['label']             =
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['mandatory'] = true;
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['tl_class']  = 'w50';
 
-if (in_array('avisota-core', \ModuleLoader::getActive()))
-{
-    $arrFields['formHybridSubmissionAvisotaMessage'] = [
-        'exclude'          => true,
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionAvisotaMessage'],
-        'inputType'        => 'select',
-        'options_callback' => \ContaoCommunityAlliance\Contao\Events\CreateOptions\CreateOptionsEventCallbackFactory::createCallback(
-            \Avisota\Contao\Message\Core\MessageEvents::CREATE_BOILERPLATE_MESSAGE_OPTIONS,
-            'Avisota\Contao\Core\Event\CreateOptionsEvent'
-        ),
-        'eval'             => [
-            'includeBlankOption' => true,
-            'tl_class'           => 'w50 clr',
-            'chosen'             => true,
-            'submitOnChange'     => true,
-        ],
-        'sql'              => "char(36) NOT NULL default ''",
-    ];
 
-    $arrFields['formHybridSubmissionAvisotaSalutationGroup'] = [
-        'exclude'          => true,
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridSubmissionAvisotaSalutationGroup'],
-        'inputType'        => 'select',
-        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getSalutationGroupOptions'],
-        'eval'             => [
-            'includeBlankOption' => true,
-            'tl_class'           => 'w50',
-            'chosen'             => true,
-        ],
-        'sql'              => "char(36) NOT NULL default ''",
-    ];
-
-    $arrFields['formHybridConfirmationAvisotaMessage'] = [
-        'exclude'          => true,
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationAvisotaMessage'],
-        'inputType'        => 'select',
-        'options_callback' => \ContaoCommunityAlliance\Contao\Events\CreateOptions\CreateOptionsEventCallbackFactory::createCallback(
-            \Avisota\Contao\Message\Core\MessageEvents::CREATE_BOILERPLATE_MESSAGE_OPTIONS,
-            'Avisota\Contao\Core\Event\CreateOptionsEvent'
-        ),
-        'eval'             => [
-            'includeBlankOption' => true,
-            'tl_class'           => 'w50 clr',
-            'chosen'             => true,
-            'submitOnChange'     => true,
-        ],
-        'sql'              => "char(36) NOT NULL default ''",
-    ];
-
-    $arrFields['formHybridConfirmationAvisotaSalutationGroup'] = [
-        'exclude'          => true,
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridConfirmationAvisotaSalutationGroup'],
-        'inputType'        => 'select',
-        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getSalutationGroupOptions'],
-        'eval'             => [
-            'includeBlankOption' => true,
-            'tl_class'           => 'w50',
-            'chosen'             => true,
-        ],
-        'sql'              => "char(36) NOT NULL default ''",
-    ];
-}
-
-if (in_array('exporter', \ModuleLoader::getActive()))
-{
+if (in_array('exporter', \ModuleLoader::getActive())) {
     $arrFields['formHybridExportAfterSubmission'] = [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridExportAfterSubmission'],
         'exclude'   => true,

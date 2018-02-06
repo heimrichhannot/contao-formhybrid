@@ -39,52 +39,14 @@ $arrLang['formHybridSubmissionNotification']        = [
     'Wählen Sie hier eine Nachricht aus, die nach dem erfolgreichen Absenden des Formulars verschickt werden soll.',
 ];
 
-$arrLang['formHybridSendSubmissionViaEmail']           = ['Per E-Mail versenden', 'Die Formulardaten an eine E-Mail-Adresse versenden.'];
-$arrLang['formHybridSubmissionMailSender']             =
-    ['Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>'];
-$arrLang['formHybridSubmissionMailRecipient']          = ['Empfänger-Adresse', 'Mehrere E-Mail-Adressen können mit Komma getrennt werden.'];
-$arrLang['formHybridSubmissionAvisotaMessage']         = ['Benachrichtigung', 'Wählen Sie hier eine Avisota-Nachricht aus.'];
-$arrLang['formHybridSubmissionAvisotaSalutationGroup'] =
-    ['Anrede', 'Wählen Sie hier eine Avisota-Anrede aus. Die Anrede generiert sich aus Mitgliedern gleicher E-Mail-Adressen wie die Empfänger.'];
-$arrLang['formHybridSubmissionMailSubject']            = [
-    'Betreff',
-    'Bitte geben Sie eine Betreffzeile für die Bestätigungs-E-Mail ein. Wenn Sie keine Betreffzeile erfassen, steigt die Wahrscheinlichkeit, dass die E-Mail als SPAM identifiziert wird.',
-];
-$arrLang['formHybridSubmissionMailText']               = [
-    'Text der E-Mail',
-    'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.',
-];
-$arrLang['formHybridSubmissionMailTemplate']           = ['E-Mail-Template', 'Hier können Sie das E-Mail-Template überschreiben.'];
-$arrLang['formHybridSubmissionMailAttachment']         = ['E-Mail Anhänge', 'Versenden Sie Dateien aus der Dateiverwaltung als Anhang.'];
-
 $arrLang['formHybridSendConfirmationAsNotification']     = [
     'Bestätigungs-E-Mail über Benachrichtigungscenter versenden',
     'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars über den Benachrichtungscenter ausgelößt.',
 ];
-$arrLang['formHybridSendConfirmationViaEmail']           =
-    ['Bestätigung per E-Mail versenden', 'Wenn Sie diese Option wählen, wird eine Bestätigung per E-Mail an den Absender des Formulars versendet.'];
 $arrLang['formHybridConfirmationNotification']           = [
     'Bestätigungsbenachrichtigung verschicken',
     'Wählen Sie hier eine Nachricht aus, die nach dem erfolgreichen Absenden des Formulars an dessen Absender verschickt werden soll.',
 ];
-$arrLang['formHybridConfirmationMailSender']             =
-    ['Absender', 'Bitte geben Sie hier die Absender-E-Mail-Adresse ein. <strong>Format mit Absender-Name: Name [Email]</strong>'];
-$arrLang['formHybridConfirmationMailRecipientField']     = [
-    'Formularfeld mit E-Mail-Adresse des Empfängers',
-    'Wählen Sie hier das Formularfeld, in dem der Absender seine E-Mail-Adresse angibt oder ein Formularfeld, das die Empfänger-Adresse als Wert enthält.',
-];
-$arrLang['formHybridConfirmationAvisotaMessage']         = ['Benachrichtigung', 'Wählen Sie hier eine Avisota-Nachricht aus.'];
-$arrLang['formHybridConfirmationAvisotaSalutationGroup'] = ['Anrede', 'Wählen Sie hier eine Avisota-Anrede aus. Die Anrede generiert sich aus der Form-Submission.'];
-$arrLang['formHybridConfirmationMailSubject']            = [
-    'Betreff',
-    'Bitte geben Sie eine Betreffzeile für die Bestätigungs-E-Mail ein. Wenn Sie keine Betreffzeile erfassen, steigt die Wahrscheinlichkeit, dass die E-Mail als SPAM identifiziert wird.',
-];
-$arrLang['formHybridConfirmationMailText']               = [
-    'Text der E-Mail',
-    'Bitte geben Sie hier den Text der E-Mail ein (##submission## gibt die gesammelten Formulardaten formatiert mit Label: Wert aus). Neben den allgemeinen Insert-Tags werden Tags der Form form::FORMULARFELDNAME unterstützt.',
-];
-$arrLang['formHybridConfirmationMailTemplate']           = ['E-Mail-Template', 'Hier können Sie das E-Mail-Template überschreiben.'];
-$arrLang['formHybridConfirmationMailAttachment']         = ['E-Mail Anhänge', 'Versenden Sie Dateien aus der Dateiverwaltung als Anhang.'];
 $arrLang['formHybridAddFieldDependentRedirect']          = [
     'Feldabhängige Weiterleitung hinzufügen',
     'Wählen Sie diese Option, um eine Weiterleitung zu definieren, die durchgeführt wird, wenn ein Feld (oder mehrere) bestimmte Werte ausweist.',

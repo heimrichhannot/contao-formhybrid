@@ -33,27 +33,8 @@ $arrLang['formHybridSkipScrollingToSuccessMessage'] = ['Skip scrolling to succes
 $arrLang['formHybridSendSubmissionAsNotification'] = ['Send email using notification center', 'After successfully submitting the form an email using the notification center is sent.'];
 $arrLang['formHybridSubmissionNotification'] = ['Send notification after form submission', 'Choose the notification to be sent after successfully submitting the form.'];
 
-$arrLang['formHybridSendSubmissionViaEmail'] = ['Send via email', 'Send the form data via email.'];
-$arrLang['formHybridSubmissionMailSender'] = ['Sender', 'Please type in the email sender address. <strong>Format with sender name: Name [Email]</strong>'];
-$arrLang['formHybridSubmissionMailRecipient'] = ['Sender address', 'Multiple email addresses an be typed in comma separatedly.'];
-$arrLang['formHybridSubmissionAvisotaMessage'] = ['Notification', 'Choose an avisota message.'];
-$arrLang['formHybridSubmissionAvisotaSalutationGroup'] = ['Salutation', 'Choose an avisota salutation.'];
-$arrLang['formHybridSubmissionMailSubject'] = ['Subject', 'Please type in a subject.'];
-$arrLang['formHybridSubmissionMailText'] = ['Email text', 'Please type in the email text.'];
-$arrLang['formHybridSubmissionMailTemplate'] = ['Email template', 'Here you can override the email template.'];
-$arrLang['formHybridSubmissionMailAttachment'] = ['Email attachment', 'Send files as attachment.'];
-
 $arrLang['formHybridSendConfirmationAsNotification'] = ['Send Confirmation email using notification center', 'If you choose this, a confirmation is sent to the sender of the form using the notification center.'];
-$arrLang['formHybridSendConfirmationViaEmail'] = ['Send confirmation via email', 'If you choose this, a confirmation is sent to the sender of the form via email.'];
 $arrLang['formHybridConfirmationNotification'] = ['Send confirmation notification', 'Choose the confirmation notification message here.'];
-$arrLang['formHybridConfirmationMailSender'] = ['Sender', 'Type in the sender email address here. <strong>Format with sender name: Name [Email]</strong>'];
-$arrLang['formHybridConfirmationMailRecipientField'] = ['Email recipient form field', 'Choose the form field containing the mail address.'];
-$arrLang['formHybridConfirmationAvisotaMessage'] = ['Notification', 'Choose an avisota message here.'];
-$arrLang['formHybridConfirmationAvisotaSalutationGroup'] = ['Salutation', 'Choose an avisota salutation here.'];
-$arrLang['formHybridConfirmationMailSubject'] = ['Subject', 'Type in a subject here.'];
-$arrLang['formHybridConfirmationMailText'] = ['Email text', 'Type in the email text here.'];
-$arrLang['formHybridConfirmationMailTemplate'] = ['Email template', 'Here you can override the email template.'];
-$arrLang['formHybridConfirmationMailAttachment'] = ['Email attachments', 'Attach files here.'];
 $arrLang['formHybridAddFieldDependentRedirect'] = ['Add field dependent redirect', 'Choose this option in order to define a jump to page for certain field values.'];
 $arrLang['formHybridFieldDependentRedirectConditions'] = ['Redirect conditions', ''];
 $arrLang['formHybridFieldDependentRedirectJumpTo'] = ['Field dependent redirect page', 'Choose the field dependend redirect page.'];
