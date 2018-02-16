@@ -224,7 +224,7 @@ $arrFields = [
         'foreignKey' => 'tl_page.title',
         'eval'       => ['fieldType' => 'radio', 'tl_class' => 'clr'],
         'sql'        => "int(10) unsigned NOT NULL default '0'",
-        'relation'   => ['type' => 'hasOne', 'load' => 'eager'],
+        'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
     ],
     'formHybridAddHashToAction'                  => [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddHashToAction'],
@@ -561,6 +561,7 @@ $arrFields['formHybridFieldDependentRedirectJumpTo']['label']             =
 	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectJumpTo'];
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['mandatory'] = true;
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['tl_class']  = 'w50';
+$arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['load'] = 'lazy';
 
 
 if (in_array('exporter', \ModuleLoader::getActive())) {
@@ -577,7 +578,7 @@ if (in_array('exporter', \ModuleLoader::getActive())) {
         'exclude'      => true,
         'inputType'    => 'fieldpalette',
         'foreignKey'   => 'tl_fieldpalette.id',
-        'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
+        'relation'     => ['type' => 'hasMany', 'load' => 'lazy'],
         'sql'          => "blob NULL",
         'eval'         => ['tl_class' => 'clr'],
         'fieldpalette' => [
