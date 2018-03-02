@@ -77,7 +77,9 @@ abstract class FrontendWidget extends \Widget
                 $_POST[$objWidget->name] = Request::getPost($objWidget->name, $objWidget->decodeEntities);
             }
 
-            $_POST[$objWidget->name] = static::decodeEntities($_POST[$objWidget->name]);
+            if(false === $objWidget->decodeEntities){
+                $_POST[$objWidget->name] = static::decodeEntities($_POST[$objWidget->name]);
+            }
 
             // Captcha needs no value, just simple validation
             if ($objWidget instanceof \FormCaptcha)
@@ -91,8 +93,13 @@ abstract class FrontendWidget extends \Widget
                 $varValue = $objWidget->value;
             }
         }
+    
+        if ($objWidget->allowHtml)
+        {
+            $varValue = Request::cleanHtml($varValue, $objWidget->decodeEntities, true, $objWidget->allowedTags ?: \Config::get('allowedTags'));
+        }
 
-        $objWidget->varValue = $varValue;
+        $objWidget->value = $varValue;
 
         // HOOK: validate form field callback
         if (isset($GLOBALS['TL_HOOKS']['formHybridValidateFormField']) && is_array($GLOBALS['TL_HOOKS']['formHybridValidateFormField']))

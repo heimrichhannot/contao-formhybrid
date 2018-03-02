@@ -1,16 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.4] - 2018-03-02
 
+### Fixed
+- `allowHtml` for widget now correctly renders `allowedTags` from widget `['eval']['allowedTags']` or fallback from `\Config::get('allowedTags')`
 
 ## [3.0.3] - 2018-03-02
 
-#### Fixed
+### Fixed
 - unsubscription for subscriber subscribed before activating opt-out was not possible due empty opt-out token field. Now opt-out token is set, if field is added to dca and opt-out not explicit enabled. **This won't added tokens to already existing database entries** (see readme for more information)**!**
 
 ## [3.0.2] - 2018-03-02
 
-#### Fixed 
+### Fixed 
 
 - wrong translation used for opt-out jumpto
 
