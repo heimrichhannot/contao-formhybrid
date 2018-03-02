@@ -125,6 +125,16 @@ FormHybrid comes with build in opt-out handling. After calling the opt-out link 
 * call `HeimrichHannot\FormHybrid\TokenGenerator` in your notification generation code with the opt-out-token from the database, to generate the opt-out-email-token and -url.
 * add `opt_out_token` and `opt_out_link` to your notification center tokens and call them in your messages
 
+> Attention: If you enhance already existing data with opt-out-handling, tokens are **not** automatically generated for existing entries and unsubscription is not possible for existing entries! You need to check if the entry already has an token in your code, before generating opt-out link! Example:
+
+```php
+if ($module->formHybridAddOptOut && !$recipientsModel->optOutToken)
+{
+    $recipientsModel->optOutToken = Form::generateUniqueToken();
+    $recipientsModel->save();
+}
+```
+
 ### Dublicate entity flag
 
 Set `Form::isDuplicateEntityError` to true, to stop before saving and throw error message.

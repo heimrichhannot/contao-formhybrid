@@ -1,10 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.10] - 2018-03-02
+
+#### Fixed
+- unsubscription for subscriber subscribed before activating opt-out was not possible due empty opt-out token field. Now opt-out token is set, if field is added to dca and opt-out not explicit enabled. **This won't added tokens to already existing database entries** (see readme for more information)**!**
+
 ## [2.10.9] - 2018-03-02
 
 #### Fixed 
-
 - wrong translation used for opt-out jumpto
 
 ## [2.10.8] - 2018-01-24
