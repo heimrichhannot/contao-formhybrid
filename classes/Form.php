@@ -149,12 +149,15 @@ abstract class Form extends DC_Hybrid
         $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
         $objModel->$strRow = "";
 
-        if ($this->addOptOut)
+        // Always add opt-out token, if Database field added to dca:
+        $modelData = $objModel->row();
+        $strOptOutRow = FormHybrid::OPT_OUT_DATABASE_FIELD;
+        if (isset($modelData[$strOptOutRow]))
         {
             $strToken = static::generateUniqueToken();
-            $strOptOutRow = FormHybrid::OPT_OUT_DATABASE_FIELD;
             $objModel->$strOptOutRow = $strToken;
         }
+
         if ($this->optInConfirmedProperty)
         {
             $strConfirmationProperty = $this->optInConfirmedProperty;
