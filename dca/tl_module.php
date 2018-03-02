@@ -693,7 +693,7 @@ $arrFields = [
         'sql'         => "text NULL",
     ],
     'formHybridOptOutJumpTo'            => [
-        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
+        'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptOutJumpTo'],
         'exclude'    => true,
         'inputType'  => 'pageTree',
         'foreignKey' => 'tl_page.title',

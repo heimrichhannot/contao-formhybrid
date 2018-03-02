@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.10.9] - 2018-03-02
+
+#### Fixed 
+
+- wrong translation used for opt-out jumpto
+
 ## [2.10.8] - 2018-01-24
 
 ### Changed
