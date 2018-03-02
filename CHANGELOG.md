@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+
+
+## [3.0.2] - 2018-03-02
+
+#### Fixed 
+
+- wrong translation used for opt-out jumpto
+
 ## [3.0.1] - 2018-02-16
 
 - load `tl_module` fields of type `pageTree` related pages `lazy`

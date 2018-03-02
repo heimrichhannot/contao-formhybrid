@@ -73,7 +73,7 @@ $arrLang['formHybridOptInJumpTo'] =
 
 $arrLang['formHybridAddOptOut']            = ['Active Opt-out process', 'This will generate links, to delete the created entity.'];
 $arrLang['formHybridOptOutSuccessMessage'] = ['Overwrite opt-out success message', 'You can provide an alternative success message, which will be presented to the user, when opt-out was successfully.'];
-$arrLang['formHybridOptOutJumpTo'] = ['Opt-out redirect', 'This page will be called after a successfull opt-out.'];
+$arrLang['formHybridOptOutJumpTo'] = ['Opt-out redirect', 'This page will be called after a successfull unsubscription.'];
 
 /**
  * References
