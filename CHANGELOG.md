@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.5] - 2018-03-02
+
+### Fixed
+
+- correctly update `$objWidget->value` from `save_callback`
+
 ## [3.0.4] - 2018-03-02
 
 ### Fixed

@@ -1258,11 +1258,11 @@ class DC_Hybrid extends \DataContainer
                         if (is_array($callback))
                         {
                             $this->import($callback[0]);
-                            $varValue = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
+                            $objWidget->value = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
                         }
                         elseif (is_callable($callback))
                         {
-                            $varValue = $callback($varValue, $this);
+                            $objWidget->value = $callback($varValue, $this);
                         }
                     }
                 }
@@ -2472,3 +2472,4 @@ class DC_Hybrid extends \DataContainer
     }
 
 }
+
