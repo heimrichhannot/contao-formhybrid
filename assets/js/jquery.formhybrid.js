@@ -94,7 +94,9 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (jqXHR.status == 300) {
-                        location.href = jqXHR.responseJSON.result.data.url;
+                        var url = jqXHR.responseJSON.result.data.url;
+
+                        location.href = url.charAt(0) == '/' ? url : '/' + url;
                         closeModal(jqXHR.responseJSON, $form);
                         return;
                     }

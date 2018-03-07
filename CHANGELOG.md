@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.6] - 2018-03-06
+
+### Fixed
+
+- ajax redirect for IE
+
 ## [3.0.5] - 2018-03-02
 
 ### Fixed
