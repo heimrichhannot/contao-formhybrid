@@ -552,11 +552,6 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
-        if (!$this->getFields())
-        {
-            return false;
-        }
-
         $blnAjax = $this->generateFields($ajaxId);
 
         if ($blnAjax)
@@ -584,6 +579,11 @@ class DC_Hybrid extends \DataContainer
             if (in_array('exporter', \ModuleLoader::getActive()) && $this->exportAfterSubmission)
             {
                 $this->exportAfterSubmission();
+            }
+
+            if (in_array('privacy', \ModuleLoader::getActive()) && $this->formHybridAddPrivacyProtocolEntry)
+            {
+                $this->addPrivacyProtocolEntry();
             }
 
             // process form
@@ -1969,6 +1969,34 @@ class DC_Hybrid extends \DataContainer
                 }
             }
         }
+    }
+
+    protected function addPrivacyProtocolEntry()
+    {
+        $data = $this->getMappedPrivacyProtocolFields();
+        $data['description'] = $this->objModule->formHybridPrivacyProtocolDescription;
+
+        $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
+        $protocolManager->addEntryFromModule(
+            \HeimrichHannot\Privacy\Backend\ProtocolEntry::TYPE_FIRST_OPT_IN,
+            1,
+            $data,
+            $this->objModule,
+            'heimrichhannot/contao-formhybrid'
+        );
+    }
+
+    protected function getMappedPrivacyProtocolFields()
+    {
+        $data = [];
+        $mapping = deserialize($this->objModule->formHybridPrivacyProtocolFieldMapping, true);
+
+        foreach ($mapping as $mappingData)
+        {
+            $data[$mappingData['protocolField']] = $this->objActiveRecord->{$mappingData['entityField']};
+        }
+
+        return $data;
     }
 
     protected function redirectAfterSubmission()

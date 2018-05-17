@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.1.0] - 2018-05-17
+
+### Added
+
+- support for heimrichhannot/contao-privacy
+
 ## [3.0.6] - 2018-03-06
 
 ### Fixed

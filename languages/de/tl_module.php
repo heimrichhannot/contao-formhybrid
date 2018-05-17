@@ -132,6 +132,19 @@ $arrLang['formHybridAddOptOut']            = ['Opt-out Verfahren aktivieren', 'A
 $arrLang['formHybridOptOutSuccessMessage'] = ['Opt-out Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Opt-out Erfolgsmeldung an, welche dem Benutzer nach erfolgreichem Opt-out angezeigt wird.'];
 $arrLang['formHybridOptOutJumpTo'] = ['Opt-out Redirect', 'Diese Seite wird nach erfolgreicher Abmeldung aufgerufen.'];
 
+$arrLang['formHybridAddPrivacyProtocolEntry'][0] = 'Nach dem Abschicken einen Eintrag im Datenschutzprotokoll anlegen';
+$arrLang['formHybridAddPrivacyProtocolEntry'][1] = 'Wählen Sie diese Option, wenn nach validem Abschicken ein Eintrag im Datenschutzprotokoll angelegt werden soll.';
+$arrLang['formHybridPrivacyProtocolArchive'][0] = 'Protokoll-Archiv';
+$arrLang['formHybridPrivacyProtocolArchive'][1] = 'Wählen hier das Archiv, in dem der Eintrag gespeichert werden soll.';
+$arrLang['formHybridPrivacyProtocolEntryType'][0] = 'Typ';
+$arrLang['formHybridPrivacyProtocolEntryType'][1] = 'Wählen hier den Typ des Protokolleintrags aus.';
+$arrLang['formHybridPrivacyProtocolDescription'][0] = 'Beschreibung';
+$arrLang['formHybridPrivacyProtocolDescription'][1] = 'Geben Sie hier bei Bedarf einen Beschreibungstext für den Protokolleintrag ein.';
+$arrLang['formHybridPrivacyProtocolFieldMapping'][0] = 'Feldabbildung';
+$arrLang['formHybridPrivacyProtocolFieldMapping'][1] = 'Wählen Sie hier bei Bedarf Felder des Datensatzes aus, die in den Protokolleintrag überführt werden sollen.';
+$arrLang['formHybridPrivacyProtocolFieldMapping_entityField'][0] = 'Feld im Datensatz';
+$arrLang['formHybridPrivacyProtocolFieldMapping_protocolField'][0] = 'Feld im Protokolleintrag';
+
 
 
 /**

@@ -21,6 +21,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridExportAfterSubmission';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddExportButton';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptIn';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptOut';
+$arrDca['palettes']['__selector__'][] = 'formHybridAddPrivacyProtocolEntry';
 
 array_insert($arrDca['palettes']['__selector__'], 0, ['formHybridViewMode']); // bug??  must be indexed before "type"
 
@@ -32,6 +33,7 @@ $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_DEFAULT]  = 
 $arrDca['subpalettes']['formHybridViewMode_' . FORMHYBRID_VIEW_MODE_READONLY] = 'formHybridReadonlyTemplate';
 $arrDca['subpalettes']['formHybridAddDefaultValues']                          = 'formHybridDefaultValues';
 $arrDca['subpalettes']['formHybridExportAfterSubmission']                     = 'formHybridExportConfigs';
+$arrDca['subpalettes']['formHybridAddPrivacyProtocolEntry']                   = 'formHybridPrivacyProtocolArchive,formHybridPrivacyProtocolEntryType,formHybridPrivacyProtocolDescription,formHybridPrivacyProtocolFieldMapping';
 $arrDca['subpalettes']['formHybridSendSubmissionAsNotification']              = 'formHybridSubmissionNotification';
 $arrDca['subpalettes']['formHybridSendConfirmationAsNotification']            = 'formHybridConfirmationNotification';
 $arrDca['subpalettes']['formHybridAddEditableRequired']                       = 'formHybridEditableRequired';
@@ -89,7 +91,7 @@ $arrFields = [
         'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridEditable'],
         'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
         'exclude'          => true,
-        'eval'             => ['multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight clr', 'mandatory' => true],
+        'eval'             => ['multiple' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 autoheight clr'],
         'sql'              => "blob NULL",
     ],
     'formHybridAddEditableRequired'              => [
@@ -615,6 +617,83 @@ if (in_array('exporter', \ModuleLoader::getActive())) {
             ],
         ],
     ];
+}
+
+if (in_array('privacy', \ModuleLoader::getActive()))
+{
+    \Contao\Controller::loadDataContainer('tl_privacy_protocol_entry');
+    \Contao\System::loadLanguageFile('tl_privacy_protocol_entry');
+
+    $arrFields['formHybridAddPrivacyProtocolEntry'] = array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddPrivacyProtocolEntry'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
+        'sql'       => "char(1) NOT NULL default ''",
+    );
+
+
+    $arrFields['formHybridPrivacyProtocolArchive'] = array(
+        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolArchive'],
+        'exclude'                 => true,
+        'filter'                  => true,
+        'inputType'               => 'select',
+        'foreignKey' => 'tl_privacy_protocol_archive.title',
+        'eval'                    => ['tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true, 'chosen' => true],
+        'sql'                     => "varchar(64) NOT NULL default ''"
+    );
+
+    $arrFields['formHybridPrivacyProtocolEntryType'] = $GLOBALS['TL_DCA']['tl_privacy_protocol_entry']['fields']['type'];
+    $arrFields['formHybridPrivacyProtocolEntryType']['label'] = &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolEntryType'];
+
+    $arrFields['formHybridPrivacyProtocolDescription'] = array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolDescription'],
+        'exclude'   => true,
+        'search'    => true,
+        'inputType' => 'textarea',
+        'eval'      => ['tl_class' => 'long clr'],
+        'sql'       => "text NULL"
+    );
+
+    $arrFields['formHybridPrivacyProtocolFieldMapping'] = array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping'],
+        'inputType' => 'multiColumnEditor',
+        'eval'      => [
+            'tl_class' => 'long clr',
+            'multiColumnEditor' => [
+                'minRowCount' => 0,
+                'fields' => [
+                    'entityField' => [
+                        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping_entityField'],
+                        'inputType'        => 'select',
+                        'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
+                        'exclude'          => true,
+                        'eval'             => array(
+                            'includeBlankOption' => true,
+                            'chosen'             => true,
+                            'tl_class'           => 'w50',
+                            'mandatory'          => true,
+                            'style' => 'width: 400px'
+                        ),
+                    ],
+                    'protocolField' => [
+                        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping_protocolField'],
+                        'inputType'        => 'select',
+                        'options_callback' => array('HeimrichHannot\Privacy\Backend\ProtocolEntry', 'getFieldsAsOptions'),
+                        'exclude'          => true,
+                        'eval'             => array(
+                            'includeBlankOption' => true,
+                            'chosen'             => true,
+                            'tl_class'           => 'w50',
+                            'mandatory'          => true,
+                            'style' => 'width: 400px'
+                        ),
+                    ]
+                ],
+            ],
+        ],
+        'sql'       => "blob NULL",
+    );
 }
 
 $arrDca['fields'] = array_merge($arrDca['fields'], $arrFields);

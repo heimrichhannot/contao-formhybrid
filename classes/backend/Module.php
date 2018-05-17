@@ -123,7 +123,19 @@ class Module extends \Backend
 
     public static function getEditable($objDc)
     {
-        return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer);
+        if ($objDc->activeRecord !== null)
+        {
+            return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($objDc->activeRecord->formHybridDataContainer);
+        }
+        else
+        {
+            if (null === ($module = \Contao\ModuleModel::findByPk($objDc->id)))
+            {
+                return [];
+            }
+
+            return \HeimrichHannot\FormHybrid\FormHelper::getEditableFields($module->formHybridDataContainer);
+        }
     }
 
     public static function getEditableForExport($objDc)
