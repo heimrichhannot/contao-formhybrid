@@ -175,7 +175,7 @@ class DC_Hybrid extends \DataContainer
             $this->overwriteRequired = true;
         }
 
-        $this->strInputMethod = $strInputMethod = strtolower($this->strMethod);
+        $this->strInputMethod = $strInputMethod = strtoupper($this->strMethod);
 
         if (($blnSkipValidation = $this->getInputValue(FORMHYBRID_NAME_SKIP_VALIDATION)) !== null)
         {
@@ -581,10 +581,7 @@ class DC_Hybrid extends \DataContainer
                 $this->exportAfterSubmission();
             }
 
-            if (in_array('privacy', \ModuleLoader::getActive()) && $this->formHybridAddPrivacyProtocolEntry)
-            {
-                $this->addPrivacyProtocolEntry();
-            }
+            $this->addPrivacyProtocolEntry();
 
             // process form
             $this->processForm();
@@ -1344,16 +1341,6 @@ class DC_Hybrid extends \DataContainer
         return $objWidget;
     }
 
-    protected function prepareSpecialValueForPrint($varValue)
-    {
-        $varVal = FormSubmission::prepareSpecialValueForPrint(
-            $varVal,
-            $arrData,
-            $this->strTable,
-            $this->intId
-        );
-    }
-
     protected function updateWidget(&$arrWidget, $arrData, $arrSkipFields = [])
     {
 
@@ -1973,23 +1960,28 @@ class DC_Hybrid extends \DataContainer
 
     protected function addPrivacyProtocolEntry()
     {
-        $data = $this->getMappedPrivacyProtocolFields();
+        if (!in_array('privacy', \ModuleLoader::getActive()) || !$this->formHybridAddPrivacyProtocolEntry)
+        {
+            return;
+        }
+
+        $data = $this->getMappedPrivacyProtocolFields('formHybridPrivacyProtocolFieldMapping');
         $data['description'] = $this->objModule->formHybridPrivacyProtocolDescription;
 
         $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
         $protocolManager->addEntryFromModule(
-            \HeimrichHannot\Privacy\Backend\ProtocolEntry::TYPE_FIRST_OPT_IN,
-            1,
+            $this->objModule->formHybridPrivacyProtocolEntryType,
+            $this->objModule->formHybridPrivacyProtocolArchive,
             $data,
             $this->objModule,
             'heimrichhannot/contao-formhybrid'
         );
     }
 
-    protected function getMappedPrivacyProtocolFields()
+    protected function getMappedPrivacyProtocolFields($mappingFieldName)
     {
-        $data = [];
-        $mapping = deserialize($this->objModule->formHybridPrivacyProtocolFieldMapping, true);
+        $data = $this->objActiveRecord->row();
+        $mapping = deserialize($this->objModule->{$mappingFieldName}, true);
 
         foreach ($mapping as $mappingData)
         {

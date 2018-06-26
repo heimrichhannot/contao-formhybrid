@@ -2,13 +2,16 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Model;
 use Firebase\JWT\JWT;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Exporter\ExporterModel;
 use HeimrichHannot\FieldPalette\FieldPaletteModel;
 use HeimrichHannot\Haste\Util\FormSubmission;
+use HeimrichHannot\Haste\Util\Salutations;
 use HeimrichHannot\Haste\Util\Url;
+use HeimrichHannot\NotificationCenterPlus\MessageModel;
 use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use MatthiasMullie\Minify\Exception;
@@ -45,6 +48,7 @@ abstract class Form extends DC_Hybrid
         {
             return;
         }
+
         if (!\Database::getInstance()->fieldExists(FormHybrid::OPT_IN_DATABASE_FIELD, $this->table))
         {
             throw new \Exception(
@@ -56,6 +60,7 @@ abstract class Form extends DC_Hybrid
         if (Request::hasGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE))
         {
             $this->activateSubmission();
+
             // remove parameter from query string and reload current page
             \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
         }
@@ -92,7 +97,6 @@ abstract class Form extends DC_Hybrid
 
         try
         {
-
             $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
         } catch (\Exception $e)
         {
@@ -139,7 +143,8 @@ abstract class Form extends DC_Hybrid
         /**
          * @var \Model $objModel
          */
-        $objModel = $strModelClass::findById($this->intId);
+        $objModel = $strModelClass::findByPk($this->intId);
+
         if (empty($objModel))
         {
             $objModel = new $strModelClass();
@@ -152,6 +157,7 @@ abstract class Form extends DC_Hybrid
         // Always add opt-out token, if Database field added to dca:
         $modelData = $objModel->row();
         $strOptOutRow = FormHybrid::OPT_OUT_DATABASE_FIELD;
+
         if (isset($modelData[$strOptOutRow]))
         {
             $strToken = static::generateUniqueToken();
@@ -163,6 +169,7 @@ abstract class Form extends DC_Hybrid
             $strConfirmationProperty = $this->optInConfirmedProperty;
             $objModel->$strConfirmationProperty = true;
         }
+
         $objModel->save();
         $this->objActiveRecord = $objModel;
 
@@ -174,6 +181,9 @@ abstract class Form extends DC_Hybrid
         {
             $this->createSuccessMessage($arrSubmissionData, true);
         }
+
+        $this->addOptInPrivacyProtocolEntry();
+
         $this->afterActivationCallback($this, $objModel);
 
         if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
@@ -181,6 +191,7 @@ abstract class Form extends DC_Hybrid
             $strUrl = \Controller::generateFrontendUrl($objTarget->row(), null, null, true);
             \Controller::redirect($strUrl);
         }
+
         return true;
     }
 
@@ -398,24 +409,38 @@ abstract class Form extends DC_Hybrid
     {
     }
 
-    protected function afterActivationCallback(\DataContainer $dc)
+    protected function afterActivationCallback(\DataContainer $dc, $objModel)
     {
     }
+
     protected function afterUnsubscribeCallback(\DataContainer $dc)
     {
     }
 
     protected function createOptInNotification($arrSubmissionData)
     {
-        if (($objMessage = \HeimrichHannot\NotificationCenterPlus\MessageModel::findPublishedById($this->optInNotification)) !== null)
+        if (($objMessage = MessageModel::findPublishedById($this->optInNotification)) !== null)
         {
             $arrToken = FormSubmission::tokenizeData($arrSubmissionData);
 
             $strToken = static::generateUniqueToken();
 
-            $this->objActiveRecord->refresh();
-            $this->objActiveRecord->{FormHybrid::OPT_IN_DATABASE_FIELD} = $strToken;
-            $this->objActiveRecord->save();
+            if ($this->hasNoEntity())
+            {
+                $instance = $this->findOptInModelInstance();
+            }
+            else
+            {
+                $this->objActiveRecord->refresh();
+
+                $instance = $this->objActiveRecord;
+            }
+
+            if ($instance instanceof Model)
+            {
+                $instance->{FormHybrid::OPT_IN_DATABASE_FIELD} = $strToken;
+                $instance->save();
+            }
 
             $strJWT = JWT::encode(
                 [
@@ -432,11 +457,45 @@ abstract class Form extends DC_Hybrid
                 AjaxAction::removeAjaxParametersFromUrl(\Environment::get('uri'))
             );
 
+            $arrToken['salutation_submission'] = Salutations::createSalutation($GLOBALS['TL_LANGUAGE'], $this->objActiveRecord);
+
             if ($this->sendOptInNotification($objMessage, $arrSubmissionData, $arrToken))
             {
                 $objMessage->send($arrToken, $GLOBALS['TL_LANGUAGE']);
             }
         }
+    }
+
+    protected function findOptInModelInstance() {
+        $table = $this->strTable;
+        $modelClass = Model::getClassFromTable($table);
+
+        if (!class_exists($modelClass))
+        {
+            return false;
+        }
+
+        return  $modelClass::findOneBy([$table . '.' . $this->objModule->formHybridOptInModelRetrievalProperty . '=?'], [$this->objActiveRecord->{$this->objModule->formHybridOptInModelRetrievalProperty}]);
+    }
+
+    protected function addOptInPrivacyProtocolEntry()
+    {
+        if (!in_array('privacy', \ModuleLoader::getActive()) || !$this->formHybridOptInAddPrivacyProtocolEntry)
+        {
+            return;
+        }
+
+        $data = $this->getMappedPrivacyProtocolFields('formHybridOptInPrivacyProtocolFieldMapping');
+        $data['description'] = $this->objModule->formHybridOptInPrivacyProtocolDescription;
+
+        $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
+        $protocolManager->addEntryFromModule(
+            $this->objModule->formHybridOptInPrivacyProtocolEntryType,
+            $this->objModule->formHybridOptInPrivacyProtocolArchive,
+            $data,
+            $this->objModule,
+            'heimrichhannot/contao-formhybrid'
+        );
     }
 
     protected function createSuccessNotifications($arrSubmissionData)

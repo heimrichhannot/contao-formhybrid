@@ -22,6 +22,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridAddExportButton';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptIn';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptOut';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddPrivacyProtocolEntry';
+$arrDca['palettes']['__selector__'][] = 'formHybridOptInAddPrivacyProtocolEntry';
 
 array_insert($arrDca['palettes']['__selector__'], 0, ['formHybridViewMode']); // bug??  must be indexed before "type"
 
@@ -47,7 +48,8 @@ $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
-$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInJumpTo';
+$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInModelRetrievalProperty,formHybridOptInJumpTo,formHybridOptInAddPrivacyProtocolEntry';
+$arrDca['subpalettes']['formHybridOptInAddPrivacyProtocolEntry']              = 'formHybridOptInPrivacyProtocolArchive,formHybridOptInPrivacyProtocolEntryType,formHybridOptInPrivacyProtocolDescription,formHybridOptInPrivacyProtocolFieldMapping';
 $arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage,formHybridOptOutJumpTo';
 
 /**
@@ -484,7 +486,7 @@ $arrFields = [
         'search'           => true,
         'inputType'        => 'select',
         'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getOptInMessages'],
-        'eval'             => ['chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true],
+        'eval'             => ['chosen' => true, 'maxlength' => 255, 'tl_class' => 'w50 clr', 'includeBlankOption' => true, 'mandatory' => true],
         'sql'              => "int(10) unsigned NOT NULL default '0'",
     ],
     'formHybridOptInExplanation'                 => [
@@ -512,9 +514,22 @@ $arrFields = [
         'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
         'sql'              => "varchar(64) NOT NULL default ''",
         'eval'             => [
+            'chosen'             => true,
             'tl_class'           => 'w50',
             'includeBlankOption' => true
         ]
+    ],
+    'formHybridOptInModelRetrievalProperty'      => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInModelRetrievalProperty'],
+        'inputType'        => 'select',
+        'exclude'          => true,
+        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
+        'eval'             => [
+            'chosen'             => true,
+            'tl_class'           => 'w50',
+            'includeBlankOption' => true
+        ],
+        'sql'              => "varchar(32) NOT NULL default ''"
     ],
     'formHybridOptInJumpTo'                      => [
         'label'      => &$GLOBALS['TL_LANG']['tl_module']['formHybridOptInJumpTo'],
@@ -563,7 +578,7 @@ $arrFields['formHybridFieldDependentRedirectJumpTo']['label']             =
 	&$GLOBALS['TL_LANG']['tl_module']['formHybridFieldDependentRedirectJumpTo'];
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['mandatory'] = true;
 $arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['tl_class']  = 'w50';
-$arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['load'] = 'lazy';
+$arrFields['formHybridFieldDependentRedirectJumpTo']['eval']['load']      = 'lazy';
 
 
 if (in_array('exporter', \ModuleLoader::getActive())) {
@@ -619,81 +634,68 @@ if (in_array('exporter', \ModuleLoader::getActive())) {
     ];
 }
 
-if (in_array('privacy', \ModuleLoader::getActive()))
-{
-    \Contao\Controller::loadDataContainer('tl_privacy_protocol_entry');
-    \Contao\System::loadLanguageFile('tl_privacy_protocol_entry');
+if (in_array('privacy', \ModuleLoader::getActive())) {
+    $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
 
-    $arrFields['formHybridAddPrivacyProtocolEntry'] = array(
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridAddPrivacyProtocolEntry'],
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50 clr'),
-        'sql'       => "char(1) NOT NULL default ''",
-    );
+    $arrFields['formHybridAddPrivacyProtocolEntry']    = $protocolManager->getSelectorFieldDca();
+    $arrFields['formHybridPrivacyProtocolArchive']     = $protocolManager->getArchiveFieldDca();
+    $arrFields['formHybridPrivacyProtocolEntryType']   = $protocolManager->getTypeFieldDca();
+    $arrFields['formHybridPrivacyProtocolDescription'] = $protocolManager->getDescriptionFieldDca();
 
-
-    $arrFields['formHybridPrivacyProtocolArchive'] = array(
-        'label'                   => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolArchive'],
-        'exclude'                 => true,
-        'filter'                  => true,
-        'inputType'               => 'select',
-        'foreignKey' => 'tl_privacy_protocol_archive.title',
-        'eval'                    => ['tl_class' => 'w50 clr', 'mandatory' => true, 'includeBlankOption' => true, 'chosen' => true],
-        'sql'                     => "varchar(64) NOT NULL default ''"
-    );
-
-    $arrFields['formHybridPrivacyProtocolEntryType'] = $GLOBALS['TL_DCA']['tl_privacy_protocol_entry']['fields']['type'];
-    $arrFields['formHybridPrivacyProtocolEntryType']['label'] = &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolEntryType'];
-
-    $arrFields['formHybridPrivacyProtocolDescription'] = array(
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolDescription'],
-        'exclude'   => true,
-        'search'    => true,
-        'inputType' => 'textarea',
-        'eval'      => ['tl_class' => 'long clr'],
-        'sql'       => "text NULL"
-    );
-
-    $arrFields['formHybridPrivacyProtocolFieldMapping'] = array(
+    $arrFields['formHybridPrivacyProtocolFieldMapping'] = [
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping'],
         'inputType' => 'multiColumnEditor',
         'eval'      => [
-            'tl_class' => 'long clr',
+            'tl_class'          => 'long clr',
             'multiColumnEditor' => [
                 'minRowCount' => 0,
-                'fields' => [
-                    'entityField' => [
+                'fields'      => [
+                    'entityField'   => [
                         'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping_entityField'],
                         'inputType'        => 'select',
-                        'options_callback' => array('tl_form_hybrid_module', 'getEditable'),
+                        'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
                         'exclude'          => true,
-                        'eval'             => array(
+                        'eval'             => [
                             'includeBlankOption' => true,
                             'chosen'             => true,
                             'tl_class'           => 'w50',
                             'mandatory'          => true,
-                            'style' => 'width: 400px'
-                        ),
+                            'style'              => 'width: 400px'
+                        ],
                     ],
                     'protocolField' => [
                         'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridPrivacyProtocolFieldMapping_protocolField'],
                         'inputType'        => 'select',
-                        'options_callback' => array('HeimrichHannot\Privacy\Backend\ProtocolEntry', 'getFieldsAsOptions'),
+                        'options_callback' => ['HeimrichHannot\Privacy\Backend\ProtocolEntry', 'getFieldsAsOptions'],
                         'exclude'          => true,
-                        'eval'             => array(
+                        'eval'             => [
                             'includeBlankOption' => true,
                             'chosen'             => true,
                             'tl_class'           => 'w50',
                             'mandatory'          => true,
-                            'style' => 'width: 400px'
-                        ),
+                            'style'              => 'width: 400px'
+                        ],
                     ]
                 ],
             ],
         ],
         'sql'       => "blob NULL",
-    );
+    ];
+
+    $arrFields['formHybridOptInAddPrivacyProtocolEntry']             = $protocolManager->getSelectorFieldDca();
+    $arrFields['formHybridOptInAddPrivacyProtocolEntry']['label'][0] .= ' (Opt-in)';
+
+    $arrFields['formHybridOptInPrivacyProtocolArchive']             = $protocolManager->getArchiveFieldDca();
+    $arrFields['formHybridOptInPrivacyProtocolArchive']['label'][0] .= ' (Opt-in)';
+
+    $arrFields['formHybridOptInPrivacyProtocolEntryType']             = $protocolManager->getTypeFieldDca();
+    $arrFields['formHybridOptInPrivacyProtocolEntryType']['label'][0] .= ' (Opt-in)';
+
+    $arrFields['formHybridOptInPrivacyProtocolDescription']             = $protocolManager->getDescriptionFieldDca();
+    $arrFields['formHybridOptInPrivacyProtocolDescription']['label'][0] .= ' (Opt-in)';
+
+    $arrFields['formHybridOptInPrivacyProtocolFieldMapping']             = $arrFields['formHybridPrivacyProtocolFieldMapping'];
+    $arrFields['formHybridOptInPrivacyProtocolFieldMapping']['label'][0] .= ' (Opt-in)';
 }
 
 $arrDca['fields'] = array_merge($arrDca['fields'], $arrFields);

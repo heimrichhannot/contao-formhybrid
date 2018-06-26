@@ -125,6 +125,8 @@ $arrLang['formHybridOptInSuccessMessage'] =
     ['Opt-in Erfolgsmeldung überschreiben', 'Geben Sie hier eine alternative Opt-in Erfolgsmeldung nach erfolgreichen Absenden des Formulars an.'];
 $arrLang['formHybridOptInConfirmedProperty'] =
     ['Opt-in Erfolg Property', 'Ein Property (Boolean), welches bei erfolgreichem Opt-In auf true gesetzt werden soll.'];
+$arrLang['formHybridOptInModelRetrievalProperty'] =
+    ['Feld zum Auffinden der Opt-In-Entität', 'Dieses Feld wird genutzt, um die Entität zu finden, der das Opt-In-Token zugewiesen wird, wenn es sich um ein Formular ohne Bindung zu einer Entität handelt ("hasNoEntity").'];
 $arrLang['formHybridOptInJumpTo'] =
     ['Opt-in Redirect', 'Diese Seite wird nach erfolgreicher Bestätigung der Anmeldung aufgerufen.'];
 

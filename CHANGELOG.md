@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.2.0] - 2018-06-26
+
+### Added
+
+- support for opt-in emails heimrichhannot/contao-privacy
+- support for salutations in opt-in emails
+
 ## [3.1.0] - 2018-05-17
 
 ### Added
