@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.2.1] - 2018-06-27
+
+### Fixed
+
+- refactoring for privacy module
+
 ## [3.2.0] - 2018-06-26
 
 ### Added

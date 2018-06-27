@@ -487,6 +487,7 @@ abstract class Form extends DC_Hybrid
 
         $data = $this->getMappedPrivacyProtocolFields('formHybridOptInPrivacyProtocolFieldMapping');
         $data['description'] = $this->objModule->formHybridOptInPrivacyProtocolDescription;
+        $data['table'] = $this->objModule->formHybridDataContainer;
 
         $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
         $protocolManager->addEntryFromModule(

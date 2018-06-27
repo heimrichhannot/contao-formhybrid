@@ -1967,6 +1967,7 @@ class DC_Hybrid extends \DataContainer
 
         $data = $this->getMappedPrivacyProtocolFields('formHybridPrivacyProtocolFieldMapping');
         $data['description'] = $this->objModule->formHybridPrivacyProtocolDescription;
+        $data['table'] = $this->objModule->formHybridDataContainer;
 
         $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
         $protocolManager->addEntryFromModule(
