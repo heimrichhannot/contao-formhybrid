@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.2.2] - 2018-07-03
+
+### Fixed
+- backend error when there is no message created for opt in message type
+
 ## [3.2.1] - 2018-06-27
 
 ### Fixed

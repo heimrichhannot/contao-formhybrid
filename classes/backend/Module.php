@@ -277,6 +277,11 @@ class Module extends \Backend
 
         $objMessages = \NotificationCenter\Model\Message::findBy(['pid IN (' . implode(',', array_map('intval', $objNotifications->fetchEach('id'))) . ')'], []);
 
+        if (!$objMessages)
+        {
+            return $arrOptions;
+        }
+
         while ($objMessages->next())
         {
             if (($objNotification = $objMessages->getRelated('pid')) === null)
