@@ -1965,11 +1965,13 @@ class DC_Hybrid extends \DataContainer
             return;
         }
 
-        $data = $this->getMappedPrivacyProtocolFields('formHybridPrivacyProtocolFieldMapping');
+        $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
+        $protocolUtil = new \HeimrichHannot\Privacy\Util\ProtocolUtil();
+
+        $data = $protocolUtil->getMappedPrivacyProtocolFieldValues($this->objActiveRecord->row(), deserialize($this->objModule->formHybridPrivacyProtocolFieldMapping, true));
         $data['description'] = $this->objModule->formHybridPrivacyProtocolDescription;
         $data['table'] = $this->objModule->formHybridDataContainer;
 
-        $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
         $protocolManager->addEntryFromModule(
             $this->objModule->formHybridPrivacyProtocolEntryType,
             $this->objModule->formHybridPrivacyProtocolArchive,
@@ -1977,19 +1979,6 @@ class DC_Hybrid extends \DataContainer
             $this->objModule,
             'heimrichhannot/contao-formhybrid'
         );
-    }
-
-    protected function getMappedPrivacyProtocolFields($mappingFieldName)
-    {
-        $data = $this->objActiveRecord->row();
-        $mapping = deserialize($this->objModule->{$mappingFieldName}, true);
-
-        foreach ($mapping as $mappingData)
-        {
-            $data[$mappingData['protocolField']] = $this->objActiveRecord->{$mappingData['entityField']};
-        }
-
-        return $data;
     }
 
     protected function redirectAfterSubmission()

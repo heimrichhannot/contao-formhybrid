@@ -182,9 +182,9 @@ abstract class Form extends DC_Hybrid
             $this->createSuccessMessage($arrSubmissionData, true);
         }
 
-        $this->addOptInPrivacyProtocolEntry();
+        $this->addOptInPrivacyProtocolEntry($objData->submission);
 
-        $this->afterActivationCallback($this, $objModel);
+        $this->afterActivationCallback($this, $objModel, $objData->submission);
 
         if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
         {
@@ -409,7 +409,7 @@ abstract class Form extends DC_Hybrid
     {
     }
 
-    protected function afterActivationCallback(\DataContainer $dc, $objModel)
+    protected function afterActivationCallback(\DataContainer $dc, $objModel, $submissionData = null)
     {
     }
 
@@ -442,12 +442,19 @@ abstract class Form extends DC_Hybrid
                 $instance->save();
             }
 
+            $data = [
+                'table' => $this->table,
+                'token' => $strToken,
+                'date'  => time(),
+            ];
+
+            if ($instance instanceof Model)
+            {
+                $data['submission'] = $this->getSubmission()->row();
+            }
+
             $strJWT = JWT::encode(
-                [
-                    'table' => $this->table,
-                    'token' => $strToken,
-                    'date'  => time(),
-                ],
+                $data,
                 \Config::get('encryptionKey')
             );
 
@@ -478,14 +485,16 @@ abstract class Form extends DC_Hybrid
         return  $modelClass::findOneBy([$table . '.' . $this->objModule->formHybridOptInModelRetrievalProperty . '=?'], [$this->objActiveRecord->{$this->objModule->formHybridOptInModelRetrievalProperty}]);
     }
 
-    protected function addOptInPrivacyProtocolEntry()
+    protected function addOptInPrivacyProtocolEntry($submissionData = null)
     {
         if (!in_array('privacy', \ModuleLoader::getActive()) || !$this->formHybridOptInAddPrivacyProtocolEntry)
         {
             return;
         }
 
-        $data = $this->getMappedPrivacyProtocolFields('formHybridOptInPrivacyProtocolFieldMapping');
+        $protocolUtil = new \HeimrichHannot\Privacy\Util\ProtocolUtil();
+
+        $data = $protocolUtil->getMappedPrivacyProtocolFieldValues($submissionData, deserialize($this->objModule->formHybridOptInPrivacyProtocolFieldMapping, true));
         $data['description'] = $this->objModule->formHybridOptInPrivacyProtocolDescription;
         $data['table'] = $this->objModule->formHybridDataContainer;
 
