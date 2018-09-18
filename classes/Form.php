@@ -671,7 +671,7 @@ abstract class Form extends DC_Hybrid
         StatusMessage::addSuccess($this->successMessage, $this->objModule->id, 'alert alert-success');
     }
 
-    protected function sendOptInNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, $arrToken)
+    protected function sendOptInNotification(\NotificationCenter\Model\Message $objMessage, $arrSubmissionData, &$arrToken)
     {
         return true;
     }
