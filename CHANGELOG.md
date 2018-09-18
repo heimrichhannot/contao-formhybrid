@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.3.0] - 2018-09-18
+
+### Changed
+- `Form::sendOptInNotification` $arrToken parameter is now reference
+
 ## [3.2.3] - 2018-09-17
 
 ### Fixed
