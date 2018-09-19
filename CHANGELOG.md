@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [3.3.1] - 2018-09-19
+## [3.4.0] - 2018-09-19
 
 ### Removed
 - heimrichhannot/contao-multifileupload
