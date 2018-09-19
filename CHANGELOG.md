@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.4.1] - 2018-09-19
+
+### Added
+- support for heimrichhannot/contao-privacy-api-bundle
+
 ## [3.4.0] - 2018-09-19
 
 ### Removed

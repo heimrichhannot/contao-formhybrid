@@ -49,7 +49,7 @@ $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
 $arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInModelRetrievalProperty,formHybridOptInJumpTo,formHybridOptInAddPrivacyProtocolEntry';
-$arrDca['subpalettes']['formHybridOptInAddPrivacyProtocolEntry']              = 'formHybridOptInPrivacyProtocolArchive,formHybridOptInPrivacyProtocolEntryType,formHybridOptInPrivacyProtocolDescription,formHybridOptInPrivacyProtocolFieldMapping';
+$arrDca['subpalettes']['formHybridOptInAddPrivacyProtocolEntry']              = 'formHybridApiApp,formHybridOptInPrivacyProtocolArchive,formHybridOptInPrivacyProtocolEntryType,formHybridOptInPrivacyProtocolDescription,formHybridOptInPrivacyProtocolFieldMapping';
 $arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage,formHybridOptOutJumpTo';
 
 /**
