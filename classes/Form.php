@@ -450,7 +450,7 @@ abstract class Form extends DC_Hybrid
 
             if ($instance instanceof Model)
             {
-                $data['submission'] = $this->getSubmission()->row();
+                $data['submission'] = $this->objActiveRecord->row();
             }
 
             $strJWT = JWT::encode(

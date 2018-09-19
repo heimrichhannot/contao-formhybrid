@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.4.2] - 2018-09-19
+
+### Fixed
+- bug in privacy activation
+
 ## [3.4.1] - 2018-09-19
 
 ### Added
