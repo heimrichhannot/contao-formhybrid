@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.4.3] - 2018-10-16
+
+### Added
+- privacy prefill data to opt-in token
+
 ## [3.4.2] - 2018-09-19
 
 ### Fixed

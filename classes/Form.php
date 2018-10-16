@@ -184,7 +184,7 @@ abstract class Form extends DC_Hybrid
 
         $this->addOptInPrivacyProtocolEntry($objData->submission);
 
-        $this->afterActivationCallback($this, $objModel, $objData->submission);
+        $this->afterActivationCallback($this, $objModel, $objData);
 
         if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
         {
@@ -409,7 +409,7 @@ abstract class Form extends DC_Hybrid
     {
     }
 
-    protected function afterActivationCallback(\DataContainer $dc, $objModel, $submissionData = null)
+    protected function afterActivationCallback(\DataContainer $dc, $objModel, $jwtData = null)
     {
     }
 
@@ -451,6 +451,15 @@ abstract class Form extends DC_Hybrid
             if ($instance instanceof Model)
             {
                 $data['submission'] = $this->objActiveRecord->row();
+            }
+
+            if (in_array('privacy', \ModuleLoader::getActive()) && $privacyToken = Request::getGet(\HeimrichHannot\Privacy\Privacy::OPT_IN_OUT_TOKEN_PARAM))
+            {
+                try {
+                    $decoded         = \Firebase\JWT\JWT::decode($privacyToken, \Contao\Config::get('encryptionKey'), ['HS256']);
+                    $decoded         = (array)$decoded;
+                    $data['privacy_prefill_data'] = (array)$decoded['data'];
+                } catch (\Exception $e) {}
             }
 
             $strJWT = JWT::encode(
