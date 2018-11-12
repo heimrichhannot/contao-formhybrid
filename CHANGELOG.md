@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.4.4] - 2018-11-12
+
+### Added
+- update timestamp on opt-in
+
 ## [3.4.3] - 2018-10-16
 
 ### Added

@@ -162,12 +162,14 @@ abstract class Form extends DC_Hybrid
         {
             $strToken = static::generateUniqueToken();
             $objModel->$strOptOutRow = $strToken;
+            $objModel->tstamp = time();
         }
 
         if ($this->optInConfirmedProperty)
         {
             $strConfirmationProperty = $this->optInConfirmedProperty;
             $objModel->$strConfirmationProperty = true;
+			$objModel->tstamp = time();
         }
 
         $objModel->save();
