@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.5.0] - 2018-11-16
+
+### Added
+- option to filter fields that will be encoded within opt-in token, this fixes issues with too long links for outlook, when submission is very long
+
 ## [3.4.4] - 2018-11-12
 
 ### Added

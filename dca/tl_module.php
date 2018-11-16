@@ -23,6 +23,7 @@ $arrDca['palettes']['__selector__'][] = 'formHybridAddOptIn';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddOptOut';
 $arrDca['palettes']['__selector__'][] = 'formHybridAddPrivacyProtocolEntry';
 $arrDca['palettes']['__selector__'][] = 'formHybridOptInAddPrivacyProtocolEntry';
+$arrDca['palettes']['__selector__'][] = 'formHybridfilterTokenFields';
 
 array_insert($arrDca['palettes']['__selector__'], 0, ['formHybridViewMode']); // bug??  must be indexed before "type"
 
@@ -48,9 +49,10 @@ $arrDca['subpalettes']['formHybridUseCustomFormId']                           = 
 $arrDca['subpalettes']['formHybridAllowIdAsGetParameter']                     = 'formHybridIdGetParameter,formHybridAppendIdToUrlOnCreation';
 $arrDca['subpalettes']['formHybridAddHashToAction']                           = 'formHybridCustomHash';
 $arrDca['subpalettes']['formHybridAddExportButton']                           = 'formHybridExportConfigs';
-$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInModelRetrievalProperty,formHybridOptInJumpTo,formHybridOptInAddPrivacyProtocolEntry';
+$arrDca['subpalettes']['formHybridAddOptIn']                                  = 'formHybridOptInExplanation,formHybridOptInSuccessMessage,formHybridOptInNotification,formHybridOptInConfirmedProperty,formHybridOptInModelRetrievalProperty,formHybridOptInJumpTo,formHybridOptInAddPrivacyProtocolEntry,formHybridfilterTokenFields';
 $arrDca['subpalettes']['formHybridOptInAddPrivacyProtocolEntry']              = 'formHybridApiApp,formHybridOptInPrivacyProtocolArchive,formHybridOptInPrivacyProtocolEntryType,formHybridOptInPrivacyProtocolDescription,formHybridOptInPrivacyProtocolFieldMapping';
 $arrDca['subpalettes']['formHybridAddOptOut']                                 = 'formHybridOptOutSuccessMessage,formHybridOptOutJumpTo';
+$arrDca['subpalettes']['formHybridfilterTokenFields']                         = 'formHybridTokenFields';
 
 /**
  * Fields
@@ -565,6 +567,24 @@ $arrFields = [
         'sql'        => "int(10) unsigned NOT NULL default '0'",
         'relation'   => ['type' => 'hasOne', 'load' => 'lazy'],
     ],
+	'formHybridfilterTokenFields'                         => [
+		'label'     => &$GLOBALS['TL_LANG']['tl_module']['formHybridfilterTokenFields'],
+		'exclude'   => true,
+		'inputType' => 'checkbox',
+		'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+		'sql'       => "char(1) NOT NULL default ''",
+	],
+	'formHybridTokenFields'                  => [
+		'inputType'        => 'checkbox',
+		'label'            => &$GLOBALS['TL_LANG']['tl_module']['formHybridTokenFields'],
+		'options_callback' => ['HeimrichHannot\FormHybrid\Backend\Module', 'getEditable'],
+		'exclude'          => true,
+		'eval'             => [
+			'multiple'           => true,
+		],
+		'sql'              => "blob NULL",
+	],
+
 ];
 
 // conditions for the field depending redirect

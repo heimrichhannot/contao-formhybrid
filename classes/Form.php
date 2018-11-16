@@ -452,7 +452,22 @@ abstract class Form extends DC_Hybrid
 
             if ($instance instanceof Model)
             {
-                $data['submission'] = $this->objActiveRecord->row();
+				$submission = $this->objActiveRecord->row();
+            	if ($this->formHybridfilterTokenFields)
+				{
+					$tokenFields = deserialize($this->formHybridTokenFields, true);
+					foreach ($submission as $fieldName => $fieldValue)
+					{
+						if (in_array($fieldName, $tokenFields))
+						{
+							$data['submission'][$fieldName] = $fieldValue;
+
+						}
+					}
+				}
+				else {
+					$data['submission'] = $submission;
+				}
             }
 
             if (in_array('privacy', \ModuleLoader::getActive()) && $privacyToken = Request::getGet(\HeimrichHannot\Privacy\Privacy::OPT_IN_OUT_TOKEN_PARAM))

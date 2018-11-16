@@ -142,6 +142,10 @@ $arrLang['formHybridPrivacyProtocolEntryType'][0] = 'Typ';
 $arrLang['formHybridPrivacyProtocolEntryType'][1] = 'Wählen hier den Typ des Protokolleintrags aus.';
 $arrLang['formHybridPrivacyProtocolDescription'][0] = 'Beschreibung';
 $arrLang['formHybridPrivacyProtocolDescription'][1] = 'Geben Sie hier bei Bedarf einen Beschreibungstext für den Protokolleintrag ein.';
+$arrLang['formHybridfilterTokenFields'][0] = 'Token-Felder filtern';
+$arrLang['formHybridfilterTokenFields'][1] = 'Bestimmen Sie die Felder aus, welche im Opt-In-Token codiert werden sollen. Dies ist vor allem dann nützlich, wenn Ihr Opt-In-Token zu lang wird und es deshalb Probleme mit den Links in verschiedenen E-Mail-Programmen gibt.';
+$arrLang['formHybridTokenFields'][0] = 'Token-Felder wählen';
+$arrLang['formHybridTokenFields'][1] = 'Wählen Sie die Felder aus, welche im Opt-In-Token codiert werden sollen. Je mehr Felder, desto länger der Token.';
 
 /**
  * Explanations

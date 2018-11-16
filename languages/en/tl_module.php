@@ -74,6 +74,10 @@ $arrLang['formHybridOptInJumpTo'] =
 $arrLang['formHybridAddOptOut']            = ['Active Opt-out process', 'This will generate links, to delete the created entity.'];
 $arrLang['formHybridOptOutSuccessMessage'] = ['Overwrite opt-out success message', 'You can provide an alternative success message, which will be presented to the user, when opt-out was successfully.'];
 $arrLang['formHybridOptOutJumpTo'] = ['Opt-out redirect', 'This page will be called after a successfull unsubscription.'];
+$arrLang['formHybridfilterTokenFields'][0] = 'Filter token-fields';
+$arrLang['formHybridPrivacyProtocolDescription'][1] = 'Choose the fields, that should be encoded withing the opt-in-token. Use this option for example if your opt-in links are to long and produce errors within some mail programs.';
+$arrLang['formHybridTokenFields'][0] = 'Select token fields';
+$arrLang['formHybridTokenFields'][1] = 'Select the fields, that should encoded within the opt-in token. The more fields, the longer is the token.';
 
 /**
  * References
