@@ -48,6 +48,13 @@ if (TL_MODE == 'FE')
     $GLOBALS['TL_JAVASCRIPT']['jquery.formhybrid'] = 'system/modules/formhybrid/assets/js/jquery.formhybrid' . (!$GLOBALS['TL_CONFIG']['debugMode'] ? '.min' : '') . '.js|static';
 }
 
+$GLOBALS['TL_COMPONENTS']['formhybrid'] = [
+    'js'  => [
+        'system/modules/formhybrid/assets/js/jquery.formhybrid.js|static',
+        'system/modules/formhybrid/assets/js/jquery.formhybrid.min.js|static',
+    ],
+];
+
 /**
  * Hooks
  */

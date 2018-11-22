@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.5.1] - 2018-11-22
+
+### Added
+- `TL_COMPONENT` entry in config.php to disable formhybrid css & js on demand in page layout
+
 ## [3.5.0] - 2018-11-16
 
 ### Added
