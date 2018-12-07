@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.5.2] - 2018-12-07
+
+### Fixed
+- Hash generation for dynamic IDs
+
 ## [3.5.1] - 2018-11-22
 
 ### Added

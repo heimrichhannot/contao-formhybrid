@@ -120,45 +120,7 @@ class FormConfiguration
         switch ($strKey)
         {
             case 'strAction':
-                if ($varValue && ($objActionPage = \PageModel::findWithDetails($varValue)) !== null)
-                {
-                    $varValue = \Controller::generateFrontendUrl($objActionPage->row(), null, null, true);
-                }
-                else
-                {
-                    $varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
-
-                    // remove all formhybrid query parameters within ajax request
-                    if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
-                    {
-                        $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
-                    }
-
-                    // remove all modal query parameters within ajax request
-                    if (in_array('modal', \ModuleLoader::getActive()) && Ajax::isRelated(\HeimrichHannot\Modal\Modal::MODAL_NAME) !== false)
-                    {
-                        $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
-                        $varValue = Url::removeParameterFromUri($varValue, 'location');
-                    }
-                }
-
-                // async form
-                if ($this->async)
-                {
-                    $varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
-                }
-
-                // add hash
-                if ($this->addHashToAction)
-                {
-                    $varValue .= '#' . ($this->customHash ?: $this->strFormId);
-                }
-
-                // remove auto_item (-> Request class not working here since Contao adds auto_item manually to \Input ...)
-                if (\Config::get('useAutoItem') && \Input::get('auto_item') && $this->removeAutoItemFromAction)
-                {
-                    $varValue = str_replace('/' . \Input::get('auto_item'), '', $varValue);
-                }
+                $this->setFormAction($varValue);
 
                 break;
             case 'arrDefaultValues':
@@ -167,6 +129,51 @@ class FormConfiguration
         }
 
         return $varValue;
+    }
+
+    public function setFormAction($varValue)
+    {
+        if ($varValue && ($objActionPage = \PageModel::findWithDetails($varValue)) !== null)
+        {
+            $varValue = \Controller::generateFrontendUrl($objActionPage->row(), null, null, true);
+        }
+        else
+        {
+            $varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
+
+            // remove all formhybrid query parameters within ajax request
+            if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+            {
+                $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
+            }
+
+            // remove all modal query parameters within ajax request
+            if (in_array('modal', \ModuleLoader::getActive()) && Ajax::isRelated(\HeimrichHannot\Modal\Modal::MODAL_NAME) !== false)
+            {
+                $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
+                $varValue = Url::removeParameterFromUri($varValue, 'location');
+            }
+        }
+
+        // async form
+        if ($this->async)
+        {
+            $varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
+        }
+
+        // add hash
+        if ($this->addHashToAction)
+        {
+            $varValue .= '#' . ($this->customHash ?: $this->strFormId);
+        }
+
+        // remove auto_item (-> Request class not working here since Contao adds auto_item manually to \Input ...)
+        if (\Config::get('useAutoItem') && \Input::get('auto_item') && $this->removeAutoItemFromAction)
+        {
+            $varValue = str_replace('/' . \Input::get('auto_item'), '', $varValue);
+        }
+
+        $this->strAction = $varValue;
     }
 
     /**
