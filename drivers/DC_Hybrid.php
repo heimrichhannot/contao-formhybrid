@@ -160,8 +160,10 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
-        $this->intId       = $this->intId ?: $intId;
-        $this->strFormId   = $this->getFormId();
+        $this->intId                  = $this->intId ?: $intId;
+        $this->strFormId              = $this->getFormId();
+        $this->getConfig()->strFormId = $this->getFormId();
+        $this->getConfig()->setFormAction($this->getConfig()->strAction);
         $this->strFormName = $this->getFormName();
 
         if ($this->addEditableRequired) {
