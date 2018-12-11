@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.5.4] - 2018-12-11
+
+### Fixed
+- html_entity_decode for multi-dimensional array values
+
 ## [3.5.3] - 2018-12-07
 
 ### Fixed

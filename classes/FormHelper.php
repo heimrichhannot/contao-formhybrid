@@ -45,6 +45,21 @@ class FormHelper extends \System
         return \Controller::replaceInsertTags($varValue, $blnCache);
     }
 
+    public static function htmlEntityDecode($varValue)
+    {
+        if (is_array($varValue))
+        {
+            foreach ($varValue as $key => $value)
+            {
+                $varValue[$key] = static::htmlEntityDecode($value);
+            }
+
+            return $varValue;
+        }
+
+        return html_entity_decode($varValue, ENT_QUOTES, \Config::get('characterSet'));
+    }
+
     public static function getFieldOptions($arrData, $objDc = null)
     {
         $arrOptions = [];

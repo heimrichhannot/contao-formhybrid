@@ -1131,13 +1131,7 @@ class DC_Hybrid extends \DataContainer
                                     $this->intId
                                 );
 
-                                if (is_array($varVal)) {
-                                    foreach ($varVal as $key => $val) {
-                                        $varVal[$key] = html_entity_decode($val, ENT_QUOTES, \Config::get('characterSet'));
-                                    }
-                                } else {
-                                    $varVal = html_entity_decode($varVal, ENT_QUOTES, \Config::get('characterSet'));
-                                }
+                                $varVal = FormHelper::htmlEntityDecode($varVal);
 
                                 return $varVal;
                             },
