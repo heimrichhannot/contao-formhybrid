@@ -354,7 +354,7 @@ class DC_Hybrid extends \DataContainer
         }
 
         if ($this->allowIdAsGetParameter && $this->appendIdToUrlOnCreation && Request::getGet($this->idGetParameter) != $intId) {
-            $strUrl = Url::addQueryString($this->idGetParameter . '=' . $this->intId);
+            $strUrl = Url::addQueryString($this->idGetParameter.'='.$this->intId);
 
             // Use AjaxAction::generateUrl(Form::FORMHYBRID_NAME, null, array(Ajax::AJAX_ATTR_AJAXID => $this->objModule->id)) for formhybrid ajax create links
             if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== null && \HeimrichHannot\Request\Request::getGet(Ajax::AJAX_ATTR_AJAXID)) {
@@ -420,8 +420,7 @@ class DC_Hybrid extends \DataContainer
                 global $objPage;
 
                 if (($objPageJumpTo = \PageModel::findByPk($this->fieldDependentRedirectJumpTo)) !== null
-                    || $objPageJumpTo = $objPage
-                ) {
+                    || $objPageJumpTo = $objPage) {
                     $strRedirect = \Controller::generateFrontendUrl($objPageJumpTo->row());
 
                     if ($this->fieldDependentRedirectKeepParams) {
@@ -429,14 +428,14 @@ class DC_Hybrid extends \DataContainer
                         if (!empty($arrParamsToKeep)) {
                             foreach (Url::getUriParameters(Url::getUrl()) as $strParam => $strValue) {
                                 if (in_array($strParam, $arrParamsToKeep)) {
-                                    $strRedirect = Url::addQueryString($strParam . '=' . $strValue, $strRedirect);
+                                    $strRedirect = Url::addQueryString($strParam.'='.$strValue, $strRedirect);
                                 }
                             }
                         }
                     }
 
                     if (!$this->deactivateTokens) {
-                        $strRedirect = Url::addQueryString('token=' . \RequestToken::get(), $strRedirect);
+                        $strRedirect = Url::addQueryString('token='.\RequestToken::get(), $strRedirect);
                     }
 
                     StatusMessage::resetAll();
@@ -641,7 +640,7 @@ class DC_Hybrid extends \DataContainer
                 $blnIsSubPaletteSelector = false;
                 if (is_array($this->dca['subpalettes'])) {
                     foreach (array_keys($this->dca['subpalettes']) as $strSubPaletteSelector) {
-                        if (StringUtil::startsWith($strSubPaletteSelector, $strSelector . '_')) {
+                        if (StringUtil::startsWith($strSubPaletteSelector, $strSelector.'_')) {
                             $blnIsSubPaletteSelector = true;
                             break;
                         }
@@ -649,8 +648,7 @@ class DC_Hybrid extends \DataContainer
                 }
 
                 if ($varValue && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette
-                    && in_array($varValue, $arrOptions)
-                ) {
+                    && in_array($varValue, $arrOptions)) {
                     // no messages
                     $this->setSilentMode($this->isSkipValidation());
                     $this->dca['fields'][$strSelector]['eval']['skipValidationOnSubmit'] = true;
@@ -691,7 +689,7 @@ class DC_Hybrid extends \DataContainer
             }
 
             if (!$blnAjax) {
-                $objSubTemplate = $this->generateSubpalette('sub_' . $strParent);
+                $objSubTemplate = $this->generateSubpalette('sub_'.$strParent);
 
                 // parent field must exist
                 if (!$this->arrFields[$strParent]) {
@@ -799,8 +797,8 @@ class DC_Hybrid extends \DataContainer
      * Retrieve the subpalette by the field selector
      *
      * @param string $strSelector
-     * @param array $arrFields
-     * @param array $arrActivePaletteFields
+     * @param array  $arrFields
+     * @param array  $arrActivePaletteFields
      *
      * @return array Return the state, subpalette name, the filtered fields array and autosubmit state
      */
@@ -837,11 +835,11 @@ class DC_Hybrid extends \DataContainer
                 $strSubpalette = $varValue;
             } // concatenated type selector (e.g. source -> source_external)
             elseif (is_array($this->dca['subpalettes'])) {
-                $arrSubpalettes = Arrays::filterByPrefixes($this->dca['subpalettes'], [$strSelector . '_']);
+                $arrSubpalettes = Arrays::filterByPrefixes($this->dca['subpalettes'], [$strSelector.'_']);
 
                 if (!empty($arrSubpalettes)) {
                     $blnToggleSubpalette = true; // also if no active type selector, cause no default value, toggleSubpalette
-                    $blnExisting         = isset($arrSubpalettes[$strSelector . '_' . $varValue]);
+                    $blnExisting         = isset($arrSubpalettes[$strSelector.'_'.$varValue]);
 
                     if ($blnExisting) {
                         $blnActive = false;
@@ -850,7 +848,7 @@ class DC_Hybrid extends \DataContainer
                             $blnActive = true;
                         }
 
-                        $strSubpalette       = $strSelector . '_' . $varValue;
+                        $strSubpalette       = $strSelector.'_'.$varValue;
                         $arrSubPaletteFields = FormHelper::getPaletteFields($this->strTable, $this->dca['subpalettes'][$strSubpalette]);
                     }
 
@@ -928,14 +926,17 @@ class DC_Hybrid extends \DataContainer
     {
         $strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 
+        if (version_compare(VERSION, 4.0, '<') && $arrData['inputType'] === 'captcha' && class_exists('MadeYourDay\\Contao\\Form\\AntispamField')) {
+            $strClass = 'MadeYourDay\\Contao\\Form\\AntispamField';
+        }
+
         // overwrite the widget in readonly mode
         if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY
             || ($this->viewMode == FORMHYBRID_VIEW_MODE_DEFAULT && $this->addReadOnly
                 && in_array(
                     $strName,
                     $this->arrReadOnly
-                ))
-        ) {
+                ))) {
             $strClass       = 'HeimrichHannot\FormHybrid\FormReadonlyField';
             $skipValidation = true;
         }
@@ -990,7 +991,7 @@ class DC_Hybrid extends \DataContainer
 
         // to make captcha form related, add the form id without entity id
         if ($arrData['inputType'] == 'captcha') {
-            $strName .= '_' . $this->getFormId(false);
+            $strName .= '_'.$this->getFormId(false);
         }
 
         $this->strField     = $strName;
@@ -1025,10 +1026,10 @@ class DC_Hybrid extends \DataContainer
                         break;
                 }
 
-                $arrWidget[$strEvent] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_" . $strName . "', '" . $strName . "', '" . AjaxAction::generateUrl(
+                $arrWidget[$strEvent] = "FormhybridAjaxRequest.toggleSubpalette(this, 'sub_".$strName."', '".$strName."', '".AjaxAction::generateUrl(
                         Form::FORMHYBRID_NAME,
                         'toggleSubpalette'
-                    ) . "')";
+                    )."')";
                 unset($arrWidget['submitOnChange']);
             }
         } // the field does trigger a form reload without validation
@@ -1045,7 +1046,7 @@ class DC_Hybrid extends \DataContainer
                 }
 
                 if ($strEvent !== null) {
-                    $arrWidget[$strEvent] = "FormhybridAjaxRequest.reload('" . $this->getFormId() . "', '" . AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'reload') . "')";
+                    $arrWidget[$strEvent] = "FormhybridAjaxRequest.reload('".$this->getFormId()."', '".AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'reload')."')";
 
                     unset($arrWidget['submitOnChange']);
                 }
@@ -1089,8 +1090,7 @@ class DC_Hybrid extends \DataContainer
                         $strName,
                         $varValue,
                         $this->intId > 0 ? $this->intId : null
-                    )
-                ) {
+                    )) {
                     $objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
                 }
 
@@ -1150,8 +1150,7 @@ class DC_Hybrid extends \DataContainer
                         );
                     }
                 } elseif ($objWidget instanceof \uploadable && isset($_SESSION['FILES'][$strName])
-                    && \Validator::isUuid($_SESSION['FILES'][$strName]['uuid'])
-                ) {
+                          && \Validator::isUuid($_SESSION['FILES'][$strName]['uuid'])) {
                     $this->objActiveRecord->{$strName} = $_SESSION['FILES'][$strName]['uuid'];
                 }
             }
@@ -1238,14 +1237,14 @@ class DC_Hybrid extends \DataContainer
                 ' ',
                 array_map(
                     function ($strValue) use ($arrAttributes) {
-                        return $strValue . '="' . $arrAttributes[$strValue] . '"';
+                        return $strValue.'="'.$arrAttributes[$strValue].'"';
                     },
                     array_keys($this->arrAttributes)
                 )
             );
         }
 
-        $this->Template->cssID = ' id="' . $this->strFormName . '"';
+        $this->Template->cssID = ' id="'.$this->strFormName.'"';
     }
 
     protected function updateAction($strAction)
@@ -1262,7 +1261,7 @@ class DC_Hybrid extends \DataContainer
         }
 
         if ($this->useCustomSubTemplates) {
-            $strSubTemplate = $this->strTemplate . '_' . $ajaxId;
+            $strSubTemplate = $this->strTemplate.'_'.$ajaxId;
         }
 
         $strName                  = str_replace('sub_', '', $ajaxId);
@@ -1289,8 +1288,7 @@ class DC_Hybrid extends \DataContainer
             // Save the value if there was no error
             if (($varValue != '' || !$arrData['eval']['doNotSaveEmpty'])
                 && ($this->objActiveRecord->{$strName} !== $varValue
-                    || $arrData['eval']['alwaysSave'])
-            ) {
+                    || $arrData['eval']['alwaysSave'])) {
                 $this->objActiveRecord->{$strName} = $varValue;
             }
         }
@@ -1694,8 +1692,7 @@ class DC_Hybrid extends \DataContainer
                     $objExporter = ModuleExporter::export($objConfig, $this->objActiveRecord, $arrExportFields);
 
                     if ($objExportConfigs->formhybrid_formHybridExportConfigs_entityField) {
-                        $objFile                                                                                    =
-                            FilesModel::findByPath($objExporter->getFileDir() . '/' . $objExporter->getFilename());
+                        $objFile                                                                                    = FilesModel::findByPath($objExporter->getFileDir().'/'.$objExporter->getFilename());
                         $this->objActiveRecord->{$objExportConfigs->formhybrid_formHybridExportConfigs_entityField} = $objFile->uuid;
                         $this->objActiveRecord->save();
                     }
@@ -1752,10 +1749,10 @@ class DC_Hybrid extends \DataContainer
                     if ($this->deactivateTokens) {
                         break;
                     }
-                    $strUrl = Url::addQueryString($strParam . '=' . \RequestToken::get(), $strUrl);
+                    $strUrl = Url::addQueryString($strParam.'='.\RequestToken::get(), $strUrl);
                     break;
                 default:
-                    $strUrl = Url::addQueryString($strParam . '=' . $varValue, $strUrl);
+                    $strUrl = Url::addQueryString($strParam.'='.$varValue, $strUrl);
             }
         }
 
@@ -1824,8 +1821,8 @@ class DC_Hybrid extends \DataContainer
 
     /**
      * @param       $strName  The name of the field
-     * @param array $arrData Field DCA config
-     * @param bool $blnForce Force field addin, regardless of existence in active palette
+     * @param array $arrData  Field DCA config
+     * @param bool  $blnForce Force field addin, regardless of existence in active palette
      */
     public function addEditableField($strName, array $arrData, $blnForce = false)
     {
@@ -1885,7 +1882,7 @@ class DC_Hybrid extends \DataContainer
 
     public function getFormName()
     {
-        return 'formhybrid_' . str_replace('tl_', '', $this->strTable);
+        return 'formhybrid_'.str_replace('tl_', '', $this->strTable);
     }
 
     /**

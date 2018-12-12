@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.6.0] - 2018-12-12
+
+### Added
+- captcha now renders as `MadeYourDay\\Contao\\Form\\AntispamField` if installed on contao 3
+
 ## [3.5.4] - 2018-12-11
 
 ### Fixed
