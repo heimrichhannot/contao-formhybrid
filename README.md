@@ -111,6 +111,11 @@ Following methods are availiable to overwrite (no complete list, see Form and DC
 |bool sendConfirmationNotification(\NotificationCenter\Model\Message $objMessage, &$arrSubmissionData, &$arrToken)|Default: true|
 |bool sendConfirmationEmail($objEmail, &$arrRecipient, &$arrSubmissionData)|Default: true|
 
+### Hooks
+
+Name | Parameter | Description
+---- | --------- | -----------
+formhybridBeforeCreateNotifications | array &$submissionData, Form $currentForm | Do custom logic before sending notification. You can manipulate the submission data or send custom notifications.
 
 ### Opt in handling
 FormHybrid comes with build in opt-in handling. Following steps are required to use it: 

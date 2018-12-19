@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.7.0] - 2018-12-19
+
+### Added
+- `formhybridBeforeCreateNotifications` Hook to Form class
+
 ## [3.6.0] - 2018-12-12
 
 ### Added

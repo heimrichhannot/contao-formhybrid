@@ -380,6 +380,16 @@ abstract class Form extends DC_Hybrid
 
         $arrSubmissionData = $this->prepareSubmissionData();
 
+        // HOOK: custom logic before sending notifications
+        if (isset($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications']) && \is_array($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications'] as $callback)
+            {
+                $this->import($callback[0]);
+                $this->{$callback[0]}->{$callback[1]}($arrSubmissionData, $this);
+            }
+        }
+
         if ($this->addOptIn && $this->optInNotification)
         {
             $this->createOptInNotification($arrSubmissionData);
