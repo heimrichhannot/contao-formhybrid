@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.8.0] - 2018-12-12
+
+### Changed
+- captcha render as `MadeYourDay\\Contao\\Form\\AntispamField` revoked, otherwise `email` or `url` named form fields will be overwritten (empty), not compatible right now with any other entity than `tl_form_field`
+
 ## [3.7.0] - 2018-12-19
 
 ### Added

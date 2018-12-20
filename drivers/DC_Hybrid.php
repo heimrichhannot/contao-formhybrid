@@ -926,10 +926,6 @@ class DC_Hybrid extends \DataContainer
     {
         $strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
 
-        if (version_compare(VERSION, 4.0, '<') && $arrData['inputType'] === 'captcha' && class_exists('MadeYourDay\\Contao\\Form\\AntispamField')) {
-            $strClass = 'MadeYourDay\\Contao\\Form\\AntispamField';
-        }
-
         // overwrite the widget in readonly mode
         if ($this->viewMode == FORMHYBRID_VIEW_MODE_READONLY
             || ($this->viewMode == FORMHYBRID_VIEW_MODE_DEFAULT && $this->addReadOnly
