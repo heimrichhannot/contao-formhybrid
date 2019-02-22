@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.8.1] - 2019-02-22
+
+### Fixed
+- success message shown on next form visit if opt-in redirect page is set
+
 ## [3.8.0] - 2018-12-12
 
 ### Changed

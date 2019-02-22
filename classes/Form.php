@@ -2,9 +2,11 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Controller;
 use Contao\Model;
+use Contao\PageModel;
+use Contao\StringUtil;
 use Firebase\JWT\JWT;
-use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Exporter\ExporterModel;
 use HeimrichHannot\FieldPalette\FieldPaletteModel;
@@ -14,7 +16,6 @@ use HeimrichHannot\Haste\Util\Url;
 use HeimrichHannot\NotificationCenterPlus\MessageModel;
 use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
-use MatthiasMullie\Minify\Exception;
 
 abstract class Form extends DC_Hybrid
 {
@@ -62,7 +63,7 @@ abstract class Form extends DC_Hybrid
             $this->activateSubmission();
 
             // remove parameter from query string and reload current page
-            \Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
+            Controller::redirect(Url::removeQueryString([Formhybrid::OPT_IN_REQUEST_ATTRIBUTE]));
         }
     }
 
@@ -179,7 +180,13 @@ abstract class Form extends DC_Hybrid
 
         $this->createSuccessNotifications($arrSubmissionData);
 
-        if (!$this->isSilentMode())
+        $optInJumpTo = null;
+        if ($this->optInJumpTo)
+        {
+            $optInJumpTo = PageModel::findByPk($this->optInJumpTo);
+        }
+
+        if (!$this->isSilentMode() && !$optInJumpTo)
         {
             $this->createSuccessMessage($arrSubmissionData, true);
         }
@@ -188,10 +195,10 @@ abstract class Form extends DC_Hybrid
 
         $this->afterActivationCallback($this, $objModel, $objData);
 
-        if ($this->optInJumpTo && $objTarget = \PageModel::findByPk($this->optInJumpTo))
+        if ($optInJumpTo)
         {
-            $strUrl = \Controller::generateFrontendUrl($objTarget->row(), null, null, true);
-            \Controller::redirect($strUrl);
+            $strUrl = Controller::generateFrontendUrl($optInJumpTo->row(), null, null, true);
+            Controller::redirect($strUrl);
         }
 
         return true;
@@ -633,7 +640,7 @@ abstract class Form extends DC_Hybrid
             $strMessage = !empty($this->optInSuccessMessage) ? $this->optInSuccessMessage : $GLOBALS['TL_LANG']['formhybrid']['messages']['optIn'];
         }
 
-        $this->successMessage = \StringUtil::parseSimpleTokens(
+        $this->successMessage = StringUtil::parseSimpleTokens(
             $this->replaceInsertTags(
                 FormHelper::replaceFormDataTags(
                     $strMessage,
@@ -725,7 +732,7 @@ abstract class Form extends DC_Hybrid
      */
     public static function generateUniqueToken ()
     {
-        $strToken = \StringUtil::binToUuid(\Database::getInstance()->getUuid());
+        $strToken = StringUtil::binToUuid(\Database::getInstance()->getUuid());
         return $strToken;
     }
 }
