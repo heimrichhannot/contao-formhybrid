@@ -163,7 +163,7 @@ class DC_Hybrid extends \DataContainer
         $this->intId                  = $this->intId ?: $intId;
         $this->strFormId              = $this->getFormId();
         $this->getConfig()->strFormId = $this->getFormId();
-        $this->getConfig()->setFormAction($this->getConfig()->strAction);
+        $this->strAction = $this->getConfig()->strAction;
         $this->strFormName = $this->getFormName();
 
         if ($this->addEditableRequired) {
@@ -1564,7 +1564,7 @@ class DC_Hybrid extends \DataContainer
         // update form id and hash with entity id
         $this->strFormId              = $this->getFormId();
         $this->getConfig()->strFormId = $this->getFormId();
-        $this->getConfig()->setFormAction($this->getConfig()->strAction);
+        $this->strAction = $this->getConfig()->strAction;
     }
 
     protected function generateContainerClass()

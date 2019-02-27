@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.8.2] - 2019-02-27
+
+### Fixed
+- form action issue
+
 ## [3.8.1] - 2019-02-22
 
 ### Fixed

@@ -120,7 +120,7 @@ class FormConfiguration
         switch ($strKey)
         {
             case 'strAction':
-                $this->setFormAction($varValue);
+                $varValue = $this->getFormAction($varValue);
 
                 break;
             case 'arrDefaultValues':
@@ -131,7 +131,7 @@ class FormConfiguration
         return $varValue;
     }
 
-    public function setFormAction($varValue)
+    public function getFormAction($varValue)
     {
         if ($varValue && ($objActionPage = \PageModel::findWithDetails($varValue)) !== null)
         {
@@ -173,7 +173,7 @@ class FormConfiguration
             $varValue = str_replace('/' . \Input::get('auto_item'), '', $varValue);
         }
 
-        $this->strAction = $varValue;
+        return $varValue;
     }
 
     /**
