@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.9.2] - 2019-03-18
+
+### Fixed
+- missing dependency
+
 ## [3.9.1] - 2019-03-18
 
 ### Added

@@ -10,7 +10,7 @@
 
 namespace HeimrichHannot\FormHybrid\Backend;
 
-
+use Contao\DataContainer;
 use HeimrichHannot\Haste\Util\Arrays;
 use Contao\CoreBundle\Monolog\ContaoContext;
 
