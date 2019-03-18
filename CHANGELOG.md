@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.9.0] - 2019-03-18
+
+### Added
+- optional setting form values by GET-parameter
+
 ## [3.8.2] - 2019-02-27
 
 ### Fixed

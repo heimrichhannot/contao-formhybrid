@@ -1180,6 +1180,10 @@ class DC_Hybrid extends \DataContainer
 
     protected function getDefaultFieldValue($strName, $arrData)
     {
+  	if ($this->formHybridAddGetParameter && Request::hasGet($strName) && $this->setValueFromGetParameter($strName)) {
+		return Request::getGet($strName);
+	}
+
         // priority 2 -> set value from model entity ($this->setDefaults() triggered before)
         if (isset($this->objActiveRecord->{$strName})) {
             $varValue = FormSubmission::prepareSpecialValueForSave(
@@ -2195,5 +2199,20 @@ class DC_Hybrid extends \DataContainer
         $this->forceCreate = $forceCreate;
     }
 
+    /**
+     * @param string $parameter
+     * @return bool
+     */
+    protected function setValueFromGetParameter($parameter)
+    {
+	$setValue = false;
+	$get      = deserialize($this->formHybridGetParameter, true);
+
+	if (in_array($parameter, $get)) {
+	  $setValue = true;
+	}
+
+	return $setValue;
+    }
 }
 

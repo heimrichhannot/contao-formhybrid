@@ -323,4 +323,13 @@ class Module extends \Backend
     {
         return \HeimrichHannot\Exporter\Backend::getConfigsAsOptions(\HeimrichHannot\FormHybrid\FormHybrid::EXPORT_TYPE_FORMHYBRID);
     }
+
+    public function getSelectedEditable(DataContainer $dc)
+    {
+	if(!$dc->activeRecord->formHybridEditable) {
+	  return [];
+	}
+
+	return deserialize($dc->activeRecord->formHybridEditable, true);
+    }	
 }
