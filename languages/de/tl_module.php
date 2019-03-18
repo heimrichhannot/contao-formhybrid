@@ -146,6 +146,8 @@ $arrLang['formHybridfilterTokenFields'][0] = 'Token-Felder filtern';
 $arrLang['formHybridfilterTokenFields'][1] = 'Bestimmen Sie die Felder aus, welche im Opt-In-Token codiert werden sollen. Dies ist vor allem dann nützlich, wenn Ihr Opt-In-Token zu lang wird und es deshalb Probleme mit den Links in verschiedenen E-Mail-Programmen gibt.';
 $arrLang['formHybridTokenFields'][0] = 'Token-Felder wählen';
 $arrLang['formHybridTokenFields'][1] = 'Wählen Sie die Felder aus, welche im Opt-In-Token codiert werden sollen. Je mehr Felder, desto länger der Token.';
+$arrLang['formHybridAddGetParameter'] = ['GET-Parameter erlauben','Wählen Sie diese Option, wenn die Befüllung von Formular-Feldern per GET-Parameter erlauben wollen.'];
+$arrLang['formHybridGetParameter'] = ['GET-Parameter','Wählen Sie die Felder, die per GET-Parameter gesetzt werden können.'];
 
 /**
  * Explanations
