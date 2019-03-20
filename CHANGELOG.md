@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.9.3] - 2019-03-20
+
+### Fixed
+- PHP 7.3 issue
+
 ## [3.9.2] - 2019-03-18
 
 ### Fixed

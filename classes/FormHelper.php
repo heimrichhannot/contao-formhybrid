@@ -345,7 +345,7 @@ class FormHelper extends \System
                     if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['output']))
                     {
                         $strTag = '';
-                        continue;
+                        continue 2;
                     }
 
                     $strTag = $arrMailData[$elements[1]]['output'];
@@ -354,7 +354,7 @@ class FormHelper extends \System
                     if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['value']))
                     {
                         $strTag = '';
-                        continue;
+                        continue 2;
                     }
 
                     $strTag = $arrMailData[$elements[1]]['value'];
@@ -363,7 +363,7 @@ class FormHelper extends \System
                     if ($elements[1] == '' || !isset($arrMailData[$elements[1]]['submission']))
                     {
                         $strTag = '';
-                        continue;
+                        continue 2;
                     }
 
                     $strTag = rtrim($arrMailData[$elements[1]]['submission'], "\n");
