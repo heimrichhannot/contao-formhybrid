@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.9.4] - 2019-05-27
+
+### Fixed
+- issue with concatenated subpalettes (e.g. `source_external`) -> if selector isn't set, fields are now correctly removed from main palette
+
 ## [3.9.3] - 2019-03-20
 
 ### Fixed

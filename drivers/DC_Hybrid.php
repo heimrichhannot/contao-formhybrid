@@ -874,7 +874,7 @@ class DC_Hybrid extends \DataContainer
                             }
 
                             // field is also part of parent palette
-                            if (in_array($strSubPaletteSiblingField, $this->arrEditable) && in_array($strSubPaletteSiblingField, $arrActivePaletteFields)) {
+                            if (!in_array($strSelector, $this->arrEditable) && in_array($strSubPaletteSiblingField, $this->arrEditable) && in_array($strSubPaletteSiblingField, $arrActivePaletteFields)) {
                                 // remove field from subpalette fields as it is now stated as parent field
                                 Arrays::removeValue($strSubPaletteSiblingField, $arrSubPaletteFields);
                                 continue;
