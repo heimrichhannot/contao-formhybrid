@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.0] - 2019-10-01
+
+### Added
+- custom form id suffix
+
 ## [3.9.4] - 2019-05-27
 
 ### Fixed

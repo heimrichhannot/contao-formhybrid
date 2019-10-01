@@ -90,6 +90,9 @@ $arrLang['formHybridJumpToPreserveParams'] = [
 $arrLang['formHybridUseCustomFormId'] = ['FormId überschreiben', 'Wählen Sie diese Option, wenn sie die Id des Filtermodules bei der Submission überschreiben wollen.'];
 $arrLang['formHybridCustomFormId']    = ['Neue FormID', 'Geben Sie hier die Id ein, die das Filtermodul bei der Submission-Überprüfung haben soll.'];
 
+$arrLang['formHybridUseCustomFormId'] = ['FormId-Suffix hinzufügen', 'Wählen Sie diese Option, u der FormId einen Suffix hinzuzufügen.'];
+$arrLang['formHybridCustomFormId']    = ['FormId-Suffix', 'Geben Sie hier den Suffix ein.'];
+
 $arrLang['formHybridAllowIdAsGetParameter']            = [
     'ID-Eingabe als GET-Parameter erlauben (Vorsicht!)',
     'Wählen Sie diese Option, wenn über den GET-Parameter "id" der anzuzeigende Datensatz bestimmt werden darf. ACHTUNG: Nur in Verbindung mit "Bedingungen für das Bearbeiten" verwenden!',

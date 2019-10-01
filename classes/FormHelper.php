@@ -15,16 +15,20 @@ use HeimrichHannot\Request\Request;
 
 class FormHelper extends \System
 {
-    public static function getFormId($strTable, $intModule, $intId = null, $blnAddEntityId = true)
+    public static function getFormId($strTable, $intModule, $intId = null, $blnAddEntityId = true, $suffix = '')
     {
         $arrValues = [];
 
-        $arrValues[0] = $strTable;
-        $arrValues[1] = $intModule;
+        $arrValues[] = $strTable;
+        $arrValues[] = $intModule;
 
         if ($intId > 0 && $blnAddEntityId)
         {
-            $arrValues[2] = $intId;
+            $arrValues[] = $intId;
+        }
+
+        if ($suffix) {
+            $arrValues[] = $suffix;
         }
 
         return implode('_', $arrValues);
