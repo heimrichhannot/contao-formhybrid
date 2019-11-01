@@ -62,7 +62,12 @@ abstract class FrontendWidget extends \Widget
         /** @var $objWidget \Widget */
         if ($strMethod == FORMHYBRID_METHOD_GET)
         {
-            $varValue = $objWidget->validator(Request::getGet($objWidget->strName, $objWidget->decodeEntities, $objWidget->allowHtml));
+            if ($objWidget->type === 'submit') {
+                $varValue = null;
+            }
+            else {
+                $varValue = $objWidget->validator(Request::getGet($objWidget->strName, $objWidget->decodeEntities, $objWidget->allowHtml));
+            }
         }
         else
         {
