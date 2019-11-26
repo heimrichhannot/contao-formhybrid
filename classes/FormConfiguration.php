@@ -133,6 +133,10 @@ class FormConfiguration
 
     public function getFormAction($varValue)
     {
+        if (filter_var($varValue, FILTER_VALIDATE_URL) !== false) {
+            return $varValue;
+        }
+
         if ($varValue && ($objActionPage = \PageModel::findWithDetails($varValue)) !== null)
         {
             $varValue = \Controller::generateFrontendUrl($objActionPage->row(), null, null, true);

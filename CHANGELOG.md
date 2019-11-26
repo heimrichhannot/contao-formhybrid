@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.2] - 2019-11-26
+
+- form action issue
+
 ## [3.10.1] - 2019-11-01
 
 - fixed empty get field issue
