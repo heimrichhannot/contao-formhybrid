@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.3] - 2019-12-10
+- fixed database issue in Form::findOptInModelInstance() when formHybridOptInModelRetrievalProperty not set
+
 ## [3.10.2] - 2019-11-26
 
 - form action issue

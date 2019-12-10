@@ -524,6 +524,9 @@ abstract class Form extends DC_Hybrid
         {
             return false;
         }
+        if (!$this->objModule->formHybridOptInModelRetrievalProperty) {
+            return false;
+        }
 
         return  $modelClass::findOneBy([$table . '.' . $this->objModule->formHybridOptInModelRetrievalProperty . '=?'], [$this->objActiveRecord->{$this->objModule->formHybridOptInModelRetrievalProperty}]);
     }
