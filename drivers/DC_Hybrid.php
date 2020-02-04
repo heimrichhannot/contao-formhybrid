@@ -946,6 +946,19 @@ class DC_Hybrid extends \DataContainer
 
         $arrWidgetErrors = [];
 
+        // prevent name for GET and submit widget, otherwise url will have submit name in
+        if ($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit') {
+            $strName = '';
+        }
+
+        // to make captcha form related, add the form id without entity id
+        if ($arrData['inputType'] == 'captcha') {
+            $strName .= '_'.$this->getFormId(false);
+        }
+
+        $this->strField     = $strName;
+        $this->strInputName = $strName;
+
         // contains the load_callback!
         $varDefault = $this->getDefaultFieldValue($strName, $arrData);
         $varValue   = $varDefault;
@@ -973,11 +986,6 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
-        // prevent name for GET and submit widget, otherwise url will have submit name in
-        if ($this->strMethod == FORMHYBRID_METHOD_GET && $arrData['inputType'] == 'submit') {
-            $strName = '';
-        }
-
         $arrData['eval']['tagTable'] = $this->strTable;
 
         // always disable validation for filter form
@@ -985,13 +993,6 @@ class DC_Hybrid extends \DataContainer
             $arrData['eval']['mandatory'] = false;
         }
 
-        // to make captcha form related, add the form id without entity id
-        if ($arrData['inputType'] == 'captcha') {
-            $strName .= '_'.$this->getFormId(false);
-        }
-
-        $this->strField     = $strName;
-        $this->strInputName = $strName;
         $this->varValue     = is_array($varValue) ? $varValue : \Controller::replaceInsertTags($varValue);
 
         $arrWidget = \Widget::getAttributesFromDca(
