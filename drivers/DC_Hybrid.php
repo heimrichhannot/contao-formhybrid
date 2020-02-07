@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\CoreBundle\Exception\ResponseException;
+use Contao\DataContainer;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseRedirect;
@@ -19,7 +21,7 @@ use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use HeimrichHannot\Versions\Version;
 
-class DC_Hybrid extends \DataContainer
+class DC_Hybrid extends DataContainer
 {
     protected $arrData = [];
 
@@ -580,9 +582,9 @@ class DC_Hybrid extends \DataContainer
             }
 
             foreach ($arrSelectors as $strName) {
-                list(
+                [
                     $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
-                    ) = $this->retrieveSubpaletteWithState($strName, $arrFields, $arrActivePaletteFields);
+                    ] = $this->retrieveSubpaletteWithState($strName, $arrFields, $arrActivePaletteFields);
 
                 if (!$blnToggleSubpalette) {
                     continue;
@@ -1006,9 +1008,9 @@ class DC_Hybrid extends \DataContainer
 
         $this->updateWidget($arrWidget, $arrData, []);
 
-        list(
+        [
             $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
-            ) = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
+            ] = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 
         // support submitOnChange as form submission
         if ($arrData['eval']['submitOnChange'] && $blnToggleSubpalette) {
@@ -1091,16 +1093,27 @@ class DC_Hybrid extends \DataContainer
                     $objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
                 }
 
-                // trigger save_callbacks before assertion of the new value to objActiveRecord
-                if (is_array($arrData['save_callback'])) {
-                    foreach ($arrData['save_callback'] as $callback) {
-                        if (is_array($callback)) {
-                            $this->import($callback[0]);
-                            $objWidget->value = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
-                        } elseif (is_callable($callback)) {
-                            $objWidget->value = $callback($varValue, $this);
+                try
+                {
+                    if (is_array($arrData['save_callback'])) {
+                        foreach ($arrData['save_callback'] as $callback) {
+                            if (is_array($callback)) {
+                                $this->import($callback[0]);
+                                $objWidget->value = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
+                            } elseif (is_callable($callback)) {
+                                $objWidget->value = $callback($varValue, $this);
+                            }
                         }
                     }
+                }
+                catch (ResponseException $e)
+                {
+                    throw $e;
+                }
+                catch (\Exception $e)
+                {
+                    $this->noReload = true;
+                    $objWidget->addError($e->getMessage());
                 }
 
                 if ($objWidget->hasErrors()) {

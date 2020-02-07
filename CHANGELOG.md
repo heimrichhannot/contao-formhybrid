@@ -1,8 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [3.10.4] - 2020-02-04
+## [3.10.5] - 2020-02-07
+- added exception handling to DC_Hybrid::generateField
 
+## [3.10.4] - 2020-02-04
 - fixed field name assignment order in DC_Hybrid::generateField
 
 ## [3.10.3] - 2019-12-10
