@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.6] - 2020-02-14
+- fixed pdf export for contao4 environments
+
 ## [3.10.5] - 2020-02-07
 - added exception handling to DC_Hybrid::generateField
 

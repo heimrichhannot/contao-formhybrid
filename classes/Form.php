@@ -8,8 +8,6 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Firebase\JWT\JWT;
 use HeimrichHannot\Ajax\AjaxAction;
-use HeimrichHannot\Exporter\ExporterModel;
-use HeimrichHannot\FieldPalette\FieldPaletteModel;
 use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\Salutations;
 use HeimrichHannot\Haste\Util\Url;
@@ -294,8 +292,21 @@ abstract class Form extends DC_Hybrid
     {
         if (Request::getPost(FORMHYBRID_NAME_EXPORT))
         {
-            $intConfigId = FieldPaletteModel::findById($this->formHybridExportConfigs[0])->formhybrid_formHybridExportConfigs_config;
-            $objConfig   = ExporterModel::findById($intConfigId);
+            if (class_exists('HeimrichHannot\FieldpaletteBundle\HeimrichHannotContaoFieldpaletteBundle')) {
+                $fieldpaletteModel = new \HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel();
+                $intConfigId = $fieldpaletteModel->findById($this->formHybridExportConfigs[0])->formhybrid_formHybridExportConfigs_config;
+            } else {
+                $fieldpaletteModel = 'HeimrichHannot\FieldPalette\FieldPaletteModel';
+                $intConfigId = $fieldpaletteModel::findById($this->formHybridExportConfigs[0])->formhybrid_formHybridExportConfigs_config;
+            }
+
+            if (class_exists('HeimrichHannot\ContaoExporterBundle\HeimrichHannotContaoExporterBundle')) {
+                $exporterClass = 'HeimrichHannot\ContaoExporterBundle\Model\ExporterModel';
+            } else {
+                $exporterClass = 'HeimrichHannot\Exporter\ExporterModel';
+            }
+
+            $objConfig   = $exporterClass::findById($intConfigId);
 
             if (!$objConfig->linkedTable)
             {

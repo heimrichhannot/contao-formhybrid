@@ -12,7 +12,6 @@ namespace HeimrichHannot\FormHybrid\Backend;
 
 use Contao\DataContainer;
 use HeimrichHannot\Haste\Util\Arrays;
-use Contao\CoreBundle\Monolog\ContaoContext;
 
 class Module extends \Backend
 {
@@ -173,7 +172,7 @@ class Module extends \Backend
                 {
                     \System::getContainer()->get('monolog.logger.contao')->addNotice(
                         'Bundle/Extension '.$strModule.' not found.',
-                        ['contao' => new ContaoContext(__CLASS__.'::'.__FUNCTION__, TL_GENERAL)]
+                        ['contao' => new \Contao\CoreBundle\Monolog\ContaoContext(__CLASS__.'::'.__FUNCTION__, TL_GENERAL)]
                     );
                     $strDir = '';
                 }
@@ -321,7 +320,11 @@ class Module extends \Backend
 
     public static function getFormHybridExportConfigsAsOptions()
     {
-        return \HeimrichHannot\Exporter\Backend::getConfigsAsOptions(\HeimrichHannot\FormHybrid\FormHybrid::EXPORT_TYPE_FORMHYBRID);
+        if (class_exists('\HeimrichHannot\ContaoExporterBundle\HeimrichHannotContaoExporterBundle')) {
+            return \HeimrichHannot\ContaoExporterBundle\EventListener\DataContainer\ModuleListener::getExportConfigs();
+        }else {
+            return \HeimrichHannot\Exporter\Backend::getConfigsAsOptions(\HeimrichHannot\FormHybrid\FormHybrid::EXPORT_TYPE_FORMHYBRID);
+        }
     }
 
     public function getSelectedEditable(DataContainer $dc)

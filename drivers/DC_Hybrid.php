@@ -2,15 +2,11 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-use Contao\CoreBundle\Exception\ResponseException;
-use Contao\DataContainer;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseRedirect;
 use HeimrichHannot\Exporter\Exporter;
-use HeimrichHannot\Exporter\ExporterModel;
 use HeimrichHannot\Exporter\ModuleExporter;
-use HeimrichHannot\FieldPalette\FieldPaletteModel;
 use HeimrichHannot\FileCredit\FilesModel;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Files;
@@ -21,7 +17,7 @@ use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 use HeimrichHannot\Versions\Version;
 
-class DC_Hybrid extends DataContainer
+class DC_Hybrid extends \DataContainer
 {
     protected $arrData = [];
 
@@ -513,6 +509,10 @@ class DC_Hybrid extends DataContainer
             $this->save();
 
             if (in_array('exporter', \ModuleLoader::getActive()) && $this->exportAfterSubmission) {
+                $this->exportAfterSubmission();
+            }
+
+            if (class_exists('HeimrichHannot\ContaoExporterBundle\HeimrichHannotContaoExporterBundle') && $this->exportAfterSubmission) {
                 $this->exportAfterSubmission();
             }
 
@@ -1093,6 +1093,7 @@ class DC_Hybrid extends DataContainer
                     $objWidget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $arrData['label'][0] ?: $strName));
                 }
 
+                // trigger save_callbacks before assertion of the new value to objActiveRecord
                 try
                 {
                     if (is_array($arrData['save_callback'])) {
@@ -1105,10 +1106,6 @@ class DC_Hybrid extends DataContainer
                             }
                         }
                     }
-                }
-                catch (ResponseException $e)
-                {
-                    throw $e;
                 }
                 catch (\Exception $e)
                 {
@@ -1646,14 +1643,26 @@ class DC_Hybrid extends DataContainer
 
     protected function exportAfterSubmission()
     {
-        $objExportConfigs = FieldPaletteModel::findPublishedByPidAndTableAndField($this->objModule->id, 'tl_module', 'formHybridExportConfigs');
+        if (class_exists('HeimrichHannot\FieldpaletteBundle\HeimrichHannotContaoFieldpaletteBundle')) {
+            $fieldpaletteModel = new \HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel();
+            $objExportConfigs = $fieldpaletteModel->findPublishedByPidAndTableAndField($this->objModule->id, 'tl_module', 'formHybridExportConfigs');
+        } else {
+            $fieldpaletteModel = 'HeimrichHannot\FieldPalette\FieldPaletteModel';
+            $objExportConfigs = $fieldpaletteModel::findPublishedByPidAndTableAndField($this->objModule->id, 'tl_module', 'formHybridExportConfigs');
+        }
 
         if ($objExportConfigs !== null) {
             while ($objExportConfigs->next()) {
-                $objConfig = ExporterModel::findByPk($objExportConfigs->formhybrid_formHybridExportConfigs_config);
+                if (class_exists('HeimrichHannot\ContaoExporterBundle\HeimrichHannotContaoExporterBundle')) {
+                    $exporterClass = 'HeimrichHannot\ContaoExporterBundle\Model\ExporterModel';
+                } else {
+                    $exporterClass = 'HeimrichHannot\Exporter\ExporterModel';
+                }
+
+                $objConfig = $exporterClass::findByPk($objExportConfigs->formhybrid_formHybridExportConfigs_config);
 
                 if ($objConfig !== null) {
-                    $objConfig->type        = Exporter::TYPE_ITEM;
+                    $objConfig->type        = 'item';
                     $objConfig->linkedTable = $this->strTable;
 
                     // prepare fields for exporter

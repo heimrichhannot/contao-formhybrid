@@ -2,7 +2,6 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-use Contao\Widget;
 use HeimrichHannot\Request\Request;
 
 
@@ -15,7 +14,7 @@ use HeimrichHannot\Request\Request;
  * @author  Dennis Patzer <d.patzer@heimrich-hannot.de>
  * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
  */
-abstract class FrontendWidget extends Widget
+abstract class FrontendWidget extends \Widget
 {
     public function __get($key)
     {
