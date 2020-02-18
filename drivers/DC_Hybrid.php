@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Dbafs;
+use Contao\File;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseRedirect;
@@ -1715,7 +1717,17 @@ class DC_Hybrid extends \DataContainer
                     $objExporter = ModuleExporter::export($objConfig, $this->objActiveRecord, $arrExportFields);
 
                     if ($objExportConfigs->formhybrid_formHybridExportConfigs_entityField) {
-                        $objFile                                                                                    = FilesModel::findByPath($objExporter->getFileDir().'/'.$objExporter->getFilename());
+                        $filePath = $objExporter->getFileDir().'/'.$objExporter->getFilename();
+
+                        $file = new File($filePath);
+                        if (!$objFile = $file->getModel()) {
+                            if (!Dbafs::shouldBeSynchronized($filePath)) {
+                                Dbafs::addResource($filePath);
+                            }
+                            Dbafs::syncFiles();
+                            $objFile = $file->getModel();
+                        }
+
                         $this->objActiveRecord->{$objExportConfigs->formhybrid_formHybridExportConfigs_entityField} = $objFile->uuid;
                         $this->objActiveRecord->save();
                     }

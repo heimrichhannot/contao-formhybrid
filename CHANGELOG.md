@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.7] - 2020-02-18
+- fixed applying of email-attachments if they are not listed in the database
+
 ## [3.10.6] - 2020-02-14
 - fixed pdf export for contao4 environments
 
