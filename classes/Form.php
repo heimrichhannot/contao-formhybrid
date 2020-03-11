@@ -3,6 +3,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 use Contao\Controller;
+use Contao\Database;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -143,15 +144,18 @@ abstract class Form extends DC_Hybrid
          * @var \Model $objModel
          */
         $objModel = $strModelClass::findByPk($this->intId);
+        $justCreated = false;
 
         if (empty($objModel))
         {
             $objModel = new $strModelClass();
             $objModel->setRow($objResult->row());
+            $justCreated = true;
         }
 
-        $strRow = FormHybrid::OPT_IN_DATABASE_FIELD;
-        $objModel->$strRow = "";
+        $set = [
+            FormHybrid::OPT_IN_DATABASE_FIELD => ''
+        ];
 
         // Always add opt-out token, if Database field added to dca:
         $modelData = $objModel->row();
@@ -160,18 +164,28 @@ abstract class Form extends DC_Hybrid
         if (isset($modelData[$strOptOutRow]))
         {
             $strToken = static::generateUniqueToken();
-            $objModel->$strOptOutRow = $strToken;
-            $objModel->tstamp = time();
+            $set[$strOptOutRow] = $strToken;
+            $set['tstamp'] = time();
         }
 
         if ($this->optInConfirmedProperty)
         {
             $strConfirmationProperty = $this->optInConfirmedProperty;
-            $objModel->$strConfirmationProperty = true;
-			$objModel->tstamp = time();
+            $set[$strConfirmationProperty] = true;
+            $set['tstamp'] = time();
         }
 
-        $objModel->save();
+        foreach ($set as $k => $v) {
+            $objModel->{$k} = $v;
+        }
+
+        // store with Database since the entity might use DC_Multilingual
+        if ($justCreated) {
+            Database::getInstance()->prepare('INSERT INTO ' . $objData->table . ' %s')->set($set)->execute();
+        } else {
+            Database::getInstance()->prepare('UPDATE ' . $objData->table . ' %s WHERE ' . $objData->table . '.id=?')->set($set)->execute($this->intId);
+        }
+
         $this->objActiveRecord = $objModel;
 
         $arrSubmissionData = FormSubmission::prepareData($objModel, $this->strTable, $this->dca, $this, $this->arrEditable);
@@ -468,8 +482,9 @@ abstract class Form extends DC_Hybrid
 
             if ($instance instanceof Model)
             {
-                $instance->{FormHybrid::OPT_IN_DATABASE_FIELD} = $strToken;
-                $instance->save();
+                $table = $instance->getTable();
+
+                Database::getInstance()->prepare("UPDATE $table SET $table." . FormHybrid::OPT_IN_DATABASE_FIELD . "=? WHERE $table.id=?")->execute($strToken, $instance->id);
             }
 
             $data = [

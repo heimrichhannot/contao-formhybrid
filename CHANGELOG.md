@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.11.0] - 2020-03-11
+- fixed dc_multilingual related bug
+
 ## [3.10.7] - 2020-02-18
 - fixed applying of email-attachments if they are not listed in the database
 
