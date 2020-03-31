@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.12.0] - 2020-03-31
+- removed logging for non existing dca
+
 ## [3.11.0] - 2020-03-11
 - fixed dc_multilingual related bug
 

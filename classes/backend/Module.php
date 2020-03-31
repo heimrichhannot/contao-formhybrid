@@ -170,10 +170,6 @@ class Module extends \Backend
                 }
                 catch (\InvalidArgumentException $ex)
                 {
-                    \System::getContainer()->get('monolog.logger.contao')->addNotice(
-                        'Bundle/Extension '.$strModule.' not found.',
-                        ['contao' => new \Contao\CoreBundle\Monolog\ContaoContext(__CLASS__.'::'.__FUNCTION__, TL_GENERAL)]
-                    );
                     $strDir = '';
                 }
             }
