@@ -116,6 +116,7 @@ Following methods are availiable to overwrite (no complete list, see Form and DC
 Name | Parameter | Description
 ---- | --------- | -----------
 formhybridBeforeCreateNotifications | array &$submissionData, Form $currentForm | Do custom logic before sending notification. You can manipulate the submission data or send custom notifications.
+formhybridOnCreateInstance | Form $form, $varConfig = null, $id = 0 | Is called in the form constructor and allows to change configs or do actions on every form init.
 
 ### Opt in handling
 FormHybrid comes with build in opt-in handling. Following steps are required to use it: 

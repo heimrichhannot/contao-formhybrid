@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.13.0] - 2020-06-05
+- added formhybridOnCreateInstance hook
+
 ## [3.12.0] - 2020-03-31
 - removed logging for non existing dca
 

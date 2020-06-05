@@ -26,6 +26,16 @@ abstract class Form extends DC_Hybrid
 
     public function __construct($varConfig = null, $intId = 0)
     {
+        // HOOK: custom logic before sending notifications
+        if (isset($GLOBALS['TL_HOOKS']['formhybridOnCreateInstance']) && \is_array($GLOBALS['TL_HOOKS']['formhybridOnCreateInstance']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['formhybridOnCreateInstance'] as $callback)
+            {
+                $this->import($callback[0]);
+                $this->{$callback[0]}->{$callback[1]}($this, $varConfig, $intId);
+            }
+        }
+
         // prevent from caching form, chrome is greedy
         Request::getInstance()->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
         Request::getInstance()->headers->set('Pragma', 'no-cache'); // HTTP 1.0.
