@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.14.0] - 2020-07-14
+- fixed error on non existent methods in DC_Hybrid
+
 ## [3.13.0] - 2020-06-05
 - added formhybridOnCreateInstance hook
 

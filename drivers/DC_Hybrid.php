@@ -637,7 +637,12 @@ class DC_Hybrid extends \DataContainer
 
                 if (is_array($arrCallback) && class_exists($arrCallback[0])) {
                     $objInstance = \Controller::importStatic($arrCallback[0]);
-                    $arrOptions  = $objInstance->{$arrCallback[1]}($this);
+
+                    try {
+                        $arrOptions  = $objInstance->{$arrCallback[1]}($this);
+                    } catch (\Error $e) {
+                        $arrOptions = [];
+                    }
                 }
 
                 // check for existing subpalettes in order to distinguish between type and subpalette selectors
