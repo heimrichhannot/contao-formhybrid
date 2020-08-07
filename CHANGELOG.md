@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.14.1] - 2020-08-07
+- fixed formhybridBeforeCreateNotifications Hook
+
 ## [3.14.0] - 2020-07-14
 - fixed error on non existent methods in DC_Hybrid
 

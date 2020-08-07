@@ -428,7 +428,7 @@ abstract class Form extends DC_Hybrid
             foreach ($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications'] as $callback)
             {
                 $this->import($callback[0]);
-                $this->{$callback[0]}->{$callback[1]}($arrSubmissionData, $this);
+                $this->{$callback[0]}->{$callback[1]}(is_array($arrSubmissionData) ? $arrSubmissionData : [], $this);
             }
         }
 
