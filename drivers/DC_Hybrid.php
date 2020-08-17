@@ -4,12 +4,14 @@ namespace HeimrichHannot\FormHybrid;
 
 use Contao\Dbafs;
 use Contao\File;
+use Contao\Widget;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Ajax\Response\ResponseRedirect;
 use HeimrichHannot\Exporter\Exporter;
 use HeimrichHannot\Exporter\ModuleExporter;
 use HeimrichHannot\FileCredit\FilesModel;
+use HeimrichHannot\FormHybrid\Event\FormhybridBeforeCreateWidgetEvent;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Files;
 use HeimrichHannot\Haste\Util\FormSubmission;
@@ -1059,6 +1061,19 @@ class DC_Hybrid extends \DataContainer
             }
         }
 
+        if (isset($GLOBALS['TL_HOOKS'][FormhybridBeforeCreateWidgetEvent::NAME]) && \is_array($GLOBALS['TL_HOOKS'][FormhybridBeforeCreateWidgetEvent::NAME]))
+        {
+            $event = new FormhybridBeforeCreateWidgetEvent($arrWidget, $strClass, $arrData, $this);
+            foreach ($GLOBALS['TL_HOOKS'][FormhybridBeforeCreateWidgetEvent::NAME] as $callback)
+            {
+                $this->import($callback[0]);
+                $event = $this->{$callback[0]}->{$callback[1]}($event);
+            }
+            $strClass = $event->getWidgetClass();
+            $arrWidget = $event->getWidgetData();
+        }
+
+        /** @var Widget $objWidget */
         $objWidget = new $strClass($arrWidget);
 
         if (isset($arrData['formHybridOptions'])) {
