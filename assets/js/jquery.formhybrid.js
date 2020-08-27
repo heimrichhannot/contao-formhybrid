@@ -119,7 +119,6 @@
 
                             closeModal(response, $form);
                         }
-
                 }
             });
         },
@@ -182,6 +181,15 @@
                     }
 
                     $el.closest('form').find('#' + checkboxId).attr('disabled', false);
+
+                    document.dispatchEvent(new CustomEvent('formhybridToggleSubpaletteComplete', {
+                        bubbles: true,
+                        detail: {
+                            field: field,
+                            subpaletteContainerSelector: '#sub_' + field,
+                            subpaletteHTML: response.result.html
+                        }
+                    }));
                 }
             });
         },

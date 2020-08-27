@@ -43,6 +43,8 @@ ClassLoader::addClasses(
         'HeimrichHannot\FormHybrid\AvisotaHelper'            => 'system/modules/formhybrid/classes/AvisotaHelper.php',
         'HeimrichHannot\FormHybrid\DatabaseUpdater'          => 'system/modules/formhybrid/classes/DatabaseUpdater.php',
         'HeimrichHannot\FormHybrid\FormSubmissionHelper'     => 'system/modules/formhybrid/classes/FormSubmissionHelper.php',
+        'HeimrichHannot\FormHybrid\Event\FormhybridBeforeCreateWidgetEvent'     => 'system/modules/formhybrid/classes/Event/FormhybridBeforeCreateWidgetEvent.php',
+
 
         // Elements
         'HeimrichHannot\FormHybrid\ContentFormHybridStop'    => 'system/modules/formhybrid/elements/ContentFormHybridStop.php',

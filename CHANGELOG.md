@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.15.1] - 2020-08-27
+- added javascript event in `toggleSubpalette`
+
 ## [3.15.0] - 2020-08-17
 - added formhybridBeforeCreateWidget hook
 - bump minimum php version to 5.6
