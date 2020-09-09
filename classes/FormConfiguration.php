@@ -10,6 +10,7 @@
  */
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\ModuleModel;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
 use HeimrichHannot\Haste\Util\Arrays;
@@ -273,7 +274,7 @@ class FormConfiguration
     /**
      * Fallback function that returns the module from a given id
      *
-     * @return \ModuleModel | null if no id
+     * @return ModuleModel | null if no id
      */
     public function getModule()
     {

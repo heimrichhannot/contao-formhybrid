@@ -118,6 +118,7 @@ Name | Parameter | Description
 formhybridBeforeCreateNotifications | array &$submissionData, Form $currentForm | Do custom logic before sending notification. You can manipulate the submission data or send custom notifications.
 formhybridOnCreateInstance | Form $form, $varConfig = null, $id = 0 | Is called in the form constructor and allows to change configs or do actions on every form init.
 formhybridBeforeCreateWidget | FormhybridBeforeCreateWidgetEvent $event | Is called before widget class constructor is called. You can change widget config and widget class in the event class.
+formhybridBeforeRenderForm | FormhybridBeforeRenderFormEvent $event | Is called before the form template is rendered and can be used to modify data or work with the data before rendering.
 
 ### Opt in handling
 FormHybrid comes with build in opt-in handling. Following steps are required to use it: 

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.16.0] - 2020-09-09
+- added formhybridBeforeRenderForm hook
+- added DC_Hybrid::getInvalidFields()
+
 ## [3.15.1] - 2020-08-27
 - added javascript event in `toggleSubpalette`
 

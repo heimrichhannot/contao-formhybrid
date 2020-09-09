@@ -44,6 +44,7 @@ ClassLoader::addClasses(
         'HeimrichHannot\FormHybrid\DatabaseUpdater'          => 'system/modules/formhybrid/classes/DatabaseUpdater.php',
         'HeimrichHannot\FormHybrid\FormSubmissionHelper'     => 'system/modules/formhybrid/classes/FormSubmissionHelper.php',
         'HeimrichHannot\FormHybrid\Event\FormhybridBeforeCreateWidgetEvent'     => 'system/modules/formhybrid/classes/Event/FormhybridBeforeCreateWidgetEvent.php',
+        'HeimrichHannot\FormHybrid\Event\FormhybridBeforeRenderFormEvent'     => 'system/modules/formhybrid/classes/Event/FormhybridBeforeRenderFormEvent.php',
 
 
         // Elements

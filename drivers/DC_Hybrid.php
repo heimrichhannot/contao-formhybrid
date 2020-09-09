@@ -12,6 +12,7 @@ use HeimrichHannot\Exporter\Exporter;
 use HeimrichHannot\Exporter\ModuleExporter;
 use HeimrichHannot\FileCredit\FilesModel;
 use HeimrichHannot\FormHybrid\Event\FormhybridBeforeCreateWidgetEvent;
+use HeimrichHannot\FormHybrid\Event\FormhybridBeforeRenderFormEvent;
 use HeimrichHannot\Haste\Util\Arrays;
 use HeimrichHannot\Haste\Util\Files;
 use HeimrichHannot\Haste\Util\FormSubmission;
@@ -554,6 +555,16 @@ class DC_Hybrid extends \DataContainer
         $this->Template->invalid     = $this->invalid;
         $this->Template->config      = $this->objConfig;
         $this->Template->action      = $this->getConfig()->strAction;
+
+        if (isset($GLOBALS['TL_HOOKS'][FormhybridBeforeRenderFormEvent::NAME]) && \is_array($GLOBALS['TL_HOOKS'][FormhybridBeforeRenderFormEvent::NAME]))
+        {
+            $event = new FormhybridBeforeRenderFormEvent($this->Template, $this->objModule, $this);
+            foreach ($GLOBALS['TL_HOOKS'][FormhybridBeforeRenderFormEvent::NAME] as $callback)
+            {
+                $this->import($callback[0]);
+                $this->{$callback[0]}->{$callback[1]}($event);
+            }
+        }
 
         $this->compile();
 
@@ -2269,5 +2280,17 @@ class DC_Hybrid extends \DataContainer
 
 	return $setValue;
     }
+
+    /**
+     * Return a list of invalid fields. Is filled when fields are generated.
+     *
+     * @return array
+     */
+    public function getInvalidFields()
+    {
+        return $this->arrInvalidFields;
+    }
+
+
 }
 
