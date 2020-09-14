@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.16.1] - 2020-09-14
+- allow status_message 2.0
+
 ## [3.16.0] - 2020-09-09
 - added formhybridBeforeRenderForm hook
 - added DC_Hybrid::getInvalidFields()
