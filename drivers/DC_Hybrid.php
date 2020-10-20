@@ -1543,6 +1543,10 @@ class DC_Hybrid extends \DataContainer
 
         if ($this->formHybridTransformGetParamsToHiddenFields) {
             foreach ($_GET as $strField => $varValue) {
+                if ($strField === 'FORM_SUBMIT' && $this->strMethod === FORMHYBRID_METHOD_POST) {
+                    continue;
+                }
+
                 $arrData = [
                     'inputType' => 'hidden',
                     'value'     => $varValue,
