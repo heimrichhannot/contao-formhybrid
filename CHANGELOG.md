@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.16.3] - 2020-10-29
+- fixed unchecked checkbox value not correctly evaluated when editing existing entities
+
 ## [3.16.2] - 2020-10-20
 - fixed bug concerning formHybridTransformGetParamsToHiddenFields
 

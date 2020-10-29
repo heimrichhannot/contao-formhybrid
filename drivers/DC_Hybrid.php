@@ -772,7 +772,7 @@ class DC_Hybrid extends \DataContainer
 
         $varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
 
-        if ($this->isSubmitted && in_array($strName, $this->arrEditable) && $inputValue !== null) {
+        if ($this->isSubmitted && in_array($strName, $this->arrEditable) && ($inputValue !== null || $this->dca['fields'][$strName]['inputType'] === 'checkbox')) {
             $varValue = $inputValue;
         }
 
@@ -986,7 +986,11 @@ class DC_Hybrid extends \DataContainer
         $varValue   = $varDefault;
 
         if ($this->isSubmitted && !$skipValidation) {
-            $varValue = $this->getInputValue($strName) !== null ? $this->getInputValue($strName) : $varValue;
+            $inputValue = $this->getInputValue($strName);
+            if ($inputValue !== null || ($inputValue === null && $arrData['inputType'] === 'checkbox')) {
+                $varValue = $inputValue;
+            }
+            
             $varValue = FormSubmission::prepareSpecialValueForSave(
                 $varValue,
                 $arrData,
