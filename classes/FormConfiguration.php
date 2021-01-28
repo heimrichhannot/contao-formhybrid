@@ -173,7 +173,9 @@ class FormConfiguration
         }
 
         // remove auto_item (-> Request class not working here since Contao adds auto_item manually to \Input ...)
-        if (\Config::get('useAutoItem') && \Input::get('auto_item') && $this->removeAutoItemFromAction)
+        // IMPORTANT: Don't run \Input::get('auto_item') before removeAutoItemFromAction has been checked since it removed auto_item
+        // from \Input::$arrUnusedGet which leads wrong auto_items being accepted (non-404) in regular pages!!
+        if ($this->removeAutoItemFromAction && \Config::get('useAutoItem') && \Input::get('auto_item'))
         {
             $varValue = str_replace('/' . \Input::get('auto_item'), '', $varValue);
         }

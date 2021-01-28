@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.16.4] - 2021-01-28
+- switched position of check for `removeAutoItemFromAction` -> don't run \Input::get('auto_item') before `removeAutoItemFromAction` has been checked since it removed `auto_item` from `\Input::$arrUnusedGet` which leads wrong `auto_items` being accepted (non-404) in regular pages!!
+
 ## [3.16.3] - 2020-10-29
 - fixed unchecked checkbox value not correctly evaluated when editing existing entities
 
