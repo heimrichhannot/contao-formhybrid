@@ -422,13 +422,15 @@ abstract class Form extends DC_Hybrid
 
         $arrSubmissionData = $this->prepareSubmissionData();
 
+        $arrSubmissionData = is_array($arrSubmissionData) ? $arrSubmissionData : [];
+
         // HOOK: custom logic before sending notifications
         if (isset($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications']) && \is_array($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications']))
         {
             foreach ($GLOBALS['TL_HOOKS']['formhybridBeforeCreateNotifications'] as $callback)
             {
                 $this->import($callback[0]);
-                $this->{$callback[0]}->{$callback[1]}(is_array($arrSubmissionData) ? $arrSubmissionData : [], $this);
+                $this->{$callback[0]}->{$callback[1]}($arrSubmissionData, $this);
             }
         }
 

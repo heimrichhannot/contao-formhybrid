@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.16.5] - 2021-03-19
+- fixed array reference issue for hook
+
 ## [3.16.4] - 2021-01-28
 - switched position of check for `removeAutoItemFromAction` -> don't run \Input::get('auto_item') before `removeAutoItemFromAction` has been checked since it removed `auto_item` from `\Input::$arrUnusedGet` which leads wrong `auto_items` being accepted (non-404) in regular pages!!
 
