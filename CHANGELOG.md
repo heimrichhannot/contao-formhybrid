@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.17.0] - 2021-04-08
+- dispatch formhybrid_ajax_complete event after async form submit success
+
 ## [3.16.5] - 2021-03-19
 - fixed array reference issue for hook
 

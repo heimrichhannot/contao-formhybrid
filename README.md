@@ -120,6 +120,13 @@ formhybridOnCreateInstance | Form $form, $varConfig = null, $id = 0 | Is called 
 formhybridBeforeCreateWidget | FormhybridBeforeCreateWidgetEvent $event | Is called before widget class constructor is called. You can change widget config and widget class in the event class.
 formhybridBeforeRenderForm | FormhybridBeforeRenderFormEvent $event | Is called before the form template is rendered and can be used to modify data or work with the data before rendering.
 
+### JavaScript Events
+
+Event | Descripiton
+----- | -----------
+formhybrid_ajax_complete | Dispatched after successfull async form submit
+formhybridToggleSubpaletteComplete | Dispatched after subpalette toggled
+
 ### Opt in handling
 FormHybrid comes with build in opt-in handling. Following steps are required to use it: 
 * add `formHybridAddOptIn` to your modules palette

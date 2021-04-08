@@ -115,6 +115,12 @@
                                 $form.replaceWith($replace);
                             }
 
+                            if ( typeof window.CustomEvent === "function" ) {
+                                $replace[0].dispatchEvent(new CustomEvent('formhybrid_ajax_complete', {
+                                    bubbles: true,
+                                }));
+                            }
+
                             FormhybridPlugins.scrollToMessages($replace);
 
                             closeModal(response, $form);
