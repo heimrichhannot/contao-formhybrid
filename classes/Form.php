@@ -525,7 +525,8 @@ abstract class Form extends DC_Hybrid
 				}
             }
 
-            if (in_array('privacy', \ModuleLoader::getActive()) && $privacyToken = Request::getGet(\HeimrichHannot\Privacy\Privacy::OPT_IN_OUT_TOKEN_PARAM))
+            if ((in_array('privacy', \ModuleLoader::getActive()) || class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle')) &&
+                $privacyToken = Request::getGet('ptoken'))
             {
                 try {
                     $decoded         = \Firebase\JWT\JWT::decode($privacyToken, \Contao\Config::get('encryptionKey'), ['HS256']);
@@ -571,7 +572,8 @@ abstract class Form extends DC_Hybrid
 
     protected function addOptInPrivacyProtocolEntry($submissionData = null)
     {
-        if (!in_array('privacy', \ModuleLoader::getActive()) || !$this->formHybridOptInAddPrivacyProtocolEntry)
+        if (!in_array('privacy', \ModuleLoader::getActive()) && !class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle') ||
+            !$this->formHybridOptInAddPrivacyProtocolEntry)
         {
             return;
         }

@@ -694,7 +694,7 @@ if (class_exists('HeimrichHannot\ContaoExporterBundle\HeimrichHannotContaoExport
     ];
 }
 
-if (in_array('privacy', \ModuleLoader::getActive())) {
+if (in_array('privacy', \ModuleLoader::getActive()) || class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle')) {
     $protocolManager = new \HeimrichHannot\Privacy\Manager\ProtocolManager();
 
     $arrFields['formHybridAddPrivacyProtocolEntry']     = $protocolManager->getSelectorFieldDca();

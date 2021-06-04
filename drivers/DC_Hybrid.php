@@ -1777,7 +1777,8 @@ class DC_Hybrid extends \DataContainer
 
     protected function addPrivacyProtocolEntry()
     {
-        if (!in_array('privacy', \ModuleLoader::getActive()) || !$this->formHybridAddPrivacyProtocolEntry) {
+        if (!in_array('privacy', \ModuleLoader::getActive()) && !class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle') ||
+            !$this->formHybridAddPrivacyProtocolEntry) {
             return;
         }
 
