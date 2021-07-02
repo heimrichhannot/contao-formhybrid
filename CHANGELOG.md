@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.18.1] - 2021-07-02
+
+- fixed field and config callbacks to be arrays or callables
+
 ## [3.18.0] - 2021-06-04
 
 - changes for privacy bundle
