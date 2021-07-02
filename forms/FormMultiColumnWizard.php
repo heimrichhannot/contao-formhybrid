@@ -79,6 +79,13 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 
 					foreach ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['save_callback'] AS $callback)
 					{
+                        if (is_array($callback)) {
+                            $this->import($callback[0]);
+                            $this->{$callback[0]}->{$callback[1]}(serialize($this->varValue), $dc);
+                        } elseif (is_callable($callback)) {
+                            $callback(serialize($this->varValue), $dc);
+                        }
+
 						$this->import($callback[0]);
 						$this->{$callback[0]}->{$callback[1]}(serialize($this->varValue), $dc);
 					}
