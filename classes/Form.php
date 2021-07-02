@@ -362,8 +362,13 @@ abstract class Form extends DC_Hybrid
             {
                 foreach ($this->dca['config']['onsubmit_callback'] as $callback)
                 {
-                    $this->import($callback[0]);
-                    $this->{$callback[0]}->{$callback[1]}($this);
+
+                    if (is_array($callback)) {
+                        $this->import($callback[0]);
+                        $this->{$callback[0]}->{$callback[1]}($this);
+                    } elseif (is_callable($callback)) {
+                        $callback($this);
+                    }
 
                     // reload model from database, maybe something has changed in callback
                     if (!$this->saveToBlob)

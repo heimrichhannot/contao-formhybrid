@@ -482,8 +482,12 @@ class DC_Hybrid extends \DataContainer
         if (is_array($this->dca['config']['onreload_callback'])) {
             foreach ($this->dca['config']['onreload_callback'] as $callback) {
 
-                $this->import($callback[0]);
-                $this->{$callback[0]}->{$callback[1]}($this);
+                if (is_array($callback)) {
+                    $this->import($callback[0]);
+                    $this->{$callback[0]}->{$callback[1]}($this);
+                } elseif (is_callable($callback)) {
+                    $callback($this);
+                }
 
                 // reload model from database, maybe something has changed in callback
                 if (!$this->saveToBlob) {
@@ -1245,8 +1249,14 @@ class DC_Hybrid extends \DataContainer
         // priority 1 -> load_callback
         if (is_array($this->dca['fields'][$strName]['load_callback'])) {
             foreach ($this->dca['fields'][$strName]['load_callback'] as $callback) {
-                $this->import($callback[0]);
-                $varValue = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
+
+                if (is_array($callback)) {
+                    $this->import($callback[0]);
+                    $varValue = $this->{$callback[0]}->{$callback[1]}($varValue, $this);
+                } elseif (is_callable($callback)) {
+                    $callback($varValue, $this);
+                }
+
             }
         }
 
