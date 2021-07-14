@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.19.0] - 2021-07-14
+
+- added polish translation
+- updated gitignore
+
 ## [3.18.1] - 2021-07-02
 
 - fixed field and config callbacks to be arrays or callables
