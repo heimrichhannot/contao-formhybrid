@@ -14,7 +14,6 @@ use HeimrichHannot\FileCredit\FilesModel;
 use HeimrichHannot\FormHybrid\Event\FormhybridBeforeCreateWidgetEvent;
 use HeimrichHannot\FormHybrid\Event\FormhybridBeforeRenderFormEvent;
 use HeimrichHannot\Haste\Util\Arrays;
-use HeimrichHannot\Haste\Util\Files;
 use HeimrichHannot\Haste\Util\FormSubmission;
 use HeimrichHannot\Haste\Util\StringUtil;
 use HeimrichHannot\Haste\Util\Url;
@@ -1086,7 +1085,7 @@ class DC_Hybrid extends \DataContainer
             foreach ($GLOBALS['TL_HOOKS'][FormhybridBeforeCreateWidgetEvent::NAME] as $callback)
             {
                 $this->import($callback[0]);
-                $event = $this->{$callback[0]}->{$callback[1]}($event);
+                $this->{$callback[0]}->{$callback[1]}($event);
             }
             $strClass = $event->getWidgetClass();
             $arrWidget = $event->getWidgetData();

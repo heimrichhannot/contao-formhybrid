@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.19.1] - 2021-07-22
+- fixed FormhybridBeforeCreateWidgetEvent hook
+
 ## [3.19.0] - 2021-07-14
 
 - added polish translation
