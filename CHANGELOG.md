@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.20.0] - 2021-08-31
+
+- Added: php8 support
+
 ## [3.19.1] - 2021-07-22
 - fixed FormhybridBeforeCreateWidgetEvent hook
 
