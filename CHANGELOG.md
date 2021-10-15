@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.21.0] - 2021-10-15
+- Added: FormhybridModifyAsyncFormSubmitResponseEvent
+- Added: blocks to formhybrid_default template
+
 ## [3.20.0] - 2021-08-31
 
 - Added: php8 support

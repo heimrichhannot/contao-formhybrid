@@ -119,12 +119,13 @@ formhybridBeforeCreateNotifications | array &$submissionData, Form $currentForm 
 formhybridOnCreateInstance | Form $form, $varConfig = null, $id = 0 | Is called in the form constructor and allows to change configs or do actions on every form init.
 formhybridBeforeCreateWidget | FormhybridBeforeCreateWidgetEvent $event | Is called before widget class constructor is called. You can change widget config and widget class in the event class.
 formhybridBeforeRenderForm | FormhybridBeforeRenderFormEvent $event | Is called before the form template is rendered and can be used to modify data or work with the data before rendering.
+formhybridModifyAsyncFormSubmitResponse | FormhybridModifyAsyncFormSubmitResponseEvent $event | Modify the response data before returning the form ajax response.
 
 ### JavaScript Events
 
 Event | Descripiton
 ----- | -----------
-formhybrid_ajax_complete | Dispatched after successfull async form submit
+formhybrid_ajax_complete | Dispatched after successful async form submit
 formhybridToggleSubpaletteComplete | Dispatched after subpalette toggled
 
 ### Opt in handling
