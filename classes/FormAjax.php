@@ -11,9 +11,11 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\System;
 use HeimrichHannot\Ajax\Response\ResponseData;
 use HeimrichHannot\Ajax\Response\ResponseError;
 use HeimrichHannot\Ajax\Response\ResponseSuccess;
+use HeimrichHannot\FormHybrid\Event\FormhybridModifyAsyncFormSubmitResponseEvent;
 use HeimrichHannot\Request\Request;
 use HeimrichHannot\StatusMessages\StatusMessage;
 
@@ -97,8 +99,18 @@ class FormAjax
 			return;
 		}
 
-		$objResponse = new ResponseSuccess();
-		$objResponse->setResult(new ResponseData($this->html, ['id' => $this->dc->getFormId()]));
+        $event = new FormhybridModifyAsyncFormSubmitResponseEvent($this->html, ['id' => $this->dc->getFormId()], $this->dc);
+        if (isset($GLOBALS['TL_HOOKS'][FormhybridModifyAsyncFormSubmitResponseEvent::NAME]) && \is_array($GLOBALS['TL_HOOKS'][FormhybridModifyAsyncFormSubmitResponseEvent::NAME]))
+        {
+            foreach ($GLOBALS['TL_HOOKS'][FormhybridModifyAsyncFormSubmitResponseEvent::NAME] as $callback)
+            {
+                $hook = System::importStatic($callback[0]);
+                $hook->{$callback[1]}($event);
+            }
+        }
+
+        $objResponse = new ResponseSuccess();
+        $objResponse->setResult(new ResponseData($event->getHtml(), $event->getData()));
 		StatusMessage::reset($this->dc->objModule->id); // reset messages after html has been submitted
 		return $objResponse;
 	}
