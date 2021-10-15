@@ -13,6 +13,7 @@
 		<?php endif; ?>
 
 		<div class="formbody">
+            <?php $this->block('formbody') ?>
 			<?php if(!$this->invalid): ?>
 				<?php if (strtoupper($this->method) == FORMHYBRID_METHOD_POST): ?>
 					<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
@@ -21,10 +22,13 @@
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php echo $this->hidden; ?>
+                <?php $this->block('fields') ?>
 				<?php foreach($this->fields as $name => $objField): ?>
 					<?php echo $objField->parse(); ?>
 				<?php endforeach; ?>
+                <?php $this->endblock(); ?>
 			<?php endif; ?>
+            <?php $this->endblock(); ?>
 		</div>
 	</form>
 
