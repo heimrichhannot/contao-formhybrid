@@ -16,7 +16,7 @@ use HeimrichHannot\FormHybrid\DC_Hybrid;
 
 class FormhybridModifyAsyncFormSubmitResponseEvent
 {
-    const NAME = 'FormhybridModifyAsyncFormSubmitResponse';
+    const NAME = 'formhybridModifyAsyncFormSubmitResponse';
     /**
      * @var string
      */
