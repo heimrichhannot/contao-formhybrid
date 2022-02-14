@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.21.1] - 2022-02-14
+
+- Fixed: array index issues in php 8+
+
 ## [3.21.0] - 2021-10-15
 - Added: FormhybridModifyAsyncFormSubmitResponseEvent
 - Added: blocks to formhybrid_default template

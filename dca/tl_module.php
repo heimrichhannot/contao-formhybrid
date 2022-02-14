@@ -704,19 +704,19 @@ if (in_array('privacy', \ModuleLoader::getActive()) || class_exists('\HeimrichHa
     $arrFields['formHybridPrivacyProtocolFieldMapping'] = $protocolManager->getFieldMappingFieldDca('formHybridDataContainer');
 
     $arrFields['formHybridOptInAddPrivacyProtocolEntry']             = $protocolManager->getSelectorFieldDca();
-    $arrFields['formHybridOptInAddPrivacyProtocolEntry']['label'][0] .= ' (Opt-in)';
+    isset($arrFields['formHybridOptInAddPrivacyProtocolEntry']['label'][0]) && $arrFields['formHybridOptInAddPrivacyProtocolEntry']['label'][0] .= ' (Opt-in)';
 
     $arrFields['formHybridOptInPrivacyProtocolArchive']             = $protocolManager->getArchiveFieldDca();
-    $arrFields['formHybridOptInPrivacyProtocolArchive']['label'][0] .= ' (Opt-in)';
+    isset($arrFields['formHybridOptInPrivacyProtocolArchive']['label'][0]) && $arrFields['formHybridOptInPrivacyProtocolArchive']['label'][0] .= ' (Opt-in)';
 
     $arrFields['formHybridOptInPrivacyProtocolEntryType']             = $protocolManager->getTypeFieldDca();
-    $arrFields['formHybridOptInPrivacyProtocolEntryType']['label'][0] .= ' (Opt-in)';
+    isset($arrFields['formHybridOptInPrivacyProtocolEntryType']['label'][0]) && $arrFields['formHybridOptInPrivacyProtocolEntryType']['label'][0] .= ' (Opt-in)';
 
     $arrFields['formHybridOptInPrivacyProtocolDescription']             = $protocolManager->getDescriptionFieldDca();
-    $arrFields['formHybridOptInPrivacyProtocolDescription']['label'][0] .= ' (Opt-in)';
+    isset($arrFields['formHybridOptInPrivacyProtocolDescription']['label'][0]) && $arrFields['formHybridOptInPrivacyProtocolDescription']['label'][0] .= ' (Opt-in)';
 
     $arrFields['formHybridOptInPrivacyProtocolFieldMapping']             = $arrFields['formHybridPrivacyProtocolFieldMapping'];
-    $arrFields['formHybridOptInPrivacyProtocolFieldMapping']['label'][0] .= ' (Opt-in)';
+    isset($arrFields['formHybridOptInPrivacyProtocolFieldMapping']['label'][0]) && $arrFields['formHybridOptInPrivacyProtocolFieldMapping']['label'][0] .= ' (Opt-in)';
 }
 
 $arrDca['fields'] = array_merge($arrDca['fields'], $arrFields);
