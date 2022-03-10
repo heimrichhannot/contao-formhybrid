@@ -2,6 +2,7 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Controller;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\Widget;
@@ -540,7 +541,7 @@ class DC_Hybrid extends \DataContainer
             // Exception: filter forms should never been reset after submit
             else {
                 if ($this->getReset()) {
-                    $this->reset();
+                    $this->resetForm();
                     $blnSubmittedBeforeReset = true;
                 }
             }
@@ -1667,7 +1668,7 @@ class DC_Hybrid extends \DataContainer
         return implode(' ', $arrClasses);
     }
 
-    protected function reset($blnForce = false)
+    protected function resetForm($blnForce = false)
     {
         if (($this->async && $this->isRelatedAjaxRequest()) || $blnForce) {
             // on reset, reset submission id within session
@@ -1856,7 +1857,7 @@ class DC_Hybrid extends \DataContainer
 
         if (!$blnRedirect || $this->isFilterForm) {
             if ($this->getReset()) {
-                $this->reset(true);
+                $this->resetForm(true);
             }
 
             return;
@@ -2108,7 +2109,7 @@ class DC_Hybrid extends \DataContainer
      * Clear inputs, set default values
      *
      * @return bool
-     * @deprecated set $this->reset to true/fals on onsubmit_callback
+     * @deprecated set $this->resetForm() to true/fals on onsubmit_callback
      */
     public function clearInputs()
     {

@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.21.2] - 2022-03-10
+- Fixed: error due changes in contao 4.9.27 (renamed DC_Hybrid::reset() to DC_Hybrid::resetForm())
+
 ## [3.21.1] - 2022-02-14
 
 - Fixed: array index issues in php 8+
