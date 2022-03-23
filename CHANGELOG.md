@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.21.3] - 2022-03-23
+- Fixed: possible contao manager version issues
+
 ## [3.21.2] - 2022-03-10
 - Fixed: error due changes in contao 4.9.27 (renamed DC_Hybrid::reset() to DC_Hybrid::resetForm())
 
