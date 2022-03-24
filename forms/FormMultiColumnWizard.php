@@ -109,6 +109,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 		$arrUnique = [];
 		$arrDatepicker = [];
 		$arrTinyMCE = [];
+        $arrColorpicker = array();
 		$arrHeaderItems = [];
 
 		foreach ($this->columnFields as $strKey => $arrField)
@@ -124,6 +125,12 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 			{
 				$arrDatepicker[] = $strKey;
 			}
+
+            // Store color picker fields
+            if ($arrField['eval']['colorpicker'])
+            {
+                $arrColorpicker[] = $strKey;
+            }
 
 			// Store tiny mce fields
 			if ($arrField['eval']['rte'] && strncmp($arrField['eval']['rte'], 'tiny', 4) === 0)
@@ -213,17 +220,17 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 
 		if ($this->formTemplate != '')
 		{
-			$strOutput = $this->generateTemplateOutput($arrUnique, $arrDatepicker, $arrHidden, $arrItems, $arrHiddenHeader);
+			$strOutput = $this->generateTemplateOutput($arrUnique, $arrDatepicker, $arrColorpicker, $arrHidden, $arrItems, $arrHiddenHeader);
 		}
 		else
 		{
-			$strOutput = $this->generateTable($arrUnique, $arrDatepicker, $arrHidden, $arrItems, $arrHiddenHeader);
+			$strOutput = $this->generateTable($arrUnique, $arrDatepicker, $arrColorpicker, $arrHidden, $arrItems, $arrHiddenHeader);
 		}
 
 		return $strOutput;
 	}
 
-	protected function generateTemplateOutput($arrUnique, $arrDatepicker, $arrHidden, $arrItems)
+    protected function generateTemplateOutput($arrUnique, $arrDatepicker, $arrColorpicker, $strHidden, $arrItems)
 	{
 		$objTemplate        = new \FrontendTemplate($this->formTemplate);
 		$objTemplate->items = $arrItems;
@@ -247,7 +254,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 	 * @param array
 	 * @return string
 	 */
-	protected function generateTable($arrUnique, $arrDatepicker, $arrHidden, $arrItems, $arrHiddenHeader = [])
+    protected function generateTable($arrUnique, $arrDatepicker, $arrColorpicker, $strHidden, $arrItems, $arrHiddenHeader = array())
 	{
 
 		// generate header fields

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2022-03-24
+- Fixed: ContentFormHybridStart and ContentFormHybridStop not working properly with module fragment controllers
+- Fixed: incompatible method signatures in FormMultiColumnWizard 
+
 ## [3.21.3] - 2022-03-23
 - Fixed: possible contao manager version issues
 

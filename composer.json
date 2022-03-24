@@ -35,6 +35,9 @@
         "heimrichhannot/contao-be_explanation": "~1.0",
         "firebase/php-jwt": "^4.0"
     },
+    "conflict": {
+        "menatwork/contao-multicolumnwizard": "<3.3.4"
+    },
     "suggest": {
         "heimrichhannot/contao-exporter": "Export entities to pdf"
     },

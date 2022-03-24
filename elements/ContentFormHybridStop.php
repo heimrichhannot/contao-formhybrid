@@ -11,6 +11,8 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use Contao\ModuleProxy;
+
 class ContentFormHybridStop extends \ContentElement
 {
 	protected $strTemplate = 'ce_formhybrid_stop';
@@ -53,10 +55,15 @@ class ContentFormHybridStop extends \ContentElement
 
         global $objPage;
 
-
-        $objModule = new $strClass($objModule, $objArticle->inColumn);
-        $objModule->renderStop = true;
-        $objModule->startModule = $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer];
+        if (class_exists(ModuleProxy::class) && $strClass === ModuleProxy::class) {
+            $objModule->renderStop = true;
+            $objModule->startModule = $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer];
+            $objModule = new $strClass($objModule, $objArticle->inColumn);
+        } else {
+            $objModule = new $strClass($objModule, $objArticle->inColumn);
+            $objModule->renderStop = true;
+            $objModule->startModule = $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer];
+        }
 
 		$this->Template->content = $objModule->generate();
 	}
