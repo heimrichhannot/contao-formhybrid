@@ -12,15 +12,17 @@
 namespace HeimrichHannot\FormHybrid;
 
 
-class FormMultiColumnWizard extends \MultiColumnWizard
+use MenAtWork\MultiColumnWizardBundle\Contao\Widgets\MultiColumnWizard;
+
+class FormMultiColumnWizard extends MultiColumnWizard
 {
 
 	/**
 	 * Generate the widget and return it as string
 	 * @return string
 	 */
-	public function generate()
-	{
+    public function generate($overwriteRowCurrentRow = null, $onlyRows = false)
+    {
 		// load the callback data if there's any (do not do this in __set() already because then we don't have access to currentRecord)
 		if (is_array($this->arrCallback))
 		{
@@ -234,7 +236,7 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 	{
 		$objTemplate        = new \FrontendTemplate($this->formTemplate);
 		$objTemplate->items = $arrItems;
-		$objTemplate->hidden = $arrHidden;
+		$objTemplate->hidden = $strHidden;
 
 		$arrButtons = [];
 		foreach ($arrItems as $k => $arrValue)
@@ -254,9 +256,16 @@ class FormMultiColumnWizard extends \MultiColumnWizard
 	 * @param array
 	 * @return string
 	 */
-    protected function generateTable($arrUnique, $arrDatepicker, $arrColorpicker, $strHidden, $arrItems, $arrHiddenHeader = array())
-	{
 
+    protected function generateTable(
+        $arrUnique,
+        $arrDatepicker,
+        $arrColorpicker,
+        $strHidden,
+        $arrItems,
+        $arrHiddenHeader = array(),
+        $onlyRows = false
+    ) {
 		// generate header fields
 		foreach ($this->columnFields as $strKey => $arrField)
 		{

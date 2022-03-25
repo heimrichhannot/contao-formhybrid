@@ -11,6 +11,7 @@
 namespace HeimrichHannot\FormHybrid;
 
 
+use Contao\ModuleModel;
 use Contao\ModuleProxy;
 
 class ContentFormHybridStart extends \ContentElement
@@ -47,6 +48,7 @@ class ContentFormHybridStart extends \ContentElement
 
 		if($objContentStop->numRows === 0) return;
 
+        /** @var ModuleModel|null $objModule */
 		$objModule = \ModuleModel::findByPk($this->formhybridModule);
 
 		if($objModule === null) return;
@@ -69,6 +71,7 @@ class ContentFormHybridStart extends \ContentElement
 
         global $objPage;
 
+        $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer] = $objModule->id;
         if (class_exists(ModuleProxy::class) && $strClass === ModuleProxy::class) {
             $objModule->renderStart = true;
             $objModule = new $strClass($objModule, $objArticle->inColumn);
@@ -76,8 +79,6 @@ class ContentFormHybridStart extends \ContentElement
             $objModule = new $strClass($objModule, $objArticle->inColumn);
             $objModule->renderStart = true;
         }
-
-        $_SESSION[FormSession::FORMHYBRID_FORMSESSION_START_KEY][$objPage->id . '_' .  $objModule->formHybridDataContainer] = $objModule->id;
 
 		$this->Template->content = $objModule->generate();
 	}
