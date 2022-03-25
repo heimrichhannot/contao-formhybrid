@@ -36,7 +36,7 @@
         "firebase/php-jwt": "^4.0"
     },
     "conflict": {
-        "menatwork/contao-multicolumnwizard": "*"
+        "menatwork/contao-multicolumnwizard": "<3.4"
     },
     "suggest": {
         "heimrichhannot/contao-exporter": "Export entities to pdf"
