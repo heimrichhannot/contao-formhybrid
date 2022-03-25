@@ -13,11 +13,20 @@ namespace HeimrichHannot\FormHybrid;
 
 
 use MenAtWork\MultiColumnWizardBundle\Contao\Widgets\MultiColumnWizard;
+use MenAtWork\MultiColumnWizardBundle\MultiColumnWizardBundle;
 
 class FormMultiColumnWizard extends MultiColumnWizard
 {
+    public function __construct($arrAttributes = false)
+    {
+        if (!class_exists(MultiColumnWizardBundle::class)) {
+            throw new \Exception("FormMultiColumnWizard need menatwork/contao-multicolumnwizard-bundle 3.x to be installed.");
+        }
+        parent::__construct($arrAttributes);
+    }
 
-	/**
+
+    /**
 	 * Generate the widget and return it as string
 	 * @return string
 	 */
