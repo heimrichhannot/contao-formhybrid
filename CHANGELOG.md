@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2022-03-24
+## [3.22.0] - 2022-03-25
 - Changed: due changes in contao, php and multicolumnwizard formhybrid is now only compatible to multicolumnwizard bundle
 - Fixed: ContentFormHybridStart and ContentFormHybridStop not working properly with module fragment controllers
 - Fixed: incompatible method signatures in FormMultiColumnWizard 
