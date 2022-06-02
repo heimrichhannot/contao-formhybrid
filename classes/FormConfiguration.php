@@ -144,26 +144,34 @@ class FormConfiguration
         }
         else
         {
-            $varValue = Url::removeQueryString(['file'], \Environment::get('uri'));
+            $varValue = \Environment::get('uri');
+            $hasGetParameter = (false !== strpos($varValue, '?'));
+
+            if ($hasGetParameter) {
+                $varValue = Url::removeQueryString(['file'], $varValue);
+                $hasGetParameter = (false !== strpos($varValue, '?'));
+            }
 
             // remove all formhybrid query parameters within ajax request
-            if (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
+            if ($hasGetParameter && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false)
             {
                 $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
+                $hasGetParameter = (false !== strpos($varValue, '?'));
             }
 
             // remove all modal query parameters within ajax request
-            if (in_array('modal', \ModuleLoader::getActive()) && Ajax::isRelated(\HeimrichHannot\Modal\Modal::MODAL_NAME) !== false)
+            if ($hasGetParameter && in_array('modal', \ModuleLoader::getActive()) && Ajax::isRelated(\HeimrichHannot\Modal\Modal::MODAL_NAME) !== false)
             {
                 $varValue = AjaxAction::removeAjaxParametersFromUrl($varValue);
                 $varValue = Url::removeParameterFromUri($varValue, 'location');
+                $hasGetParameter = (false !== strpos($varValue, '?'));
             }
         }
 
         // async form
         if ($this->async)
         {
-            $varValue = AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
+            $varValue = @AjaxAction::generateUrl(Form::FORMHYBRID_NAME, 'asyncFormSubmit');
         }
 
         // add hash

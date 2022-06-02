@@ -479,7 +479,7 @@ class DC_Hybrid extends \DataContainer
         }
 
         // run callbacks on ajax reload
-        if (is_array($this->dca['config']['onreload_callback'])) {
+        if (is_array($this->dca['config']['onreload_callback'] ?? null)) {
             foreach ($this->dca['config']['onreload_callback'] as $callback) {
 
                 if (is_array($callback)) {
@@ -574,8 +574,8 @@ class DC_Hybrid extends \DataContainer
 
         $strBuffer = \Controller::replaceInsertTags($this->Template->parse(), false);
 
-        Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'asyncFormSubmit', new FormAjax($this, $strBuffer, $blnSubmittedBeforeReset));
-        Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'reload', new FormAjax($this, $strBuffer));
+        @Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'asyncFormSubmit', new FormAjax($this, $strBuffer, $blnSubmittedBeforeReset));
+        @Ajax::runActiveAction(Form::FORMHYBRID_NAME, 'reload', new FormAjax($this, $strBuffer));
 
         return $strBuffer;
     }
@@ -588,7 +588,7 @@ class DC_Hybrid extends \DataContainer
         $blnAjax                = false;
 
         // subpalettes
-        $arrSelectors = $this->dca['palettes']['__selector__'];
+        $arrSelectors = $this->dca['palettes']['__selector__'] ?? null;
 
         if (is_array($arrSelectors)) {
             $toggleSubpalette = str_replace('sub_', '', $ajaxId);
@@ -772,12 +772,16 @@ class DC_Hybrid extends \DataContainer
      */
     protected function getFieldValue($strName)
     {
-        $inputValue = (strtoupper($this->strMethod) == 'POST') ? Request::getPost($strName) : Request::getGet($strName);
+        $varValue = null;
+        if (isset($this->dca['fields'][$strName])) {
+            $varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
+        }
 
-        $varValue = $this->getDefaultFieldValue($strName, $this->dca['fields'][$strName]);
-
-        if ($this->isSubmitted && in_array($strName, $this->arrEditable) && ($inputValue !== null || $this->dca['fields'][$strName]['inputType'] === 'checkbox')) {
-            $varValue = $inputValue;
+        if ($this->isSubmitted) {
+            $inputValue = (strtoupper($this->strMethod) == 'POST') ? Request::getPost($strName) : Request::getGet($strName);
+            if (in_array($strName, $this->arrEditable) && ($inputValue !== null || $this->dca['fields'][$strName]['inputType'] === 'checkbox')) {
+                $varValue = $inputValue;
+            }
         }
 
         return $varValue;
@@ -844,8 +848,8 @@ class DC_Hybrid extends \DataContainer
         }
 
         // checkbox: addImage for example
-        if ($this->dca['fields'][$strSelector]['inputType'] == 'checkbox' && !$this->dca['fields'][$strSelector]['eval']['multiple']) {
-            if (strlen($this->dca['subpalettes'][$strSelector])) {
+        if (isset($this->dca['fields'][$strSelector]) && $this->dca['fields'][$strSelector]['inputType'] == 'checkbox' && !($this->dca['fields'][$strSelector]['eval']['multiple'] ?? false)) {
+            if (!empty($this->dca['subpalettes'][$strSelector])) {
                 $blnActive           = ($varValue == true);
                 $strSubpalette       = $strSelector;
                 $blnToggleSubpalette = true;
@@ -860,7 +864,7 @@ class DC_Hybrid extends \DataContainer
                 $blnActive     = true;
                 $strSubpalette = $varValue;
             } // concatenated type selector (e.g. source -> source_external)
-            elseif (is_array($this->dca['subpalettes'])) {
+            elseif (is_array($this->dca['subpalettes'] ?? null)) {
                 $arrSubpalettes = Arrays::filterByPrefixes($this->dca['subpalettes'], [$strSelector.'_']);
 
                 if (!empty($arrSubpalettes)) {
@@ -980,14 +984,18 @@ class DC_Hybrid extends \DataContainer
         // to make captcha form related, add the form id without entity id
         if ($arrData['inputType'] == 'captcha') {
             $strName .= '_'.$this->getFormId(false);
+            $varDefault = null;
+            $varValue = null;
         }
 
         $this->strField     = $strName;
         $this->strInputName = $strName;
 
-        // contains the load_callback!
-        $varDefault = $this->getDefaultFieldValue($strName, $arrData);
-        $varValue   = $varDefault;
+        if ($arrData['inputType'] != 'captcha') {
+            // contains the load_callback!
+            $varDefault = $this->getDefaultFieldValue($strName, $arrData);
+            $varValue   = $varDefault;
+        }
 
         if ($this->isSubmitted && !$skipValidation) {
             $inputValue = $this->getInputValue($strName);
@@ -1041,7 +1049,7 @@ class DC_Hybrid extends \DataContainer
             ] = $this->retrieveSubpaletteWithState($strName, array_keys($this->arrFields));
 
         // support submitOnChange as form submission
-        if ($arrData['eval']['submitOnChange'] && $blnToggleSubpalette) {
+        if (($arrData['eval']['submitOnChange'] ?? false) && $blnToggleSubpalette) {
             if ($blnAutoSubmit) {
                 $arrWidget['onchange'] = $this->async ? 'FormhybridAjaxRequest.asyncSubmit(this.form);' : "this.form.submit();";
             } else {
@@ -1061,7 +1069,7 @@ class DC_Hybrid extends \DataContainer
             }
         } // the field does trigger a form reload without validation
         else {
-            if ($arrWidget['submitOnChange']) {
+            if ($arrWidget['submitOnChange'] ?? false) {
                 $strEvent = null;
 
                 if ($arrWidget['onchange']) {
@@ -1124,7 +1132,7 @@ class DC_Hybrid extends \DataContainer
                 }
 
                 // Make sure unique fields are unique
-                if ($arrData['eval']['unique'] && $varValue != ''
+                if (($arrData['eval']['unique'] ?? false) && $varValue != ''
                     && !\Database::getInstance()->isUniqueValue(
                         $this->strTable,
                         $strName,
@@ -1137,7 +1145,7 @@ class DC_Hybrid extends \DataContainer
                 // trigger save_callbacks before assertion of the new value to objActiveRecord
                 try
                 {
-                    if (is_array($arrData['save_callback'])) {
+                    if (is_array($arrData['save_callback'] ?? null)) {
                         foreach ($arrData['save_callback'] as $callback) {
                             if (is_array($callback)) {
                                 $this->import($callback[0]);
@@ -1232,9 +1240,11 @@ class DC_Hybrid extends \DataContainer
 
     protected function getDefaultFieldValue($strName, $arrData)
     {
-  	if ($this->formHybridAddGetParameter && Request::hasGet($strName) && $this->setValueFromGetParameter($strName)) {
-		return Request::getGet($strName);
-	}
+        if ($this->formHybridAddGetParameter && Request::hasGet($strName) && $this->setValueFromGetParameter($strName)) {
+            return Request::getGet($strName);
+        }
+
+        $varValue = null;
 
         // priority 2 -> set value from model entity ($this->setDefaults() triggered before)
         if (isset($this->objActiveRecord->{$strName})) {
@@ -1247,7 +1257,7 @@ class DC_Hybrid extends \DataContainer
         }
 
         // priority 1 -> load_callback
-        if (is_array($this->dca['fields'][$strName]['load_callback'])) {
+        if (is_array($this->dca['fields'][$strName]['load_callback'] ?? null)) {
             foreach ($this->dca['fields'][$strName]['load_callback'] as $callback) {
 
                 if (is_array($callback)) {
@@ -1334,19 +1344,19 @@ class DC_Hybrid extends \DataContainer
     protected function runCallbacks()
     {
         foreach ($this->arrFields as $strName => $objWidget) {
-            $arrData = $this->dca['fields'][$strName];
+            $arrData = $this->dca['fields'][$strName] ?? [];
 
             $varValue = $this->objActiveRecord->{$strName};
 
             // Set the correct empty value (see #6284, #6373)
             if ($varValue === '') {
-                $varValue = \Widget::getEmptyValueByFieldType($arrData['sql']);
+                $varValue = \Widget::getEmptyValueByFieldType($arrData['sql'] ?? '');
             }
 
             // Save the value if there was no error
-            if (($varValue != '' || !$arrData['eval']['doNotSaveEmpty'])
+            if (($varValue != '' || !($arrData['eval']['doNotSaveEmpty'] ?? false))
                 && ($this->objActiveRecord->{$strName} !== $varValue
-                    || $arrData['eval']['alwaysSave'])) {
+                    || ($arrData['eval']['alwaysSave'] ?? false))) {
                 $this->objActiveRecord->{$strName} = $varValue;
             }
         }
@@ -1360,7 +1370,7 @@ class DC_Hybrid extends \DataContainer
 
         if (($objVersion = Version::setFromModel($this->objActiveRecord)) !== null) {
             $objVersion = $this->modifyVersion($objVersion);
-            Version::createVersion($objVersion, $this->objActiveRecord);
+            @Version::createVersion($objVersion, $this->objActiveRecord);
         }
     }
 
@@ -1408,11 +1418,11 @@ class DC_Hybrid extends \DataContainer
             }
 
             // set from default field value
-            if (($varDefault = $arrDca['fields'][$strName]['default']) !== null) {
+            if (($varDefault = $arrDca['fields'][$strName]['default'] ?? null) !== null) {
                 $this->arrDefaults[$strName] = $varDefault;
             }
 
-            if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName]) !== null) {
+            if ($this->addDefaultValues && ($varDefault = $this->arrDefaultValues[$strName] ?? null) !== null) {
                 $this->arrDefaults[$strName] = $varDefault['value'];
             }
         }
@@ -1420,6 +1430,10 @@ class DC_Hybrid extends \DataContainer
         // add more fields, for example from other palettes or fields that have no palette or no sql
         if (is_array($this->arrDefaultValues)) {
             foreach ($this->arrDefaultValues as $strField => $varDefault) {
+                if (!isset($arrDca['fields'][$strField]) || empty($arrDca['fields'][$strField])) {
+                    continue;
+                }
+
                 $arrData = $arrDca['fields'][$strField];
 
                 if (!in_array($strField, $this->arrEditable) && isset($arrData['inputType'])) {
@@ -1485,13 +1499,13 @@ class DC_Hybrid extends \DataContainer
                     break;
                 case FORMHYBRID_METHOD_POST:
 
-                    if ($arrAttribues['preserveTags']) {
+                    if ($arrAttribues['preserveTags'] ?? false) {
                         $this->arrSubmission[$strName] = Request::getPostRaw($strName);
                     } else {
-                        if ($arrAttribues['allowHtml']) {
-                            $this->arrSubmission[$strName] = Request::getPostHtml($strName, $arrAttribues['decodeEntities']);
+                        if ($arrAttribues['allowHtml'] ?? false) {
+                            $this->arrSubmission[$strName] = Request::getPostHtml($strName, $arrAttribues['decodeEntities'] ?? false);
                         } else {
-                            $this->arrSubmission[$strName] = Request::getPost($strName, $arrAttribues['decodeEntities']);
+                            $this->arrSubmission[$strName] = Request::getPost($strName, $arrAttribues['decodeEntities'] ?? false);
                         }
                     }
                     break;

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.23.0] - 2022-06-02
+- Changed: dropped php 5 support
+- Fixed: warning in php 8
+
 ## [3.22.2] - 2022-03-25
 - Fixed: not working multicolumnwizard version conflict, now a exception is thrown if invalid version is used
 

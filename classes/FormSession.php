@@ -27,7 +27,7 @@ class FormSession
 	 */
 	public static function addSubmissionId($formId, $intId)
 	{
-		if (!is_array($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY]))
+		if (!is_array($_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY] ?? null))
 		{
 			$_SESSION[static::FORMHYBRID_FORMSESSION_SUBMISSION_KEY] = [];
 		}

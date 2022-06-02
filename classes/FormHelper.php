@@ -205,7 +205,7 @@ class FormHelper extends \System
     {
         return 'var Formhybrid={' . 'lang:{' . 'close:"' . $GLOBALS['TL_LANG']['MSC']['close'] . '",' . 'collapse:"' . $GLOBALS['TL_LANG']['MSC']['collapseNode'] . '",'
                . 'expand:"' . $GLOBALS['TL_LANG']['MSC']['expandNode'] . '",' . 'loading:"' . $GLOBALS['TL_LANG']['MSC']['loadingData'] . '",' . 'apply:"'
-               . $GLOBALS['TL_LANG']['MSC']['apply'] . '",' . 'picker:"' . $GLOBALS['TL_LANG']['MSC']['pickerNoSelection'] . '"' . '},' . 'script_url:"' . TL_ASSETS_URL . '",'
+               . ($GLOBALS['TL_LANG']['MSC']['apply'] ?? '') . '",' . 'picker:"' . ($GLOBALS['TL_LANG']['MSC']['pickerNoSelection'] ?? '') . '"' . '},' . 'script_url:"' . TL_ASSETS_URL . '",'
                . 'path:"' . TL_PATH . '",' . 'request_token:"' . REQUEST_TOKEN . '",' . 'referer_id:"' . TL_REFERER_ID . '",' . 'scope:"' . FORMHYBRID_ACTION_SCOPE . '"' . '};';
     }
 
@@ -221,7 +221,7 @@ class FormHelper extends \System
                 continue;
             }
 
-            $varValue = $arrValue[$strValue];
+            $varValue = $arrValue[$strValue] ?? null;
 
             if (empty($strValue))
             {
@@ -309,7 +309,7 @@ class FormHelper extends \System
         for ($_rit = 0, $_cnt = count($tags); $_rit < $_cnt; $_rit += 3)
         {
             $strBuffer .= $tags[$_rit];
-            $strTag = $tags[$_rit + 1];
+            $strTag = $tags[$_rit + 1] ?? '';
 
             // Skip empty tags
             if ($strTag == '')
