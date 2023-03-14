@@ -232,7 +232,7 @@ class DC_Hybrid extends \DataContainer
 
         if (!$this->intId || !is_numeric($this->intId)) {
             if ($this->objModule !== null && (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false || $this->isForceCreate())) {
-                $this->objActiveRecord = $this->createSubmission($strModelClass);
+                $this->objActiveRecord = $this->createSubmission($strModelClass ?? null);
 
                 // set tstamp by default to 0
                 if ($this->hasDatabaseTable() && !$this->hasNoEntity() && \Database::getInstance()->fieldExists('tstamp', $this->strTable)) {
@@ -278,7 +278,7 @@ class DC_Hybrid extends \DataContainer
             $strModelClass = \Model::getClassFromTable($this->strTable);
         }
 
-        if (class_exists($strModelClass)) {
+        if (class_exists($strModelClass ?? '')) {
             if (!$blnCreated && ($objModel = $strModelClass::findByPk($this->intId)) !== null) {
                 $this->objActiveRecord = $objModel;
                 $this->setMode(FORMHYBRID_MODE_EDIT);
@@ -1601,7 +1601,7 @@ class DC_Hybrid extends \DataContainer
 
         // Call onload_callback, but only if 3rd callback parameter is set to true, otherwise contao backend related callbacks
         // where a BackendUser is required might get called
-        if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback'])) {
+        if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback'] ?? null)) {
             foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onload_callback'] as $callback) {
                 if (!is_array($callback) || !isset($callback[2]) || $callback[2] !== true) {
                     continue;
