@@ -397,7 +397,7 @@ abstract class Form extends DC_Hybrid
         $blnIsModified = false;
         foreach ($this->objActiveRecord->row() as $strField => $varValue)
         {
-            if ($this->arrOriginalRow[$strField] != $varValue)
+            if (!$this->arrOriginalRow || ($this->arrOriginalRow[$strField] != $varValue))
             {
                 $blnIsModified = true;
                 break;
@@ -748,7 +748,7 @@ abstract class Form extends DC_Hybrid
             {
                 $arrData = $arrDca['fields'][$strField];
 
-                if (is_array($arrData['options']) && !Validator::isValidOption($varValue, $arrData, $this))
+                if (is_array($arrData['options'] ?? null) && !Validator::isValidOption($varValue, $arrData, $this))
                 {
                     continue;
                 }

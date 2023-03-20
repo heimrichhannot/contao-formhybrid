@@ -32,7 +32,7 @@ class Validator
             $arrOptions = [0, 1];
         }
 
-        $blnIsAssociative = ($arrData['eval']['isAssociative'] || array_is_assoc($arrOptions));
+        $blnIsAssociative = (($arrData['eval']['isAssociative'] ?? false) || array_is_assoc($arrOptions));
         $intFounds        = 0;
 
         // add empty option if includeBlankOption is active
