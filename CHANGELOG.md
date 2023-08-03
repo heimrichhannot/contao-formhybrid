@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.24.0] - 2023-08-03
+- Changed: skip validation on disabled fields
+
 ## [3.23.3] - 2023-03-20
 - Fixed: php 8 related issues
 

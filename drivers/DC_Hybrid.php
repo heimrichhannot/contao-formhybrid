@@ -1122,7 +1122,8 @@ class DC_Hybrid extends \DataContainer
 
             // do not validate fields if not submitted or skipvalidation issset
             // do not submit if ajax request and group is not formhybrid, for example multifileupload (otherwise captcha fields will be validated does not match visible one)
-            if (!($this->isSkipValidation() || $skipValidation) && Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) {
+            // do not validate disabled fields
+            if (!($this->isSkipValidation() || $skipValidation) && (Ajax::isRelated(Form::FORMHYBRID_NAME) !== false) && ('disabled' !== $objWidget->disabled)) {
                 FrontendWidget::validateGetAndPost($objWidget, $this->strMethod, $this->getFormId(), $arrData);
 
                 if (is_array($arrWidgetErrors)) {
