@@ -5,6 +5,7 @@ namespace HeimrichHannot\FormHybrid;
 use Contao\Controller;
 use Contao\Dbafs;
 use Contao\File;
+use Contao\System;
 use Contao\Widget;
 use HeimrichHannot\Ajax\Ajax;
 use HeimrichHannot\Ajax\AjaxAction;
@@ -175,7 +176,7 @@ class DC_Hybrid extends \DataContainer
 
         $this->strInputMethod = $strInputMethod = strtoupper($this->strMethod);
 
-        if (($blnSkipValidation = $this->getInputValue(FORMHYBRID_NAME_SKIP_VALIDATION)) !== null) {
+        if ('dev' === System::getContainer()->getParameter('kernel.environment') && ($blnSkipValidation = $this->getInputValue(FORMHYBRID_NAME_SKIP_VALIDATION)) !== null) {
             $this->setSkipValidation($blnSkipValidation);
         }
 

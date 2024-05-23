@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.25.0] - 2024-05-23
+- Changed: require at least contao 4.4
+- Fixed: to lazy skip parameter
+
 ## [3.24.0] - 2023-08-03
 - Changed: skip validation on disabled fields
 
