@@ -2,7 +2,6 @@
 
 namespace HeimrichHannot\FormHybrid;
 
-use Contao\Controller;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\System;
@@ -604,7 +603,7 @@ class DC_Hybrid extends \DataContainer
             foreach ($arrSelectors as $strName) {
                 [
                     $blnActive, $strSubPalette, $arrFields, $arrSubPaletteFields, $blnAutoSubmit, $blnToggleSubpalette
-                    ] = $this->retrieveSubpaletteWithState($strName, $arrFields, $arrActivePaletteFields);
+                ] = $this->retrieveSubpaletteWithState($strName, $arrFields, $arrActivePaletteFields);
 
                 if (!$blnToggleSubpalette) {
                     continue;
@@ -648,7 +647,11 @@ class DC_Hybrid extends \DataContainer
             // check for active palette from typeselector
             foreach ($arrSelectors as $strSelector) {
                 $varValue   = $this->getFieldValue($strSelector);
-                $strPalette = $this->dca['palettes'][$varValue];
+                $strPalette = null;
+                if (is_string($varValue)) {
+                    $strPalette = $this->dca['palettes'][$varValue] ?? null;
+
+                }
                 $arrOptions = deserialize($this->dca['fields'][$strSelector]['options'], true);
 
                 $arrCallback = $this->dca['fields'][$strSelector]['options_callback'];
@@ -674,7 +677,7 @@ class DC_Hybrid extends \DataContainer
                     }
                 }
 
-                if ($varValue && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette
+                if ($varValue && is_string($varValue) && isset($this->dca['palettes'][$varValue]) && !$blnIsSubPaletteSelector && $strPalette
                     && in_array($varValue, $arrOptions)) {
                     // no messages
                     $this->setSilentMode($this->isSkipValidation());
@@ -807,6 +810,9 @@ class DC_Hybrid extends \DataContainer
         }
 
         $varValue = $this->getFieldValue($strSelector);
+        if (!is_string($varValue) || empty($varValue)) {
+            return false;
+        }
 
         if (!isset($this->dca['palettes'][$varValue])) {
             return false;
