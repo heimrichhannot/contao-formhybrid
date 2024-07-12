@@ -1921,7 +1921,7 @@ class DC_Hybrid extends \DataContainer
     }
 
     /**
-     * @param       $strName  The name of the field
+     * @param string $strName  The name of the field
      * @param array $arrData  Field DCA config
      * @param bool  $blnForce Force field addin, regardless of existence in active palette
      */
