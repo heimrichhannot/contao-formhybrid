@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.25.1] - 2024-12-04
+- Fixed: exception when not in web context
+- Changed: require at least contao 4.9
+- Fixed: some legacy code
+
 ## [3.25.0] - 2024-05-23
 - Changed: require at least contao 4.4
 - Fixed: to lazy skip parameter

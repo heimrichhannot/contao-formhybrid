@@ -11,9 +11,16 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Controller;
+use Contao\Config;
+use Psr\Log\LogLevel;
+use Contao\CoreBundle\Monolog\ContaoContext;
+use Contao\StringUtil;
+use Contao\DataContainer;
+use Contao\System;
 use HeimrichHannot\Request\Request;
 
-class FormHelper extends \System
+class FormHelper extends System
 {
     public static function getFormId($strTable, $intModule, $intId = null, $blnAddEntityId = true, $suffix = '')
     {
@@ -46,7 +53,7 @@ class FormHelper extends \System
             return $varValue;
         }
 
-        return \Controller::replaceInsertTags($varValue, $blnCache);
+        return Controller::replaceInsertTags($varValue, $blnCache);
     }
 
     public static function htmlEntityDecode($varValue)
@@ -61,7 +68,7 @@ class FormHelper extends \System
             return $varValue;
         }
 
-        return html_entity_decode($varValue, ENT_QUOTES, \Config::get('characterSet'));
+        return html_entity_decode($varValue, ENT_QUOTES, Config::get('characterSet'));
     }
 
     public static function getFieldOptions($arrData, $objDc = null)
@@ -83,14 +90,14 @@ class FormHelper extends \System
             {
                 $strClass    = $arrData['options_callback'][0];
                 $strMethod   = $arrData['options_callback'][1];
-                $objInstance = \Controller::importStatic($strClass);
+                $objInstance = Controller::importStatic($strClass);
 
                 try
                 {
                     $arrCallback = @$objInstance->{$strMethod}($objDc);
                 } catch (\Exception $e)
                 {
-                    \System::log("$strClass::$strMethod raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
+                    System::getContainer()->get('monolog.logger.contao')->log(LogLevel::ERROR, "$strClass::$strMethod raised an Exception: $e->getMessage()", ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]);
                 }
             }
             elseif (is_callable($arrData['options_callback']))
@@ -101,7 +108,7 @@ class FormHelper extends \System
                 } catch (\Exception $e)
                 {
                     $strCallback = serialize($arrData['options_callback']);
-                    \System::log("$strCallback raised an Exception: $e->getMessage()", __METHOD__, TL_ERROR);
+                    System::getContainer()->get('monolog.logger.contao')->log(LogLevel::ERROR, "$strCallback raised an Exception: $e->getMessage()", ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]);
                 }
             }
 
@@ -130,11 +137,11 @@ class FormHelper extends \System
 
     public static function escapeAllEntities($strDca, $strField, $varValue)
     {
-        \Controller::loadDataContainer($strDca);
+        Controller::loadDataContainer($strDca);
 
         $arrData = $GLOBALS['TL_DCA'][$strDca]['fields'][$strField];
 
-        $strPreservedTags = isset($arrData['eval']['allowedTags']) ? $arrData['eval']['allowedTags'] : \Config::get('allowedTags');
+        $strPreservedTags = $arrData['eval']['allowedTags'] ?? Config::get('allowedTags');
 
         if($arrData['eval']['allowHtml'] || strlen($arrData['eval']['rte']) || $arrData['eval']['preserveTags'])
         {
@@ -206,7 +213,7 @@ class FormHelper extends \System
         return 'var Formhybrid={' . 'lang:{' . 'close:"' . $GLOBALS['TL_LANG']['MSC']['close'] . '",' . 'collapse:"' . $GLOBALS['TL_LANG']['MSC']['collapseNode'] . '",'
                . 'expand:"' . $GLOBALS['TL_LANG']['MSC']['expandNode'] . '",' . 'loading:"' . $GLOBALS['TL_LANG']['MSC']['loadingData'] . '",' . 'apply:"'
                . ($GLOBALS['TL_LANG']['MSC']['apply'] ?? '') . '",' . 'picker:"' . ($GLOBALS['TL_LANG']['MSC']['pickerNoSelection'] ?? '') . '"' . '},' . 'script_url:"' . TL_ASSETS_URL . '",'
-               . 'path:"' . TL_PATH . '",' . 'request_token:"' . REQUEST_TOKEN . '",' . 'referer_id:"' . TL_REFERER_ID . '",' . 'scope:"' . FORMHYBRID_ACTION_SCOPE . '"' . '};';
+               . 'path:"' . TL_PATH . '",' . 'request_token:"' . System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue() . '",' . 'referer_id:"' . TL_REFERER_ID . '",' . 'scope:"' . FORMHYBRID_ACTION_SCOPE . '"' . '};';
     }
 
 
@@ -238,9 +245,9 @@ class FormHelper extends \System
 
     public static function getPaletteFields($strTable, $strPalette)
     {
-        \Controller::loadDataContainer($strTable);
+        Controller::loadDataContainer($strTable);
 
-        $boxes   = trimsplit(';', $strPalette);
+        $boxes   = StringUtil::trimsplit(';', $strPalette);
         $legends = [];
 
         if (!empty($boxes))
@@ -248,7 +255,7 @@ class FormHelper extends \System
             foreach ($boxes as $k => $v)
             {
                 $eCount    = 1;
-                $boxes[$k] = trimsplit(',', $v);
+                $boxes[$k] = StringUtil::trimsplit(',', $v);
 
                 foreach ($boxes[$k] as $kk => $vv)
                 {
@@ -296,9 +303,9 @@ class FormHelper extends \System
     public static function replaceFormDataTags($strBuffer, $arrMailData)
     {
         // Preserve insert tags
-        if (\Config::get('disableInsertTags'))
+        if (Config::get('disableInsertTags'))
         {
-            return \StringUtil::restoreBasicEntities($strBuffer);
+            return StringUtil::restoreBasicEntities($strBuffer);
         }
 
         $tags = preg_split('/\{\{(([^\{\}]*|(?R))*)\}\}/', $strBuffer, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -386,7 +393,7 @@ class FormHelper extends \System
         }
 
 
-        return \StringUtil::restoreBasicEntities($strBuffer);
+        return StringUtil::restoreBasicEntities($strBuffer);
     }
 
     public static function evalConditionTags($strBuffer)
@@ -419,11 +426,11 @@ class FormHelper extends \System
      *
      * @param array          $arrSubPalettes
      * @param array          $arrFieldsInPalette
-     * @param \DataContainer $dc
+     * @param \Contao\DataContainer $dc
      *
      * @return array
      */
-    public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, \DataContainer $dc = null)
+    public static function getFilteredSubPalettes(array $arrSubPalettes, array $arrFieldsInPalette, DataContainer $dc = null)
     {
         $arrFilteredSubPalettes = [];
 
@@ -454,7 +461,7 @@ class FormHelper extends \System
             {
                 $strClass    = $arrField['options_callback'][0];
                 $strMethod   = $arrField['options_callback'][1];
-                $objInstance = \Controller::importStatic($strClass);
+                $objInstance = Controller::importStatic($strClass);
                 $arrOptions  = $objInstance->{$strMethod}($dc);
 
                 foreach ($arrOptions as $strOption)
@@ -479,7 +486,7 @@ class FormHelper extends \System
             return [];
         }
 
-        \Controller::loadDataContainer($strDataContainer);
+        Controller::loadDataContainer($strDataContainer);
 
         if (!is_array($GLOBALS['TL_DCA'][$strDataContainer]))
         {
