@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.26.0] - 2026-03-02
+- Fixed: CVE in firebase/php-jwt by bumping required version to ^7.0
+- Changed: JWT decode/encode now updated according to api changes in firebase/php-jwt
+
 ## [3.25.1] - 2024-12-04
 - Fixed: exception when not in web context
 - Changed: require at least contao 4.9
