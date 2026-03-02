@@ -2,9 +2,11 @@
 
 namespace HeimrichHannot\FormHybrid;
 
+use Contao\Config;
 use Contao\Controller;
 use Contao\Database;
 use Contao\Model;
+use Contao\ModuleLoader;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Firebase\JWT\JWT;
@@ -101,14 +103,15 @@ abstract class Form extends DC_Hybrid
 
     }
 
-    protected function activateSubmission()
+    protected function activateSubmission(): bool
     {
         $strJWT = Request::getGet(Formhybrid::OPT_IN_REQUEST_ATTRIBUTE);
 
         try
         {
-            $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
-        } catch (\Exception $e)
+            $objData = JWT::decode($strJWT, Config::get('encryptionKey'));
+        }
+        catch (\Exception)
         {
             $this->createInvalidOptInTokenMessage();
 
@@ -226,14 +229,15 @@ abstract class Form extends DC_Hybrid
         return true;
     }
 
-    protected function removeSubscription()
+    protected function removeSubscription(): bool
     {
         $strJWT = Request::getGet(Formhybrid::OPT_OUT_REQUEST_ATTRIBUTE);
 
         try
         {
-            $objData = JWT::decode($strJWT, \Config::get('encryptionKey'), ['HS256']);
-        } catch (\Exception $e)
+            $objData = JWT::decode($strJWT, Config::get('encryptionKey'));
+        }
+        catch (\Exception)
         {
             $this->createInvalidOptInTokenMessage();
 
@@ -499,7 +503,7 @@ abstract class Form extends DC_Hybrid
 
             if ($instance instanceof Model)
             {
-                $table = $instance->getTable();
+                $table = $instance::getTable();
 
                 Database::getInstance()->prepare("UPDATE $table SET $table." . FormHybrid::OPT_IN_DATABASE_FIELD . "=? WHERE $table.id=?")->execute($strToken, $instance->id);
             }
@@ -512,37 +516,45 @@ abstract class Form extends DC_Hybrid
 
             if ($instance instanceof Model)
             {
-				$submission = $this->objActiveRecord->row();
-            	if ($this->formHybridfilterTokenFields)
-				{
-					$tokenFields = deserialize($this->formHybridTokenFields, true);
-					foreach ($submission as $fieldName => $fieldValue)
-					{
-						if (in_array($fieldName, $tokenFields))
-						{
-							$data['submission'][$fieldName] = $fieldValue;
-
-						}
-					}
-				}
-				else {
-					$data['submission'] = $submission;
-				}
+                $submission = $this->objActiveRecord->row();
+                if ($this->formHybridfilterTokenFields)
+                {
+                    $tokenFields = StringUtil::deserialize($this->formHybridTokenFields, true);
+                    foreach ($submission as $fieldName => $fieldValue)
+                    {
+                        if (in_array($fieldName, $tokenFields))
+                        {
+                            $data['submission'][$fieldName] = $fieldValue;
+                        }
+                    }
+                }
+                else
+                {
+                    $data['submission'] = $submission;
+                }
             }
 
-            if ((in_array('privacy', \ModuleLoader::getActive()) || class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle')) &&
-                $privacyToken = Request::getGet('ptoken'))
+            $privacyBundleInstalled = in_array('privacy', ModuleLoader::getActive())
+                || class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle');
+
+            if ($privacyBundleInstalled && $privacyToken = Request::getGet('ptoken'))
             {
-                try {
-                    $decoded         = \Firebase\JWT\JWT::decode($privacyToken, \Contao\Config::get('encryptionKey'), ['HS256']);
-                    $decoded         = (array)$decoded;
-                    $data['privacy_prefill_data'] = (array)$decoded['data'];
-                } catch (\Exception $e) {}
+                try
+                {
+                    $decoded = JWT::decode($privacyToken, Config::get('encryptionKey'));
+                    $decoded = (array) $decoded;
+                    $data['privacy_prefill_data'] = (array) $decoded['data'];
+                }
+                catch (\Exception $e)
+                {
+                    // ignore
+                }
             }
 
             $strJWT = JWT::encode(
-                $data,
-                \Config::get('encryptionKey')
+                payload: $data,
+                key: Config::get('encryptionKey'),
+                alg: 'HS256',
             );
 
             $arrToken['opt_in_token'] = $strJWT;
@@ -577,8 +589,10 @@ abstract class Form extends DC_Hybrid
 
     protected function addOptInPrivacyProtocolEntry($submissionData = null)
     {
-        if (!in_array('privacy', \ModuleLoader::getActive()) && !class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle') ||
-            !$this->formHybridOptInAddPrivacyProtocolEntry)
+        $privacyBundleInstalled = in_array('privacy', ModuleLoader::getActive())
+            || class_exists('\HeimrichHannot\PrivacyBundle\HeimrichHannotPrivacyBundle');
+
+        if (!$privacyBundleInstalled || !$this->formHybridOptInAddPrivacyProtocolEntry)
         {
             return;
         }
